@@ -1,0 +1,120 @@
+
+
+-- 地址信息
+CREATE TABLE IF NOT EXISTS address(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  open_id VARCHAR(255) COMMENT '用户ID',
+  address VARCHAR(255) COMMENT '地址',
+  is_default VARCHAR(255) COMMENT '0不是默认,1是默认地址',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+
+)CHARACTER SET utf8mb4;
+
+-- 商户
+CREATE TABLE IF NOT EXISTS merchant(
+
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255) COMMENT '商户名称',
+  open_id VARCHAR(255) COMMENT '商户open_id',
+  status INT COMMENT '商户状态 1.正常 0.关闭',
+  json VARCHAR(1000) COMMENT '附加数据',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+
+)CHARACTER SET utf8mb4;
+
+-- 商户产品
+CREATE TABLE IF NOT EXISTS merchant_prod(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  merchant_id BIGINT COMMENT '商户ID',
+  prod_id BIGINT COMMENT '产品ID',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+) CHARACTER SET utf8mb4;
+
+-- 类别
+CREATE TABLE IF NOT EXISTS category(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  title VARCHAR(255) COMMENT '标题',
+  description VARCHAR(255) COMMENT '描述',
+  json VARCHAR(1000) COMMENT '附加字段',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+) CHARACTER SET utf8mb4;
+
+-- 商品
+CREATE TABLE IF NOT EXISTS product(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  title VARCHAR(255) COMMENT '标题',
+  description VARCHAR(255) COMMENT '描述',
+  price NUMERIC(14,2) COMMENT '商品价格',
+  status int COMMENT '商品状态',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
+  json VARCHAR(1000) COMMENT '附加字段'
+
+) CHARACTER SET utf8mb4;
+
+--  商品规格
+CREATE TABLE IF NOT EXISTS prod_spec(
+
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  price_move NUMERIC(14,2) COMMENT '价格波动',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
+  json VARCHAR(1000) COMMENT '附加字段'
+
+) CHARACTER SET utf8mb4;
+
+-- 商品分类
+CREATE TABLE IF NOT EXISTS prod_categroy (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  categroy_id BIGINT COMMENT '类别ID',
+  prod_id BIGINT COMMENT '商品ID',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+) CHARACTER SET utf8mb4;
+
+-- 订单
+CREATE TABLE IF NOT EXISTS order(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  no VARCHAR(255) UNIQUE KEY COMMENT '订单编号',
+  open_id VARCHAR(255) COMMENT '用户ID',
+  m_open_id VARCHAR(255) COMMENT '商家ID',
+  title VARCHAR(255) COMMENT '订单标题',
+  act_price NUMERIC(14,2) COMMENT '订单实际金额',
+  omit_money NUMERIC(10,4) COMMENT '省略金额',
+  price NUMERIC(14,2) COMMENT '订单应付金额',
+  status int COMMENT '订单状态 0:订单被取消 1:已下单待付款 2:已付款待发货 3:已发货待收货 4:已收货 5:退货中 6:已退货待退款 7:已退款 8已评论',
+  json VARCHAR(1000) COMMENT '附加字段',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+) CHARACTER SET utf8mb4;
+
+-- 订单项
+CREATE TABLE IF NOT EXISTS order_item(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  no VARCHAR(255) UNIQUE KEY COMMENT '订单编号',
+  open_id VARCHAR(255) COMMENT '用户ID',
+  m_open_id VARCHAR(255) COMMENT '商家ID',
+  prod_id BIGINT COMMENT '商品ID',
+  num int COMMENT '商品数量',
+  offer_unit_price NUMERIC(14,2) COMMENT '单价报价',
+  buy_unit_price NUMERIC(14,2) COMMENT '购买单价',
+  offer_total_price NUMERIC(14,2) COMMENT '总价格报价',
+  buy_total_price NUMERIC(14,2) COMMENT '购买总金额',
+  json VARCHAR(1000) COMMENT '附加字段',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+)CHARACTER SET utf8mb4;
+
+-- 订单地址
+CREATE TABLE IF NOT EXISTS order_address(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  order_no VARCHAR(255) COMMENT '订单号',
+  open_id VARCHAR(255) COMMENT '用户ID',
+  address VARCHAR(255) COMMENT '送货地址',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+) CHARACTER SET utf8mb4;
