@@ -22,6 +22,28 @@ type Product struct  {
 	Json string
 }
 
+type ProductDetail struct {
+	//商品ID
+	Id int64
+	AppId string
+	//商品标题
+	Title string
+	//商品价格
+	Price float64
+	//折扣价格
+	DisPrice float64
+	//商品状态
+	Status int
+	//商户ID
+	MerchantId int64
+	//商户名称
+	MerchantName string
+	//商品图片集合
+	prodImgs []ProdImgsDetail
+}
+
+
+
 func NewProduct() *Product  {
 
 	return &Product{}
@@ -41,7 +63,7 @@ func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 func (self *Product) ProductListWithCategory(appId string,categoryId int64) ([]*Product,error)  {
 	session := db.NewSession()
 	var prodList []*Product
-	_,err :=session.SelectBySql("select pt.* from prod_category pc,product pt where pc.app_id=pt.app_id and pc.prod_id=pt.id and pc.category_id=? and pt.app_id=?",categoryId,appId).LoadStructs(&prodList)
+	_,err :=session.SelectBySql("select pt.* from merchant_prod md,prod_category pc,product pt where md.app_id=pc.app_id and pc.app_id=pt.app_id and pc.prod_id=pt.id and pc.category_id=? and pt.app_id=?",categoryId,appId).LoadStructs(&prodList)
 	return prodList,err
 }
 
