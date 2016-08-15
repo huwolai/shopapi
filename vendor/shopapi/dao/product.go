@@ -3,6 +3,7 @@ package dao
 import (
 	"github.com/gocraft/dbr"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 type Product struct  {
@@ -86,21 +87,30 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 		return nil,err
 	}
 	prodimgsMap := make(map[int64][]*ProdImgsDetail)
-	if prodImgDetail!=nil{
+	if prodImgDetails!=nil{
 		for _,prodimgd :=range prodImgDetails {
-			 prodimgdetails :=prodimgsMap[prodimgd.Id]
-			if prodimgdetails==nil{
-				prodimgdetails = make([]*ProdImgsDetail,0)
-				prodimgdetails = append(prodimgdetails,prodimgd)
-				prodimgsMap[prodimgd.Id] = prodimgdetails
+			key := prodimgd.ProdId
+			pdimgdetails :=prodimgsMap[key]
+			if pdimgdetails==nil{
+				log.Debug("----------------")
+				pdimgdetails = make([]*ProdImgsDetail,0)
 			}
 
-			prodimgdetails= append(prodimgdetails,prodimgd)
+
+			pdimgdetails= append(pdimgdetails,prodimgd)
+
+			prodimgsMap[key] = pdimgdetails
+			log.Debug(prodimgsMap)
+			for _,test :=range pdimgdetails {
+				log.Debug(test.ImgNo)
+			}
 		}
 	}
 
+	log.Debug("图片数量:",prodimgsMap)
 	for _,prod :=range prodList {
-		prodimgs := prodimgsMap[prod.Id]
+		key := prod.Id
+		prodimgs := prodimgsMap[key]
 		prod.ProdImgs = prodimgs
 	}
 

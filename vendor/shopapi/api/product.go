@@ -63,7 +63,7 @@ type ProductDetailDto struct {
 	MerchantName string `json:"merchant_name"`
 	Json string `json:"json"`
 	//商品图片集合
-	prodImgs []*ProdImgsDetailDto
+	ProdImgs []*ProdImgsDetailDto `json:"prod_imgs"`
 }
 
 type ProdImgsDetailDto struct  {
@@ -243,7 +243,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 		for _,prodimg :=range model.ProdImgs {
 			detailDtos = append(detailDtos,prodImgsDetailToDto(prodimg))
 		}
-		dto.prodImgs=detailDtos
+		dto.ProdImgs=detailDtos
 	}
 
 	return dto
