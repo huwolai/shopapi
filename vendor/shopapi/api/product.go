@@ -40,7 +40,7 @@ type ProdImgsDetailDto struct  {
 	Json string `json:"json"`
 }
 type ProductListDto struct  {
-	Id string `json:"id"`
+	Id int64 `json:"id"`
 	//商品标题
 	Title string `json:"title"`
 	//描述
