@@ -6,8 +6,8 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"shopapi/service"
 	"shopapi/comm"
-	"github.com/Azure/azure-sdk-for-go/core/http"
 	"gitlab.qiyunxin.com/tangtao/utils/config"
+	"net/http"
 )
 
 type OrderDto struct  {

@@ -5,7 +5,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"shopapi/service"
-	"github.com/Azure/azure-sdk-for-go/core/http"
+	"net/http"
 )
 
 type MerchantAddParam struct  {

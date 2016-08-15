@@ -12,7 +12,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"shopapi/comm"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
-	"github.com/Azure/azure-sdk-for-go/core/http"
+	"net/http"
 )
 
 type OrderModel struct  {
