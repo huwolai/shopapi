@@ -38,11 +38,16 @@ type ProductDetail struct {
 	MerchantId int64
 	//商户名称
 	MerchantName string
+	//附加数据
+	Json string
 	//商品图片集合
-	prodImgs []ProdImgsDetail
+	ProdImgs []*ProdImgsDetail
 }
 
+func NewProductDetail() *ProductDetail {
 
+	return &ProductDetail{}
+}
 
 func NewProduct() *Product  {
 
@@ -60,10 +65,45 @@ func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 	return pid,err
 }
 
-func (self *Product) ProductListWithCategory(appId string,categoryId int64) ([]*Product,error)  {
+func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64) ([]*ProductDetail,error)  {
 	session := db.NewSession()
-	var prodList []*Product
-	_,err :=session.SelectBySql("select pt.* from merchant_prod md,prod_category pc,product pt where md.app_id=pc.app_id and pc.app_id=pt.app_id and pc.prod_id=pt.id and pc.category_id=? and pt.app_id=?",categoryId,appId).LoadStructs(&prodList)
+	var prodList []*ProductDetail
+	_,err :=session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,prod_category pc,product pt where md.app_id=pc.app_id and md.prod_id=pc.prod_id and md.merchant_id=mt.id and pc.app_id=pt.app_id and pc.prod_id=pt.id and pc.category_id=? and pt.app_id=?",categoryId,appId).LoadStructs(&prodList)
+	if err!=nil{
+		return nil,err
+	}
+
+	 prodids := make([]int64,0)
+	if prodList!=nil{
+		for _,prod :=range prodList {
+			prodids = append(prodids,prod.Id)
+		}
+	}
+
+	prodImgDetail := NewProdImgsDetail()
+	prodImgDetails,err := prodImgDetail.ProdImgsWithProdIds(prodids,appId)
+	if err!=nil{
+		return nil,err
+	}
+	prodimgsMap := make(map[int64][]*ProdImgsDetail)
+	if prodImgDetail!=nil{
+		for _,prodimgd :=range prodImgDetails {
+			 prodimgdetails :=prodimgsMap[prodimgd.Id]
+			if prodimgdetails==nil{
+				prodimgdetails = make([]*ProdImgsDetail,0)
+				prodimgdetails = append(prodimgdetails,prodimgd)
+				prodimgsMap[prodimgd.Id] = prodimgdetails
+			}
+
+			prodimgdetails= append(prodimgdetails,prodimgd)
+		}
+	}
+
+	for _,prod :=range prodList {
+		prodimgs := prodimgsMap[prod.Id]
+		prod.ProdImgs = prodimgs
+	}
+
 	return prodList,err
 }
 

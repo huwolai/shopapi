@@ -7,6 +7,7 @@ import (
 	"shopapi/service"
 	"strconv"
 	"net/http"
+	"shopapi/dao"
 )
 
 type ProductParam struct  {
@@ -29,16 +30,7 @@ type ProductParam struct  {
 	Json  string `json:"json"`
 }
 
-type ProdImgsDetailDto struct  {
-	//图片编号
-	ImgNo string `json:"img_no"`
-	//产品ID
-	ProdId int64 `json:"prod_id"`
-	AppId string `json:"app_id"`
-	Url string `json:"url"`
-	Flag string `json:"flag"`
-	Json string `json:"json"`
-}
+
 type ProductListDto struct  {
 	Id int64 `json:"id"`
 	//商品标题
@@ -50,6 +42,38 @@ type ProductListDto struct  {
 	//折扣价格
 	DisPrice float64 `json:"dis_price"`
 
+	Json string `json:"json"`
+}
+
+type ProductDetailDto struct {
+	//商品ID
+	Id int64 `json:"id"`
+	AppId string `json:"app_id"`
+	//商品标题
+	Title string `json:"title"`
+	//商品价格
+	Price float64 `json:"price"`
+	//折扣价格
+	DisPrice float64 `json:"dis_price"`
+	//商品状态
+	Status int `json:"status"`
+	//商户ID
+	MerchantId int64 `json:"merchant_id"`
+	//商户名称
+	MerchantName string `json:"merchant_name"`
+	Json string `json:"json"`
+	//商品图片集合
+	prodImgs []*ProdImgsDetailDto
+}
+
+type ProdImgsDetailDto struct  {
+	//图片编号
+	ImgNo string `json:"img_no"`
+	//产品ID
+	ProdId int64 `json:"prod_id"`
+	AppId string `json:"app_id"`
+	Url string `json:"url"`
+	Flag string `json:"flag"`
 	Json string `json:"json"`
 }
 
@@ -135,11 +159,11 @@ func ProductListWithCategory(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"查询失败!")
 		return
 	}
-	prodListDtos :=make([]*ProductListDto,0)
+	prodListDtos :=make([]*ProductDetailDto,0)
 	if prodList!=nil {
 
-		for _,prodResultBll :=range prodList {
-			prodListDtos = append(prodListDtos,productResultDLLToDto(prodResultBll))
+		for _,prodDetail :=range prodList {
+			prodListDtos = append(prodListDtos,productDetailToDto(prodDetail))
 		}
 	}
 
@@ -201,15 +225,38 @@ func productParamToDLL(param *ProductParam) *service.ProdBLL {
 	return prodBll
 }
 
-func productResultDLLToDto(dll *service.ProductResultDLL) *ProductListDto  {
+func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 
-	dto :=&ProductListDto{}
-	dto.Description=dll.Description
-	dto.DisPrice=dll.DisPrice
-	dto.Id = dll.Id
-	dto.Json = dll.Json
-	dto.Price = dll.Price
-	dto.Title = dll.Title
+	dto :=&ProductDetailDto{}
+	dto.Id = model.Id
+	dto.DisPrice=model.DisPrice
+	dto.Json = model.Json
+	dto.Title = model.Title
+	dto.AppId = model.AppId
+	dto.MerchantId = model.MerchantId
+	dto.MerchantName = model.MerchantName
+	dto.Price = model.Price
+
+	if model.ProdImgs!=nil{
+		detailDtos :=make([]*ProdImgsDetailDto,0)
+
+		for _,prodimg :=range model.ProdImgs {
+			detailDtos = append(detailDtos,prodImgsDetailToDto(prodimg))
+		}
+		dto.prodImgs=detailDtos
+	}
+
+	return dto
+}
+
+func prodImgsDetailToDto(model *dao.ProdImgsDetail) *ProdImgsDetailDto  {
+
+	dto :=&ProdImgsDetailDto{}
+	dto.AppId = model.AppId
+	dto.Flag = model.Flag
+	dto.ImgNo = model.ImgNo
+	dto.ProdId = model.ProdId
+	dto.Url = model.Url
 
 	return dto
 }

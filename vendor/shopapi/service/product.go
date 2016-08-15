@@ -73,24 +73,14 @@ func ProdAdd(prodbll *ProdBLL) error  {
 }
 
 
-func ProductListWithCategory(appId string,categoryId int64) ([]*ProductResultDLL,error)   {
-	product :=dao.NewProduct()
-	prodList,err := product.ProductListWithCategory(appId,categoryId)
+func ProductListWithCategory(appId string,categoryId int64) ([]*dao.ProductDetail,error)   {
+	productDetail :=dao.NewProductDetail()
+	prodList,err := productDetail.ProductListWithCategory(appId,categoryId)
 	if err!=nil {
 		return nil,err
 	}
 
-	if prodList!=nil{
-		dllArray := make([]*ProductResultDLL,0)
-		for _,prod := range prodList {
-
-			dllArray = append(dllArray,productToReusltDLL(prod))
-		}
-
-		return dllArray,nil
-	}
-
-	return nil,nil
+	return prodList,nil
 }
 
 //产品分类添加

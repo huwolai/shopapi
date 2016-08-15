@@ -77,6 +77,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		"title": order.Title,
 		"client_ip": "127.0.0.1",
 		"notify_url": model.NotifyUrl,
+		"remark": order.Title,
 	}
 	log.Info(params)
 

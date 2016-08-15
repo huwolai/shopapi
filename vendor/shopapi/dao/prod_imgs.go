@@ -54,3 +54,11 @@ func (self *ProdImgsDetail) ProdImgsWithProdId(prodId int64,appId string) ([]*Pr
 
 	return  details,err
 }
+
+func (self *ProdImgsDetail) ProdImgsWithProdIds(prodIds []int64,appId string) ([]*ProdImgsDetail,error){
+	sess := db.NewSession()
+	var details []*ProdImgsDetail
+	_,err :=sess.SelectBySql("select * from prod_imgs ps,images gs where ps.app_id=gs.app_id and ps.img_no=gs.no and ps.prod_id in ? and ps.app_id=?",prodIds,appId).LoadStructs(&details)
+
+	return  details,err
+}
