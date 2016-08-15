@@ -82,7 +82,7 @@ func (self *OrderDetail) OrderDetailWithUser(openId string,appId string) ([]*Ord
 		ordernos = append(ordernos,orderDetail.No)
 	}
 
-	if len(ordernos>0) {
+	if len(ordernos)>0 {
 		orderItemDetail := NewOrderItemDetail()
 		orderItemDetails,err :=orderItemDetail.OrderItemWithOrderNo(ordernos)
 		if err!=nil{

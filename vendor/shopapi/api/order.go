@@ -125,21 +125,21 @@ func OrderDetailByNo(c *gin.Context)  {
 
 //获取用户订单
 func OrderByUser(c *gin.Context)  {
-	appId,err :=CheckAuth(c)
-	if err!=nil{
-		log.Error(err)
-		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
-		return
-	}
-	//获取用户openid
-	openId,err :=GetOpenId(c)
-	if err!=nil{
-		log.Error(err)
-		util.ResponseError400(c.Writer,err.Error())
-		return
-	}
+	//appId,err :=CheckAuth(c)
+	//if err!=nil{
+	//	log.Error(err)
+	//	util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+	//	return
+	//}
+	////获取用户openid
+	//openId,err :=GetOpenId(c)
+	//if err!=nil{
+	//	log.Error(err)
+	//	util.ResponseError400(c.Writer,err.Error())
+	//	return
+	//}
 
-	service.Or
+	//service.Or
 }
 
 //post订单事件
