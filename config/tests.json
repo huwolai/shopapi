@@ -1,5 +1,5 @@
 {
-  "mysql_host":"127.0.0.1:3306",
+  "mysql_host":"mysqlshop.hwldb.svc.cluster.local:3306",
   "mysql_password":"123456",
   "mysql_user":"qiyunxin",
   "mysql_db":"sampledb",
