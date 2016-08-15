@@ -72,6 +72,15 @@ func ProdAdd(prodbll *ProdBLL) error  {
 	return nil;
 }
 
+func ProductListWithRecomm(appId string) ([]*dao.ProductDetail,error) {
+	productDetail :=dao.NewProductDetail()
+	prodList,err := productDetail.ProductListWithRecomm(appId)
+	if err!=nil {
+		return nil,err
+	}
+
+	return prodList,nil
+}
 
 func ProductListWithCategory(appId string,categoryId int64) ([]*dao.ProductDetail,error)   {
 	productDetail :=dao.NewProductDetail()

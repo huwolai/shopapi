@@ -3,6 +3,7 @@ package dao
 import (
 	"github.com/gocraft/dbr"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 type ProdImgs struct  {
@@ -59,6 +60,6 @@ func (self *ProdImgsDetail) ProdImgsWithProdIds(prodIds []int64,appId string) ([
 	sess := db.NewSession()
 	var details []*ProdImgsDetail
 	_,err :=sess.SelectBySql("select * from prod_imgs ps,images gs where ps.app_id=gs.app_id and ps.img_no=gs.no and ps.prod_id in ? and ps.app_id=?",prodIds,appId).LoadStructs(&details)
-
+	log.Debug("----err",err)
 	return  details,err
 }

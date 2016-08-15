@@ -63,6 +63,12 @@ func main() {
 		{
 			product.POST("/:merchant_id",api.ProductAdd)
 			product.GET("/:prod_id/imgs",api.ProdImgsWithProdId)
+
+		}
+		recom :=v1.Group("/recom")
+		{
+			//商品推荐列表
+			recom.GET("/products",api.ProductListWithRecomm)
 		}
 		//订单
 		order := v1.Group("/order")

@@ -20,14 +20,14 @@ func TestProductAdd(t *testing.T)  {
 
 	e :=httpexpect.New(t,URL)
 	param :=map[string]interface{}{
-		"title":"标题",
-		"description":"商品描述",
+		"title":"麻辣牛肉面",
+		"description":"麻辣牛肉面的描述",
 		"category_id": 1,
-		"price": 12,
-		"dis_price": 10,
+		"price": 20,
+		"dis_price": 19.9,
 		"imgnos": "12,23",
 	}
-	e.POST("/product/234").WithHeader("app_id",APP_ID).WithJSON(param).Expect().
+	e.POST("/product/1").WithHeader("app_id",APP_ID).WithJSON(param).Expect().
 	Status(http.StatusOK).
 	JSON().Object().ValueEqual("err_code",0)
 }

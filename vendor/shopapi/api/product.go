@@ -139,6 +139,30 @@ func ProductAdd(c *gin.Context)  {
 	util.ResponseSuccess(c.Writer)
 }
 
+//商品推荐列表
+func ProductListWithRecomm(c *gin.Context)  {
+	appId,err :=CheckAuth(c)
+	if err!=nil {
+		util.ResponseError400(c.Writer,"校验失败!")
+		return
+	}
+	prodList,err := service.ProductListWithRecomm(appId)
+	if err!=nil {
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询失败!")
+		return
+	}
+	prodListDtos :=make([]*ProductDetailDto,0)
+	if prodList!=nil {
+
+		for _,prodDetail :=range prodList {
+			prodListDtos = append(prodListDtos,productDetailToDto(prodDetail))
+		}
+	}
+
+	c.JSON(http.StatusOK,prodListDtos)
+}
+
 /**
 商品列表
  */

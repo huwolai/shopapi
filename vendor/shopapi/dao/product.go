@@ -66,6 +66,21 @@ func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 	return pid,err
 }
 
+//商品推荐列表
+func (self *ProductDetail) ProductListWithRecomm(appId string) ([]*ProductDetail,error)  {
+	session := db.NewSession()
+	var prodList []*ProductDetail
+	_,err :=session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,prod_category pc,product pt where md.app_id=pc.app_id and md.prod_id=pc.prod_id and md.merchant_id=mt.id and pc.app_id=pt.app_id and pc.prod_id=pt.id and pt.is_recom=1 and pt.app_id=?",appId).LoadStructs(&prodList)
+	if err!=nil{
+		log.Debug("----err",err)
+		return nil,err
+	}
+
+	err = fillProdImgs(appId,prodList)
+
+	return prodList,err
+}
+
 func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64) ([]*ProductDetail,error)  {
 	session := db.NewSession()
 	var prodList []*ProductDetail
@@ -74,17 +89,28 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 		return nil,err
 	}
 
-	 prodids := make([]int64,0)
+	err = fillProdImgs(appId,prodList)
+
+	return prodList,err
+}
+
+//填充商品图片数据
+func fillProdImgs(appId string,prodList []*ProductDetail) error {
+	prodids := make([]int64,0)
 	if prodList!=nil{
 		for _,prod :=range prodList {
 			prodids = append(prodids,prod.Id)
 		}
 	}
 
+	if len(prodids)<=0 {
+		return nil
+	}
+
 	prodImgDetail := NewProdImgsDetail()
 	prodImgDetails,err := prodImgDetail.ProdImgsWithProdIds(prodids,appId)
 	if err!=nil{
-		return nil,err
+		return err
 	}
 	prodimgsMap := make(map[int64][]*ProdImgsDetail)
 	if prodImgDetails!=nil{
@@ -92,7 +118,6 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 			key := prodimgd.ProdId
 			pdimgdetails :=prodimgsMap[key]
 			if pdimgdetails==nil{
-				log.Debug("----------------")
 				pdimgdetails = make([]*ProdImgsDetail,0)
 			}
 
@@ -106,15 +131,13 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 			}
 		}
 	}
-
-	log.Debug("图片数量:",prodimgsMap)
 	for _,prod :=range prodList {
 		key := prod.Id
 		prodimgs := prodimgsMap[key]
 		prod.ProdImgs = prodimgs
 	}
 
-	return prodList,err
+	return nil
 }
 
 

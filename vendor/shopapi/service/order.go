@@ -125,6 +125,13 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 
 }
 
+func OrderByUser(openId string,appId string)  ([]*dao.OrderDetail,error)  {
+
+	orderDetail :=dao.NewOrderDetail()
+	orderDetails,err := orderDetail.OrderDetailWithUser(openId,appId)
+
+	return orderDetails,err
+}
 
 
 

@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS product(
   price NUMERIC(14,2) COMMENT '原价',
   dis_price NUMERIC(14,2) COMMENT '折扣价格',
   status int COMMENT '商品状态',
+  is_recom int COMMENT '是否推荐 1.推荐 0.不推荐',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
   json VARCHAR(1000) COMMENT '附加字段'
