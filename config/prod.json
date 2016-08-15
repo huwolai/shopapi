@@ -1,14 +1,10 @@
 {
-
-  "publickey_Path": "config/keys/public_key.pub",
-  "JWT_expiration_delta": 72,
-  "mysql_host":"mysqlpay.databases.svc.cluster.local:3306",
+  "mysql_host":"mysqlshop.hwldb.svc.cluster.local:3306",
   "mysql_password":"123456",
   "mysql_user":"qiyunxin",
   "mysql_db":"sampledb",
-  "token_expire":300,
-  "redis_address":"redis.databases.svc.cluster.local:6379",
-  "amqp_url":"amqp://guest:guest@rabbitmq-service.databases.svc.cluster.local:5672/",
-  "alipay_callback_url": "http://pay.qiyunxin.com/pay/alipay_callback",
-  "wxpay_callback_url": "http://pay.qiyunxin.com/pay/wxpay_callback"
+  "payapi_appid": "shopapi",
+  "payapi_appkey": "4537C07A563C4899B5A592DA3CC84A10",
+  "payapi_url": "http://pay.qiyunxin.com",
+  "notify_url": "http://shopapi.qiyunxin.svc.cluster.local:8080"
 }
