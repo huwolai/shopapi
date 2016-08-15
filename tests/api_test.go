@@ -3,9 +3,9 @@ package main
 import "testing"
 import (
 	"github.com/gavv/httpexpect"
-	"github.com/Azure/azure-sdk-for-go/core/http"
 	"fmt"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
+	"net/http"
 )
 
 
