@@ -108,7 +108,7 @@ func fillProdImgs(appId string,prodList []*ProductDetail) error {
 	}
 
 	prodImgDetail := NewProdImgsDetail()
-	prodImgDetails,err := prodImgDetail.ProdImgsWithProdIds(prodids,appId)
+	prodImgDetails,err := prodImgDetail.ProdImgsWithProdIds(prodids)
 	if err!=nil{
 		return err
 	}

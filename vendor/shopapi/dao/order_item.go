@@ -3,6 +3,7 @@ package dao
 import (
 	"github.com/gocraft/dbr"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 type OrderItem struct  {
@@ -24,13 +25,20 @@ type OrderItemDetail struct  {
 	No string
 	AppId string
 	OpenId string
+	//商品ID
 	ProdId int64
+	//商品标题
+	ProdTitle string
+	//商品cover 封面图 url
+	ProdCoverImg string
+	//购买数量
 	Num int
 	OfferUnitPrice float64
 	OfferTotalPrice float64
 	BuyUnitPrice float64
 	BuyTotalPrice float64
 	Json string
+
 
 }
 
@@ -53,8 +61,51 @@ func (self* OrderItem) InsertTx(tx *dbr.Tx) error {
 func (self *OrderItemDetail) OrderItemWithOrderNo(orderNo []string) ([]*OrderItemDetail,error)  {
 	sess := db.NewSession()
 	var orderItems []*OrderItemDetail
-	_,err :=sess.SelectBySql("select * from order_item where no in ?",orderNo).LoadStructs(&orderItems)
+	_,err :=sess.SelectBySql("select od.*,pt.title prod_title from order_item od,product pt where od.prod_id=pt.id and  no in ?",orderNo).LoadStructs(&orderItems)
+	if err !=nil {
+		return nil,err
+	}
+	if orderItems!=nil{
+		err :=fillOrderItemImg(orderItems)
+		if err!=nil{
+
+			return nil,err
+		}
+	}
 
 	return orderItems,err
 
 }
+
+func fillOrderItemImg(orderItems []*OrderItemDetail) error  {
+	prodids := make([]int64,0)
+	for _,orderItem :=range orderItems {
+		prodids = append(prodids,orderItem.ProdId)
+	}
+	imgDetail := NewProdImgsDetail()
+	prodImgDetailList,err  := imgDetail.ProdImgsWithProdIds(prodids)
+	if err!=nil{
+		return err
+	}
+	imgDetailMap  :=make(map[int64][]*ProdImgsDetail)
+	if prodImgDetailList!=nil {
+		for _,prodimgDetal :=range prodImgDetailList {
+			prodimgDetals := imgDetailMap[prodimgDetal.ProdId]
+			if prodimgDetals==nil {
+				prodimgDetals =make([]*ProdImgsDetail,0)
+			}
+			prodimgDetals = append(prodimgDetals,prodimgDetal)
+			imgDetailMap[prodimgDetal.ProdId]=prodimgDetals
+		}
+	}
+	log.Debug(imgDetailMap)
+	for _,orderItem :=range orderItems {
+		imgs := imgDetailMap[orderItem.ProdId]
+		if imgs!=nil&&len(imgs)>0{
+			orderItem.ProdCoverImg = imgs[0].Url
+		}
+	}
+
+	return nil
+}
+
