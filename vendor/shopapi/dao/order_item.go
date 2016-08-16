@@ -53,7 +53,7 @@ func (self* OrderItem) InsertTx(tx *dbr.Tx) error {
 func (self *OrderItemDetail) OrderItemWithOrderNo(orderNo []string) ([]*OrderItemDetail,error)  {
 	sess := db.NewSession()
 	var orderItems []*OrderItemDetail
-	_,err :=sess.SelectBySql("select * from order_item where order_no ?",orderNo).LoadStructs(&orderItems)
+	_,err :=sess.SelectBySql("select * from order_item where no in ?",orderNo).LoadStructs(&orderItems)
 
 	return orderItems,err
 

@@ -82,7 +82,7 @@ type ProdImgsDetailDto struct  {
  */
 func ProductAdd(c *gin.Context)  {
 
-	appId,err := CheckAuth(c)
+	appId,err := CheckAppAuth(c)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return
@@ -141,7 +141,7 @@ func ProductAdd(c *gin.Context)  {
 
 //商品推荐列表
 func ProductListWithRecomm(c *gin.Context)  {
-	appId,err :=CheckAuth(c)
+	appId,err :=CheckAppAuth(c)
 	if err!=nil {
 		util.ResponseError400(c.Writer,"校验失败!")
 		return
@@ -168,7 +168,7 @@ func ProductListWithRecomm(c *gin.Context)  {
  */
 func ProductListWithCategory(c *gin.Context)  {
 
-	appId,err :=CheckAuth(c)
+	appId,err :=CheckAppAuth(c)
 	if err!=nil {
 		util.ResponseError400(c.Writer,"校验失败!")
 		return
@@ -195,7 +195,7 @@ func ProductListWithCategory(c *gin.Context)  {
 }
 
 func ProdImgsWithProdId(c *gin.Context)  {
-	appId,err :=CheckAuth(c)
+	appId,err :=CheckAppAuth(c)
 	if err!=nil {
 		util.ResponseError400(c.Writer,"校验失败!")
 		return

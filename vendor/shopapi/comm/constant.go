@@ -12,8 +12,8 @@ const (
 
 const (
 	//订单等待预支付
-	ORDER_STATUS_PREPAY_WAIT = 1
+	ORDER_STATUS_PAY_WAIT = 1
 
-	//订单等待付款
-	ORDER_STATUS_PAY_WAIT =2
+	//订单付款成功
+	ORDER_STATUS_PAY_SUCCESS=2
 )

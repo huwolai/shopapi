@@ -18,7 +18,7 @@ type MerchantAddParam struct  {
 
 func MerchantAdd(c *gin.Context)  {
 
-	appId,err := CheckAuth(c)
+	appId,err := CheckAppAuth(c)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return

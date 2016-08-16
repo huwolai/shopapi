@@ -8,6 +8,10 @@ import (
 	"shopapi/comm"
 	"gitlab.qiyunxin.com/tangtao/utils/config"
 	"net/http"
+	"shopapi/dao"
+	"strings"
+	"strconv"
+	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 )
 
 type OrderDto struct  {
@@ -17,6 +21,39 @@ type OrderDto struct  {
 	AppId string `json:"app_id"`
 	Title string `json:"title"`
 	OrderNo string `json:"order_no"`
+	Status int `json:"status"`
+}
+
+type OrderDetailDto struct  {
+	Id int64 `json:"id"`
+	No string `json:"no"`
+	PayapiNo string `json:"payapi_no"`
+	OpenId string `json:"open_id"`
+	AppId string `json:"app_id"`
+	Title string `json:"title"`
+	ActPrice float64 `json:"act_price"`
+	OmitMoney float64 `json:"omit_money"`
+	Price float64 `json:"price"`
+	Status int `json:"status"`
+	Items []*OrderItemDetailDto `json:"items"`
+	Json string `json:"json"`
+	CreateTime string `json:"create_time"`
+
+}
+
+type OrderItemDetailDto struct  {
+	Id int64 `json:"id"`
+	No string `json:"no"`
+	AppId string `json:"app_id"`
+	OpenId string `json:"open_id"`
+	ProdId int64 `json:"prod_id"`
+	Num int `json:"num"`
+	OfferUnitPrice float64 `json:"offer_unit_price"`
+	OfferTotalPrice float64 `json:"offer_total_price"`
+	BuyUnitPrice float64 `json:"buy_unit_price"`
+	BuyTotalPrice float64 `json:"buy_total_price"`
+	Json string `json:"json"`
+
 }
 
 type OrderItemDto struct  {
@@ -39,14 +76,14 @@ type OrderPrePayDto struct  {
 //添加订单
 func OrderAdd(c *gin.Context)  {
 
-	appId,err :=CheckAuth(c)
+	appId,err :=CheckAppAuth(c)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
 		return
 	}
 	//获取用户openid
-	openId,err :=GetOpenId(c)
+	openId,err :=CheckUserAuth(c)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
@@ -66,6 +103,7 @@ func OrderAdd(c *gin.Context)  {
 	}
 	orderDto.AppId = appId
 	orderDto.OpenId = openId
+	orderDto.Status = comm.ORDER_STATUS_PAY_WAIT
 
 	order,err := service.OrderAdd(orderDtoToModel(orderDto))
 	if err!=nil{
@@ -83,7 +121,7 @@ func OrderAdd(c *gin.Context)  {
 //预支付订单
 func OrderPrePay(c *gin.Context)  {
 
-	appId,err :=CheckAuth(c)
+	appId,err :=CheckAppAuth(c)
 	if err!=nil{
 		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
 		return
@@ -112,22 +150,17 @@ func OrderPrePay(c *gin.Context)  {
 }
 
 
+
+
 //根据编号查询订单信息
 func OrderByNo(c *gin.Context)  {
-	
+
 }
 
 //订单详情
 func OrderDetailByNo(c *gin.Context)  {
-	
-}
-
-
-//获取用户订单
-func OrderByUser(c *gin.Context)  {
 	//appId,err :=CheckAuth(c)
 	//if err!=nil{
-	//	log.Error(err)
 	//	util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
 	//	return
 	//}
@@ -135,16 +168,143 @@ func OrderByUser(c *gin.Context)  {
 	//openId,err :=GetOpenId(c)
 	//if err!=nil{
 	//	log.Error(err)
-	//	util.ResponseError400(c.Writer,err.Error())
+	//	util.ResponseError(c.Writer,http.StatusUnauthorized,err.Error())
 	//	return
 	//}
+}
 
-	//service.Or
+
+//获取用户订单
+func OrderWithUserAndStatus(c *gin.Context)  {
+	appId,err :=CheckAppAuth(c)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+	//获取用户openid
+	openId,err :=CheckUserAuth(c)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	status := c.Param("status")
+	if status=="" {
+		util.ResponseError(c.Writer,http.StatusBadRequest,"请输入订单状态!")
+		return
+	}
+
+	statusArray := strings.Split(status,",")
+
+	istatusArray :=make([]int,0)
+	if len(statusArray)>0 {
+		for _,statusStr :=range statusArray {
+			stat,err :=strconv.Atoi(statusStr)
+			if err!=nil {
+				util.ResponseError(c.Writer,http.StatusBadRequest,"状态不是数字!")
+				return
+			}
+
+			istatusArray = append(istatusArray,stat)
+		}
+	}
+
+	orderList,err := service.OrderByUser(openId,istatusArray,appId)
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
+		return
+	}
+
+	orderDetailDtos :=make([]*OrderDetailDto,0)
+	if orderList!=nil{
+		for _,orderDetail :=range orderList {
+			orderDetailDtos = append(orderDetailDtos,orderDetailToDto(orderDetail))
+		}
+	}
+
+	c.JSON(http.StatusOK,orderDetailDtos)
+}
+
+func OrderDetailWithNo(c *gin.Context)  {
+	appId,err :=CheckAppAuth(c)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+	//获取用户openid
+	_,err =CheckUserAuth(c)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	orderNo := c.Param("order_no")
+	log.Debug(orderNo,appId)
+	orderDetail,err := service.OrderDetailWithNo(orderNo,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	if orderDetail!=nil {
+
+		c.JSON(http.StatusOK,orderDetailToDto(orderDetail))
+	}else{
+		util.ResponseError400(c.Writer,"没有找到订单详情!")
+	}
 }
 
 //post订单事件
 func OrderEventPost(c *gin.Context)  {
 	
+}
+
+func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
+
+	dto :=&OrderDetailDto{}
+	dto.No = model.No
+	dto.ActPrice = model.ActPrice
+	dto.AppId = model.AppId
+	dto.Id = model.Id
+	dto.Json = model.Json
+	dto.OpenId = model.OpenId
+	dto.OmitMoney = model.OmitMoney
+	dto.PayapiNo = model.PayapiNo
+	dto.Price = model.Price
+	dto.Status = model.Status
+	dto.Title = model.Title
+	dto.CreateTime = qtime.ToyyyyMMddHHmm(model.CreateTime)
+
+	items := model.Items
+	if items!=nil {
+		itemsDto :=make([]*OrderItemDetailDto,0)
+		for _,item :=range items {
+			itemsDto = append(itemsDto,orderItemDetailToDto(item))
+		}
+		dto.Items = itemsDto
+	}
+
+	return dto
+}
+
+func orderItemDetailToDto(model *dao.OrderItemDetail) *OrderItemDetailDto  {
+
+	dto :=&OrderItemDetailDto{}
+	dto.AppId = model.AppId
+	dto.BuyTotalPrice = model.BuyTotalPrice
+	dto.BuyUnitPrice = model.BuyUnitPrice
+	dto.Id = model.Id
+	dto.Json = model.Json
+	dto.No = model.No
+	dto.Num = model.Num
+	dto.OfferTotalPrice = model.OfferTotalPrice
+	dto.OfferUnitPrice = model.OfferUnitPrice
+	dto.ProdId = model.ProdId
+
+	return dto
 }
 
 func orderPrePayDtoToModel(dto OrderPrePayDto ) *service.OrderPrePayModel  {
@@ -164,8 +324,9 @@ func orderDtoToModel(dto OrderDto) *service.OrderModel  {
 	model.AppId = dto.AppId
 	model.OpenId = dto.OpenId
 	model.Json  =dto.Json
-	model.Status = comm.ORDER_STATUS_PREPAY_WAIT
+	model.Status = dto.Status
 	model.Title = dto.Title
+
 
 	items := dto.Items
 	if items!=nil {

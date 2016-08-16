@@ -27,8 +27,10 @@ func CORSMiddleware() gin.HandlerFunc {
 
 func main() {
 
-	os.Setenv("GO_ENV","tests")
-	os.Setenv("APP_ID","shopapi")
+	if os.Getenv("GO_ENV")=="" {
+		os.Setenv("GO_ENV","tests")
+		os.Setenv("APP_ID","shopapi")
+	}
 
 	err :=config.Init(false)
 	util.CheckErr(err)
@@ -52,6 +54,7 @@ func main() {
 		user :=v1.Group("/user")
 		{
 			user.POST("/:open_id/merchant",api.MerchantAdd)
+			user.POST("/:open_id/recharge",api.AccountPreRecharge)
 		}
 		//分类
 		category := v1.Group("/category")
@@ -75,8 +78,8 @@ func main() {
 		{
 			order.POST("/",api.OrderAdd)
 			order.POST("/:order_no/prepay",api.OrderPrePay)
-			order.GET("/:order_no",api.OrderByNo)
-			//order.GET("/user/:open_id",api.OrderByUser)
+			order.GET("/detail/:order_no",api.OrderDetailWithNo)
+			order.GET("/status/:status",api.OrderWithUserAndStatus)
 			order.POST("/:order_no/event",api.OrderEventPost)
 		}
 	}

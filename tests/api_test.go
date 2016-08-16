@@ -110,3 +110,14 @@ func TestSign(t *testing.T)  {
 	sign :=util.SignWithBaseSign(param,"4537C07A563C4899B5A592DA3CC84A10","9142EB5E2F586C649371244336E341D3",nil)
 	fmt.Println(sign)
 }
+
+func TestAccountRecharge(t *testing.T)  {
+	param :=map[string]interface{}{
+		"money":100,
+		"pay_type":1,
+	}
+
+	e :=httpexpect.New(t,URL)
+	obj :=e.POST("/user/"+OPEN_ID+"/recharge").WithHeader("app_id",APP_ID).WithHeader("open_id",OPEN_ID).WithJSON(param).Expect().Status(http.StatusOK).JSON().Object()
+	fmt.Println(obj)
+}

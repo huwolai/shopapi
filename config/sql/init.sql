@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS `order` (
   act_price NUMERIC(14,2) COMMENT '订单实际金额',
   omit_money NUMERIC(10,4) COMMENT '省略金额',
   price NUMERIC(14,2) COMMENT '订单应付金额',
-  status int COMMENT '订单状态 0:订单被取消 1:已下单待付款 2:已付款待发货 3:已发货待收货 4:已收货 5:退货中 6:已退货待退款 7:已退款 8已评论',
+  status int COMMENT '订单状态 0:订单被取消 1:已下单待付款 2:已付款',
   json VARCHAR(1000) COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'

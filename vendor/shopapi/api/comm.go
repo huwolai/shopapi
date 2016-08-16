@@ -22,7 +22,7 @@ func GetQueryParamInRequest(key string,req *http.Request) string  {
 }
 
 //认证校验
-func CheckAuth(c *gin.Context) (string,error)  {
+func CheckAppAuth(c *gin.Context) (string,error)  {
 
 	appId := GetQueryParamInRequest("app_id",c.Request)
 
@@ -34,7 +34,8 @@ func CheckAuth(c *gin.Context) (string,error)  {
 	return appId,nil
 }
 
-func GetOpenId(c *gin.Context) (string,error)  {
+//用户认证
+func CheckUserAuth(c *gin.Context) (string,error)  {
 	openId := GetQueryParamInRequest("open_id",c.Request)
 
 	if openId==""{

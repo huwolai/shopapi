@@ -66,7 +66,6 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 	if err!=nil {
 		return nil,err
 	}
-
 	//参数
 	params := map[string]interface{}{
 		"open_id": order.OpenId,
@@ -121,18 +120,21 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		return nil,errors.New("请求支付中心失败!")
 	}
 
-
-
 }
 
-func OrderByUser(openId string,appId string)  ([]*dao.OrderDetail,error)  {
+func OrderByUser(openId string,status []int,appId string)  ([]*dao.OrderDetail,error)  {
 
 	orderDetail :=dao.NewOrderDetail()
-	orderDetails,err := orderDetail.OrderDetailWithUser(openId,appId)
+	orderDetails,err := orderDetail.OrderDetailWithUser(openId,status,appId)
 
 	return orderDetails,err
 }
 
+func OrderDetailWithNo(orderNo string,appId string) (*dao.OrderDetail,error)  {
+	orderDetail :=dao.NewOrderDetail()
+	orderDetail,err := orderDetail.OrderDetailWithNo(orderNo,appId)
+	return orderDetail,err
+}
 
 
 func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
@@ -182,6 +184,7 @@ func orderItemSave(product *dao.Product,item OrderItemModel,orderNo string,tx *d
 	orderItem.No = orderNo
 	orderItem.ProdId = product.Id
 	orderItem.AppId = product.AppId
+	orderItem.Num = item.Num
 	orderItem.OfferUnitPrice = product.Price
 	orderItem.OfferTotalPrice = product.Price*float64(item.Num)
 	orderItem.BuyUnitPrice = product.DisPrice

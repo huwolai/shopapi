@@ -32,6 +32,7 @@ type OrderDetail struct  {
 	Status int
 	Items []*OrderItemDetail
 	Json string
+	BaseDModel
 }
 
 func NewOrder() *Order {
@@ -64,11 +65,30 @@ func (self *Order) OrderWithNo(no string,appId string) (*Order,error)  {
 	return order,err
 }
 
-func (self *OrderDetail) OrderDetailWithUser(openId string,appId string) ([]*OrderDetail,error)  {
+func (self *OrderDetail) OrderDetailWithNo(no string,appId string) (*OrderDetail,error)  {
+	sess := db.NewSession()
+	var orders []*OrderDetail
+	_,err :=sess.Select("*").From("`order`").Where("app_id=?",appId).Where("no=?",no).LoadStructs(&orders)
+	if err!=nil {
+		return nil,err
+	}
+	if len(orders)<=0 {
+
+		return nil,nil
+	}
+	err =fillOrderItemDetail(orders)
+	if err!=nil {
+		return nil,err
+	}
+
+	return orders[0],err
+}
+
+func (self *OrderDetail) OrderDetailWithUser(openId string,status []int,appId string) ([]*OrderDetail,error)  {
 
 	sess := db.NewSession()
 	var orders []*OrderDetail
-	_,err :=sess.Select("*").From("`order`").Where("open_id=?",openId).Where("app_id=?",appId).LoadStructs(&orders)
+	_,err :=sess.Select("*").From("`order`").Where("open_id=?",openId).Where("app_id=?",appId).Where("status in ?",status).OrderDir("create_time",false).LoadStructs(&orders)
 	if err!=nil{
 
 		return nil,err
@@ -77,6 +97,16 @@ func (self *OrderDetail) OrderDetailWithUser(openId string,appId string) ([]*Ord
 		return nil,nil
 	}
 
+	err = fillOrderItemDetail(orders)
+	if err!=nil {
+		return nil,err
+	}
+
+
+	return orders,err
+}
+
+func fillOrderItemDetail(orders []*OrderDetail)  error {
 	ordernos :=make([]string,0)
 	for _,orderDetail :=range orders {
 		ordernos = append(ordernos,orderDetail.No)
@@ -86,18 +116,18 @@ func (self *OrderDetail) OrderDetailWithUser(openId string,appId string) ([]*Ord
 		orderItemDetail := NewOrderItemDetail()
 		orderItemDetails,err :=orderItemDetail.OrderItemWithOrderNo(ordernos)
 		if err!=nil{
-			return nil,err
+			return err
 		}
 
 		orderItemDetailMap :=make(map[string][]*OrderItemDetail)
 		if len(orderItemDetails)>0 {
 			for _,orderItemDetail :=range orderItemDetails {
-				 odDetailList := orderItemDetailMap[orderItemDetail.No]
+				odDetailList := orderItemDetailMap[orderItemDetail.No]
 				if odDetailList==nil {
 					odDetailList = make([]*OrderItemDetail,0)
-					orderItemDetailMap[orderItemDetail.No] =odDetailList
 				}
 				odDetailList = append(odDetailList,orderItemDetail)
+				orderItemDetailMap[orderItemDetail.No] = odDetailList
 			}
 		}
 
@@ -107,10 +137,8 @@ func (self *OrderDetail) OrderDetailWithUser(openId string,appId string) ([]*Ord
 
 	}
 
-	return orders,err
+	return nil
 }
-
-
 
 func (self *Order) OrderPayapiUpdateWithNo(payapiNo string,status int,no string,appId string) error  {
 	sess := db.NewSession()
