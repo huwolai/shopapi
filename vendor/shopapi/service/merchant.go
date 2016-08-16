@@ -11,6 +11,12 @@ type MerchantAddDLL struct  {
 	Name string
 	AppId string
 	OpenId string
+	//经度
+	Longitude float64
+	//维度
+	Latitude float64
+	//覆盖距离
+	CoverDistance float64
 	Json string
 }
 func MerchantAdd(dll *MerchantAddDLL) (*MerchantAddDLL,error)  {
@@ -47,5 +53,12 @@ func MerchantAdd(dll *MerchantAddDLL) (*MerchantAddDLL,error)  {
 
 	return dll,nil
 
+}
+
+func  MerchantNear(longitude float64,latitude float64,appId string) ([]*dao.MerchantDetail,error)   {
+	mDetail :=dao.NewMerchantDetail()
+	mDetailList,err := mDetail.MerchantNear(longitude,latitude,appId)
+
+	return mDetailList,err
 }
 

@@ -69,6 +69,14 @@ func main() {
 			product.GET("/:prod_id/imgs",api.ProdImgsWithProdId)
 
 		}
+
+		merchant :=v1.Group("/merchant")
+		{
+			//附近商户
+			merchant.GET("/nearby",api.MerchatNear)
+		}
+
+		//推荐
 		recom :=v1.Group("/recom")
 		{
 			//商品推荐列表

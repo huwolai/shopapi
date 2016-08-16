@@ -6,6 +6,8 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"shopapi/service"
 	"net/http"
+	"shopapi/dao"
+	"strconv"
 )
 
 type MerchantAddParam struct  {
@@ -13,7 +15,38 @@ type MerchantAddParam struct  {
 	OpenId string `json:"open_id"`
 	Json string `json:"json"`
 	Id int64 `json:"id"`
+	//经度
+	Longitude float64 `json:"longitude"`
+	//维度
+	Latitude float64 `json:"latitude"`
+	//覆盖距离 (单位米)
+	CoverDistance float64 `json:"cover_distance"`
 	AppId string `json:"app_id"`
+}
+
+type MerchatNear struct  {
+	//经度
+	Longitude float64 `json:"longitude"`
+	//维度
+	Latitude float64 `json:"latitude"`
+
+}
+
+type MerchantDetailDto struct  {
+	Name string `json:"name"`
+	AppId string `json:"app_id"`
+	OpenId string `json:"open_id"`
+	Status int `json:"status"`
+	Json string `json:"json"`
+	//经度
+	Longitude float64 `json:"longitude"`
+	//维度
+	Latitude float64 `json:"latitude"`
+	//权重
+	Weight int `json:"weight"`
+	//距离(单位米)
+	Distance float64 `json:"distance"`
+
 }
 
 func MerchantAdd(c *gin.Context)  {
@@ -47,10 +80,53 @@ func MerchantAdd(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-
-
 	param.Id =mdll.Id
 	c.JSON(http.StatusOK,param)
+
+}
+
+//附近商户
+func MerchatNear(c *gin.Context)  {
+	appId,err := CheckAppAuth(c)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	longitude :=c.Query("longitude")
+	latitude :=c.Query("latitude")
+
+	flongitude,_ :=strconv.ParseFloat(longitude,20)
+	flatitude,_ :=strconv.ParseFloat(latitude,20)
+	mDetailList,err := service.MerchantNear(flongitude,flatitude,appId)
+	if err!=nil {
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	mDetailDtos :=make([]*dao.MerchantDetail,0)
+	if mDetailList!=nil {
+
+		for _,mDetail :=range mDetailList {
+			mDetailDtos = append(mDetailDtos,merchantDetailToDto(mDetail))
+		}
+	}
+
+	c.JSON(http.StatusOK,mDetailDtos)
+}
+
+func merchantDetailToDto(model *dao.MerchantDetail) *MerchantDetailDto  {
+	dto :=&MerchantDetailDto{}
+	dto.AppId=model.AppId
+	dto.Distance = model.Distance
+	dto.Json = model.Json
+	dto.Latitude = model.Latitude
+	dto.Longitude = model.Longitude
+	dto.Name = model.Name
+	dto.OpenId = model.OpenId
+	dto.Status = model.Status
+	dto.Weight = model.Weight
+
+	return dto
 
 }
 

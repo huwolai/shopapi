@@ -76,9 +76,7 @@ func (self *OrderItemDetail) OrderItemWithOrderNo(orderNo []string) ([]*OrderIte
 			return nil,err
 		}
 	}
-
 	return orderItems,err
-
 }
 
 func fillOrderItemImg(orderItems []*OrderItemDetail) error  {
