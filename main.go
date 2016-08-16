@@ -55,6 +55,7 @@ func main() {
 		{
 			user.POST("/:open_id/merchant",api.MerchantAdd)
 			user.POST("/:open_id/recharge",api.AccountPreRecharge)
+			user.POST("/:open_id/account",api.AccountDetail)
 		}
 		//分类
 		category := v1.Group("/category")
