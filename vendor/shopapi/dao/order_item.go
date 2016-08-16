@@ -25,6 +25,10 @@ type OrderItemDetail struct  {
 	No string
 	AppId string
 	OpenId string
+	//商户名称
+	MerchantName string
+	//商户ID
+	MerchantId int64
 	//商品ID
 	ProdId int64
 	//商品标题
@@ -61,7 +65,7 @@ func (self* OrderItem) InsertTx(tx *dbr.Tx) error {
 func (self *OrderItemDetail) OrderItemWithOrderNo(orderNo []string) ([]*OrderItemDetail,error)  {
 	sess := db.NewSession()
 	var orderItems []*OrderItemDetail
-	_,err :=sess.SelectBySql("select od.*,pt.title prod_title from order_item od,product pt where od.prod_id=pt.id and  no in ?",orderNo).LoadStructs(&orderItems)
+	_,err :=sess.SelectBySql("select od.*,pt.title prod_title,mt.id merchant_id,mt.`name` merchant_name from order_item od,product pt,merchant_prod mpd,merchant mt where od.prod_id=pt.id and mpd.prod_id=pt.id and mpd.merchant_id=mt.id and  `no` in ?",orderNo).LoadStructs(&orderItems)
 	if err !=nil {
 		return nil,err
 	}

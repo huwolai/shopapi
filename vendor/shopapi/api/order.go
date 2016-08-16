@@ -46,6 +46,10 @@ type OrderItemDetailDto struct  {
 	No string `json:"no"`
 	AppId string `json:"app_id"`
 	OpenId string `json:"open_id"`
+	//商户名称
+	MerchantName string `json:"merchant_name"`
+	//商户ID
+	MerchantId int64 `json:"merchant_id"`
 	//商品cover 封面图 url
 	ProdCoverImg string `json:"prod_coverimg"`
 	ProdTitle string `json:"prod_title"`
@@ -308,6 +312,8 @@ func orderItemDetailToDto(model *dao.OrderItemDetail) *OrderItemDetailDto  {
 	dto.ProdId = model.ProdId
 	dto.ProdTitle = model.ProdTitle
 	dto.ProdCoverImg  = model.ProdCoverImg
+	dto.MerchantName = model.MerchantName
+	dto.MerchantId = model.MerchantId
 
 	return dto
 }
