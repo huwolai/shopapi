@@ -82,6 +82,11 @@ func main() {
 			order.GET("/status/:status",api.OrderWithUserAndStatus)
 			order.POST("/:order_no/event",api.OrderEventPost)
 		}
+
+		pay := v1.Group("/pay")
+		{
+			pay.POST("/payapi/callback",api.CallbackForPayapi)
+		}
 	}
 	router.Run(":8080")
 }

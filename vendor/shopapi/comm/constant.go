@@ -17,3 +17,14 @@ const (
 	//订单付款成功
 	ORDER_STATUS_PAY_SUCCESS=2
 )
+
+//交易类型
+const  (
+
+	//充值订单
+	Trade_Type_Recharge = 1
+	//购买
+	Trade_Type_Buy =2
+	//预付款
+	Trade_Type_Imprest =3
+)
