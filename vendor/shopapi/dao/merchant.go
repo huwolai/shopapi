@@ -14,6 +14,8 @@ type Merchant struct  {
 	Json string
 	Address string
 	CoverDistance float64
+	//权重
+	Weight int
 	//经度
 	Longitude float64
 	//维度
@@ -51,7 +53,7 @@ func NewMerchant() *Merchant  {
 
 func (self *Merchant) InsertTx(tx *dbr.Tx) (int64,error) {
 
-	result,err :=tx.InsertInto("merchant").Columns("name","app_id","open_id","address","longitude","latitude","status","weight","json").Record(self).Exec()
+	result,err :=tx.InsertInto("merchant").Columns("name","app_id","open_id","address","longitude","latitude","status","weight","cover_distance","json").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
