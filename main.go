@@ -50,6 +50,10 @@ func main() {
 
 	v1 := router.Group("/v1")
 	{
+		comm :=v1.Group("/comm")
+		{
+			comm.POST("/images/upload",api.ImageUpload)
+		}
 		//用户
 		user :=v1.Group("/user")
 		{
@@ -97,5 +101,7 @@ func main() {
 			pay.POST("/payapi/callback",api.CallbackForPayapi)
 		}
 	}
+
+	router.Static("/upload","./config/upload")
 	router.Run(":8080")
 }

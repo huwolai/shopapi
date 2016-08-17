@@ -4,6 +4,12 @@ import (
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"errors"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
+	"os"
+	"gitlab.qiyunxin.com/tangtao/utils/util"
+	"io"
+	"gitlab.qiyunxin.com/tangtao/utils/qtime"
+	"time"
 )
 
 //在请求中获取AppId
@@ -44,4 +50,47 @@ func CheckUserAuth(c *gin.Context) (string,error)  {
 	}
 
 	return openId,nil
+}
+
+//图片上传
+func ImageUpload(c *gin.Context)  {
+
+	openId,err := CheckUserAuth(c)
+	if err!=nil {
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	file, header , err := c.Request.FormFile("upload")
+	filename := header.Filename
+	log.Debug(filename)
+
+	if err != nil {
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	avatar := c.Query("avatar")
+	uploadTime := qtime.ToyyyyMMddHHmm(time.Now())
+	filepath :="./config/upload/images/" +uploadTime +"/" +util.GenerUUId()
+	if avatar=="1" {
+		filepath = "./config/upload/avatar/" +openId
+	}
+
+	out, err := os.Create(filepath)
+	defer out.Close()
+	_, err = io.Copy(out, file)
+	if err != nil {
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK,gin.H{
+		"path": filepath,
+	})
+
+
 }

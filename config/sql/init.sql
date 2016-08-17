@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS merchant(
   open_id VARCHAR(255) COMMENT '商户open_id',
   longitude NUMERIC(14,10) COMMENT '经度',
   latitude NUMERIC(14,10) COMMENT '维度',
+  address VARCHAR(255) COMMENT '商户地址',
   cover_distance INT COMMENT '覆盖距离 单位米',
   weight int COMMENT '商户权重',
   status INT COMMENT '商户状态 1.正常 0.关闭',
