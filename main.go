@@ -54,10 +54,16 @@ func main() {
 		{
 			comm.POST("/images/upload",api.ImageUpload)
 		}
+
+
 		//用户
+		users :=v1.Group("/users")
+		{
+			users.POST("/loginSMS",api.LoginForSMS)
+		}
 		user :=v1.Group("/user")
 		{
-			user.POST("/loginSMS",api.LoginForSMS)
+
 			user.POST("/:open_id/merchant",api.MerchantAdd)
 			user.POST("/:open_id/recharge",api.AccountPreRecharge)
 			user.POST("/:open_id/account",api.AccountDetail)
