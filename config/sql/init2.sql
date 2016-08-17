@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS account_ext(
   status int COMMENT '状态 1.正常 0.关闭'
 );
 
+DROP FUNCTION getDistance;
+
 CREATE  FUNCTION  `getDistance`(
    lon1 float(10,7)
   ,lat1 float(10,7)
