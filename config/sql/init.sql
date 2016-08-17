@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS merchant(
 
 )CHARACTER SET utf8mb4;
 
-drop function getDistance;
+drop function IF EXISTS getDistance;
 CREATE  FUNCTION  `getDistance`(
    lon1 float(10,7)
   ,lat1 float(10,7)
