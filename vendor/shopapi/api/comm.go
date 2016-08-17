@@ -8,7 +8,6 @@ import (
 	"os"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"io"
-	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 	"time"
 )
 
@@ -74,7 +73,7 @@ func ImageUpload(c *gin.Context)  {
 	}
 
 	avatar := c.Query("avatar")
-	uploadTime := qtime.ToyyyyMM2(time.Now())
+	uploadTime := time.Now().Format("200601")
 	filepath :="./config/upload/images/" +uploadTime +"/" +util.GenerUUId()
 	if avatar=="1" {
 		filepath = "./config/upload/avatar/" +openId
