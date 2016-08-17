@@ -32,8 +32,7 @@ CREATE TABLE IF NOT EXISTS merchant(
 )CHARACTER SET utf8mb4;
 
 drop function getDistance;
-DELIMITER $$
-CREATE  FUNCTION `getDistance`(
+CREATE  FUNCTION  `getDistance`(
    lon1 float(10,7)
   ,lat1 float(10,7)
   ,lon2 float(10,7)
