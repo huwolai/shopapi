@@ -25,9 +25,18 @@ func TestProductAdd(t *testing.T)  {
 		"category_id": 1,
 		"price": 20,
 		"dis_price": 19.9,
-		"imgnos": "12,23",
+		"imgs": []map[string]interface{}{
+			map[string]interface{}{
+				"flag":"main",
+				"url":"http://b.hiphotos.baidu.com/image/h%3D200/sign=01f5770d8118367ab28978dd1e728b68/f31fbe096b63f624dac483278044ebf81a4ca37d.jpg",
+			},
+			map[string]interface{}{
+				"flag":"slave",
+				"url":"http://img5q.duitang.com/uploads/blog/201403/18/20140318120254_LXV4P.jpeg",
+			},
+		},
 	}
-	e.POST("/product/1").WithHeader("app_id",APP_ID).WithJSON(param).Expect().
+	e.POST("/product/1").WithHeader("app_id",APP_ID).WithHeader("open_id",OPEN_ID).WithJSON(param).Expect().
 	Status(http.StatusOK).
 	JSON().Object().ValueEqual("err_code",0)
 }
@@ -120,4 +129,10 @@ func TestAccountRecharge(t *testing.T)  {
 	e :=httpexpect.New(t,URL)
 	obj :=e.POST("/user/"+OPEN_ID+"/recharge").WithHeader("app_id",APP_ID).WithHeader("open_id",OPEN_ID).WithJSON(param).Expect().Status(http.StatusOK).JSON().Object()
 	fmt.Println(obj)
+}
+
+func TestImageUpload(t *testing.T)  {
+
+	e :=httpexpect.New(t,URL)
+	e.POST("/comm/images/upload").WithHeader("open_id","2323").WithMultipart().WithFile("file","./README.txt").Expect().Status(http.StatusOK)
 }

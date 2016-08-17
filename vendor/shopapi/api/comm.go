@@ -62,27 +62,38 @@ func ImageUpload(c *gin.Context)  {
 		return
 	}
 
-	file, header , err := c.Request.FormFile("upload")
+	file, header , err := c.Request.FormFile("file")
 	filename := header.Filename
 	log.Debug(filename)
 
 	if err != nil {
+		log.Debug("获取文件错误!")
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
 
 	avatar := c.Query("avatar")
-	uploadTime := qtime.ToyyyyMMddHHmm(time.Now())
+	uploadTime := qtime.ToyyyyMM2(time.Now())
 	filepath :="./config/upload/images/" +uploadTime +"/" +util.GenerUUId()
 	if avatar=="1" {
 		filepath = "./config/upload/avatar/" +openId
+		os.MkdirAll("./config/upload/avatar",0777)
+	}else{
+		os.MkdirAll("./config/upload/images/"+uploadTime,0777)
 	}
 
 	out, err := os.Create(filepath)
+	if err!=nil{
+		log.Debug("创建文件失败",filepath)
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
 	defer out.Close()
 	_, err = io.Copy(out, file)
 	if err != nil {
+		log.Debug("复制文件错误!")
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
 		return

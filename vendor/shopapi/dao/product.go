@@ -17,6 +17,8 @@ type Product struct  {
 	Price float64
 	//折扣价格
 	DisPrice float64
+	//是否推荐
+	IsRecom int
 	//商品状态
 	Status int
 	//附加数据
@@ -35,6 +37,8 @@ type ProductDetail struct {
 	DisPrice float64
 	//商品状态
 	Status int
+	//是否推荐
+	IsRecom int
 	//商户ID
 	MerchantId int64
 	//商户名称
@@ -57,7 +61,7 @@ func NewProduct() *Product  {
 
 func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 
-	result,err :=tx.InsertInto("product").Columns("title","app_id","description","price","dis_price","json","status").Record(self).Exec()
+	result,err :=tx.InsertInto("product").Columns("title","app_id","description","price","dis_price","json","status","is_recom").Record(self).Exec()
 	if err !=nil {
 
 		return 0,err
