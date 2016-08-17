@@ -126,9 +126,6 @@ func fillProdImgs(appId string,prodList []*ProductDetail) error {
 
 			prodimgsMap[key] = pdimgdetails
 			log.Debug(prodimgsMap)
-			for _,test :=range pdimgdetails {
-				log.Debug(test.ImgNo)
-			}
 		}
 	}
 	for _,prod :=range prodList {

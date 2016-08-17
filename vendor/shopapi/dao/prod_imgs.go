@@ -7,19 +7,19 @@ import (
 )
 
 type ProdImgs struct  {
-	//图片编号
-	ImgNo string
+
 	//产品ID
 	ProdId int64
 	AppId string
 	Json string
+	Url string
+	Flag string
 	BaseDModel
 
 }
 
 type ProdImgsDetail struct  {
-	//图片编号
-	ImgNo string
+
 	//产品ID
 	ProdId int64
 	AppId string
@@ -42,7 +42,7 @@ func NewProdImgs() *ProdImgs {
 
 func (self *ProdImgs) InsertTx(tx *dbr.Tx) error {
 
-	_,err :=tx.InsertInto("prod_imgs").Columns("app_id","prod_id","img_no","json").Record(self).Exec()
+	_,err :=tx.InsertInto("prod_imgs").Columns("app_id","prod_id","url","flag","json").Record(self).Exec()
 
 	return err
 }
@@ -51,7 +51,7 @@ func (self *ProdImgsDetail) ProdImgsWithProdId(prodId int64,appId string) ([]*Pr
 
 	sess := db.NewSession()
 	var details []*ProdImgsDetail
-	_,err :=sess.SelectBySql("select * from prod_imgs ps,images gs where ps.app_id=gs.app_id and ps.img_no=gs.no and ps.prod_id=? and ps.app_id=?",prodId,appId).LoadStructs(&details)
+	_,err :=sess.SelectBySql("select * from prod_imgs ps where  ps.prod_id=? and ps.app_id=?",prodId,appId).LoadStructs(&details)
 
 	return  details,err
 }
@@ -59,7 +59,7 @@ func (self *ProdImgsDetail) ProdImgsWithProdId(prodId int64,appId string) ([]*Pr
 func (self *ProdImgsDetail) ProdImgsWithProdIds(prodIds []int64) ([]*ProdImgsDetail,error){
 	sess := db.NewSession()
 	var details []*ProdImgsDetail
-	_,err :=sess.SelectBySql("select * from prod_imgs ps,images gs where ps.app_id=gs.app_id and ps.img_no=gs.no and ps.prod_id in ?",prodIds).LoadStructs(&details)
+	_,err :=sess.SelectBySql("select * from prod_imgs ps where ps.prod_id in ?",prodIds).LoadStructs(&details)
 	log.Debug("----err",err)
 	return  details,err
 }

@@ -5,7 +5,6 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/db"
 	"shopapi/comm"
 	"github.com/gocraft/dbr"
-	"strings"
 )
 
 
@@ -44,7 +43,7 @@ func ProdAdd(prodbll *ProdBLL) error  {
 	}
 
 	//保存商品图片信息
-	if prodbll.ImgNos!="" {
+	if len(prodbll.Imgs)>0 {
 		err := productImgSave(prodbll,prodId,tx)
 		if err!=nil{
 			tx.Rollback()
@@ -111,7 +110,6 @@ func prodImgsDetailToDLL(detail *dao.ProdImgsDetail) *ProdImgsDetailDLL  {
 	dll := &ProdImgsDetailDLL{}
 	dll.AppId = detail.AppId
 	dll.Flag = detail.Flag
-	dll.ImgNo = detail.ImgNo
 	dll.Json = detail.Json
 	dll.ProdId = detail.ProdId
 	dll.Url = detail.Url
@@ -143,12 +141,14 @@ func merchantProdAdd(prodbll *ProdBLL,prodId int64,tx *dbr.Tx) error  {
 //保存商品图片
 func productImgSave(prodbll *ProdBLL,prodId int64,tx *dbr.Tx) error  {
 
-	imgnoArray := strings.Split(prodbll.ImgNos,",")
-	for _,imgno :=range imgnoArray  {
+	imgArray := prodbll.Imgs
+	for _,img :=range imgArray  {
 		prodImgs :=dao.NewProdImgs()
 		prodImgs.AppId = prodbll.AppId
-		prodImgs.ImgNo = imgno
 		prodImgs.ProdId = prodId
+		prodImgs.Url = img.Url
+		prodImgs.Flag = img.Flag
+		prodImgs.Json = img.Json
 		err :=prodImgs.InsertTx(tx)
 		if err!=nil{
 			return err

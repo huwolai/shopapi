@@ -15,9 +15,16 @@ type ProdBLL struct {
 	Price float64
 	//折扣价格
 	DisPrice float64
-	//图片编号集合
-	ImgNos string
+	//图片集合
+	Imgs []ProdImgBLL
 	Json string
+}
+
+type ProdImgBLL struct {
+	Flag string
+	Url string
+	Json string
+	ProdId int64
 }
 
 type ProductResultDLL struct  {

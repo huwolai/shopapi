@@ -22,12 +22,19 @@ type ProductParam struct  {
 	Price float64 `json:"price"`
 	//折扣价格
 	DisPrice float64 `json:"dis_price"`
-	//图片编号集合
-	ImgNos string `json:"imgnos"`
+	//图片集合
+	Imgs []ProductImgParam `json:"imgs"`
 	//商户ID
 	MerchantId int64 `json:"merchant_id"`
 	//附加数据
 	Json  string `json:"json"`
+}
+
+type ProductImgParam struct {
+	Flag string
+	Url string
+	Json string
+	ProdId int64
 }
 
 
@@ -67,8 +74,6 @@ type ProductDetailDto struct {
 }
 
 type ProdImgsDetailDto struct  {
-	//图片编号
-	ImgNo string `json:"img_no"`
 	//产品ID
 	ProdId int64 `json:"prod_id"`
 	AppId string `json:"app_id"`
@@ -116,7 +121,7 @@ func ProductAdd(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"请输入商品价格!")
 		return
 	}
-	if param.ImgNos=="" {
+	if param.Imgs==nil {
 		util.ResponseError400(c.Writer,"请上传商品图片")
 		return
 	}
@@ -129,7 +134,7 @@ func ProductAdd(c *gin.Context)  {
 	param.MerchantId = int64(mid)
 	param.AppId = appId
 
-	prodBll := productParamToDLL(param)
+	prodBll := productParamToBLL(param)
 	err =service.ProdAdd(prodBll)
 	if err!=nil{
 		log.Error(err)
@@ -226,13 +231,12 @@ func prodImgsDetailDLLToDto(dll *service.ProdImgsDetailDLL) *ProdImgsDetailDto{
 	dto.ProdId = dll.ProdId
 	dto.AppId = dll.AppId
 	dto.Flag = dll.Flag
-	dto.ImgNo = dll.ImgNo
 	dto.Json = dll.Json
 
 	return dto
 }
 
-func productParamToDLL(param *ProductParam) *service.ProdBLL {
+func productParamToBLL(param *ProductParam) *service.ProdBLL {
 
 	prodBll := &service.ProdBLL{}
 	prodBll.AppId = param.AppId
@@ -240,13 +244,30 @@ func productParamToDLL(param *ProductParam) *service.ProdBLL {
 	prodBll.CategoryId = param.CategoryId
 	prodBll.Description = param.Description
 	prodBll.Price = param.Price
-	prodBll.ImgNos = param.ImgNos
 	prodBll.DisPrice = param.DisPrice
 	prodBll.Title = param.Title
 	prodBll.Json  = param.Json
 
+	imgsparams  := param.Imgs
+	if imgsparams!=nil {
+		imgBllArray :=make([]service.ProdImgBLL,0)
+		for _,imgparam :=range imgsparams {
+			imgBllArray = append(imgBllArray,productImgParamToBLL(imgparam))
+		}
+		prodBll.Imgs = imgBllArray
+	}
 
 	return prodBll
+}
+
+func productImgParamToBLL(param ProductImgParam) service.ProdImgBLL  {
+	bll :=service.ProdImgBLL{}
+	bll.Json = param.Json
+	bll.Flag = param.Flag
+	bll.ProdId=param.ProdId
+	bll.Url = param.Url
+
+	return bll
 }
 
 func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
@@ -278,7 +299,6 @@ func prodImgsDetailToDto(model *dao.ProdImgsDetail) *ProdImgsDetailDto  {
 	dto :=&ProdImgsDetailDto{}
 	dto.AppId = model.AppId
 	dto.Flag = model.Flag
-	dto.ImgNo = model.ImgNo
 	dto.ProdId = model.ProdId
 	dto.Url = model.Url
 
