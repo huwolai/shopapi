@@ -15,6 +15,7 @@ type MerchantAddDLL struct  {
 	Longitude float64
 	//维度
 	Latitude float64
+	Address string
 	//覆盖距离
 	CoverDistance float64
 	Json string
@@ -37,6 +38,10 @@ func MerchantAdd(dll *MerchantAddDLL) (*MerchantAddDLL,error)  {
 	merchant.OpenId = dll.OpenId
 	merchant.Status = comm.MERCHANT_STATUS_NORMAL
 	merchant.AppId = dll.AppId
+	merchant.Longitude = dll.Longitude
+	merchant.Latitude = dll.Latitude
+	merchant.Address = dll.Address
+	merchant.CoverDistance = dll.CoverDistance
 	mid,err := merchant.InsertTx(tx)
 	if err!=nil{
 		tx.Rollback()

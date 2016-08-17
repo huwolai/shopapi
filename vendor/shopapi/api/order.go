@@ -156,7 +156,21 @@ func OrderPrePay(c *gin.Context)  {
 
 }
 
-
+//账户余额付款
+//func OrderPayForAccount(c *gin.Context)  {
+//	appId,err :=CheckAppAuth(c)
+//	if err!=nil{
+//		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+//		return
+//	}
+//	//获取用户openid
+//	openId,err :=CheckUserAuth(c)
+//	if err!=nil{
+//		log.Error(err)
+//		util.ResponseError400(c.Writer,err.Error())
+//		return
+//	}
+//}
 
 
 //根据编号查询订单信息

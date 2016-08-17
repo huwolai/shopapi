@@ -12,6 +12,7 @@ type Merchant struct  {
 	Status int
 	Json string
 	Address string
+	CoverDistance float64
 	//经度
 	Longitude float64
 	//维度
@@ -55,6 +56,20 @@ func (self *Merchant) InsertTx(tx *dbr.Tx) (int64,error) {
 	}
 	lastId,err := result.LastInsertId()
 	return lastId,err
+}
+
+func (self*Merchant) MerchantExistWithOpenId(openId string,appId string) (bool,error)  {
+
+	var count int64
+	err :=db.NewSession().Select("count(*)").From("merchant").Where("open_id=?",openId).Where("app_id=?",appId).LoadValue(&count)
+
+	if err!=nil {
+		return false,err
+	}
+	if count>0 {
+		return true,nil
+	}
+	return false,nil
 }
 
 func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,appId string) ([]*MerchantDetail,error)  {

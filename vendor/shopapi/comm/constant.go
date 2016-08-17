@@ -18,6 +18,17 @@ const (
 	ORDER_STATUS_PAY_SUCCESS=2
 )
 
+const (
+	//账户状态正常
+	ACCOUNT_STATUS_NORMAL =1
+
+	//账户待绑定支付
+	ACCOUNT_STATUS_WAIT_BINDPAY =2
+
+	//账户已锁
+	ACCOUNT_STATUS_LOCK =0
+)
+
 //交易类型
 const  (
 

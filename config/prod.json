@@ -6,5 +6,7 @@
   "payapi_appid": "shopapi",
   "payapi_appkey": "4537C07A563C4899B5A592DA3CC84A10",
   "payapi_url": "http://payapi.qiyunxin.svc.cluster.local:8080",
+  "commuser_url": "http://commuser.qiyunxin.svc.cluster.local:8080/v1",
   "notify_url": "http://shopapi.qiyunxin.svc.cluster.local:8080/v1/pay/payapi/callback"
+
 }

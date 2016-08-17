@@ -31,3 +31,14 @@ func GetPayapiSign(params map[string]interface{}) (noncestr,timestamp,appid,base
 	return
 	
 }
+
+func GetPayAuthHeader(openId string) ( map[string]string) {
+
+	appId := config.GetValue("payapi_appid").ToString()
+
+	header :=map[string]string{
+		"open_id":openId,
+		"app_id":appId,
+	}
+	return header
+}

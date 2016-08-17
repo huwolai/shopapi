@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"errors"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
+	"shopapi/dao"
+	"shopapi/comm"
 )
 
 type AccountRechargeModel struct  {
@@ -120,4 +122,123 @@ func AccountDetail(openId string) (*AccountDetailModel,error)  {
 	}
 
 	return nil,errors.New("充值失败")
+}
+
+func LoginForSMS(mobile string,code string,appId string) (map[string]interface{},error)  {
+
+	commusermap,err  :=loginSMSOfCommuser(mobile,code,appId)
+	if err!=nil {
+
+		return nil,err
+	}
+
+	openId := commusermap["open_id"].(string)
+
+	account := dao.NewAccount()
+	account,err =account.AccountWithOpenId(openId,appId)
+	if err!=nil {
+		return nil,err
+	}
+	if account==nil {
+		password :=util.GenerUUId()
+		account = dao.NewAccount()
+		account.AppId = appId
+		account.Money = 0
+		account.OpenId = openId
+		account.Password = password
+		account.Status =comm.ACCOUNT_STATUS_WAIT_BINDPAY //等待开通支付
+		err =account.Insert()
+		if err!=nil {
+
+			return nil,err
+		}
+	}
+
+	if account.Status==comm.ACCOUNT_STATUS_WAIT_BINDPAY {
+		//绑定支付
+		err :=payBind(openId,account.Password)
+		if err!=nil {
+			return nil,err
+		}
+
+		err = account.AccountUpdateStatus(comm.ACCOUNT_STATUS_NORMAL,openId,appId)
+		if err!=nil {
+			return nil,err
+		}
+	}
+
+	merchant := dao.NewMerchant()
+	isMerchant,err :=merchant.MerchantExistWithOpenId(openId,appId)
+
+	commusermap["is_merchant"] = 0
+	if isMerchant {
+		commusermap["is_merchant"]=1
+	}
+
+	return commusermap,nil
+
+}
+
+//绑定支付
+func payBind(openId string,password string) error  {
+	header := GetPayAuthHeader(openId)
+	params :=map[string]interface{}{
+		"open_id":openId,
+		"password":password,
+	}
+	paramData,_:= json.Marshal(params);
+	response,err :=network.Post(config.GetValue("payapi_url").ToString()+"/pay/bind",paramData,header)
+	if err!=nil {
+		return err
+	}
+
+	if response.StatusCode==http.StatusOK {
+		var resultMap map[string]interface{}
+		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
+		if err!=nil{
+			return err
+		}
+
+		return nil
+	}else if response.StatusCode==http.StatusBadRequest {
+		var resultMap map[string]interface{}
+		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
+
+		return errors.New(resultMap["err_msg"].(string))
+	}
+
+	return errors.New("开通支付失败!")
+}
+
+func loginSMSOfCommuser(mobile,code,appId string) ( map[string]interface{},error)  {
+	param := map[string]interface{}{
+		"mobile":mobile,
+		"code": code,
+	}
+	paramData,_:= json.Marshal(param);
+
+	header :=map[string]string{
+		"app_id":appId,
+	}
+	response,err :=network.Post(config.GetValue("commuser_url").ToString()+"/loginSMS",paramData,header)
+	if err!=nil {
+		return nil,err
+	}
+
+	if response.StatusCode==http.StatusOK {
+		var resultMap map[string]interface{}
+		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
+		if err!=nil{
+			return nil,err
+		}
+
+		return resultMap,nil
+	}else if response.StatusCode==http.StatusBadRequest {
+		var resultMap map[string]interface{}
+		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
+
+		return nil,errors.New(resultMap["err_msg"].(string))
+	}
+
+	return nil,errors.New("调用统一用户中心登录失败!")
 }

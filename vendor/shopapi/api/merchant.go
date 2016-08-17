@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"shopapi/dao"
 	"strconv"
+	"gitlab.qiyunxin.com/tangtao/utils/security"
 )
 
 type MerchantAddParam struct  {
@@ -42,8 +43,13 @@ type MerchantDetailDto struct  {
 
 func MerchantAdd(c *gin.Context)  {
 
-	appId,err := CheckAppAuth(c)
+	_,err := security.CheckUserAuth(c.Request)
 	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	appId,err :=security.GetAppId(c.Request)
+	if err!=nil {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
@@ -64,7 +70,8 @@ func MerchantAdd(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"名称不能为空!")
 		return
 	}
-	param.AppId = appId
+
+	param.AppId =appId
 
 	mdll,err :=service.MerchantAdd(merchantAddParamToDll(param))
 	if err!=nil{
@@ -127,5 +134,8 @@ func merchantAddParamToDll(param MerchantAddParam)  *service.MerchantAddDLL {
 	dll.Name = param.Name
 	dll.Json = param.Json
 	dll.AppId = param.AppId
+	dll.CoverDistance = param.CoverDistance
+	dll.Latitude = param.Latitude
+	dll.Longitude = param.Longitude
 	return dll
 }

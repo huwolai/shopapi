@@ -6,6 +6,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"net/http"
 	"shopapi/service"
+	"gitlab.qiyunxin.com/tangtao/utils/security"
 )
 
 type AccountPreRechargeDto struct  {
@@ -23,16 +24,40 @@ type AccountDetailDto struct  {
 	PasswordIsSet int `json:"password_is_set"`
 }
 
-//账户充值
-func AccountPreRecharge(c *gin.Context)  {
-	_,err :=CheckAppAuth(c)
-	if err!=nil{
+type LoginForSMSParam struct  {
+	//手机号
+	Mobile string `json:"mobile"`
+	//验证码
+	Code string `json:"code"`
+}
+
+func LoginForSMS(c *gin.Context)  {
+
+	var loginSms LoginForSMSParam
+	err :=c.BindJSON(&loginSms)
+	if err!=nil {
 		log.Error(err)
-		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
+
+	openId := security.GetOpenId(c.Request)
+
+	resultMap,err :=service.LoginForSMS(loginSms.Mobile,loginSms.Code,openId)
+	if err!=nil {
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK,resultMap)
+
+}
+
+//账户充值
+func AccountPreRecharge(c *gin.Context)  {
+
 	//获取用户openid
-	openId,err :=CheckUserAuth(c)
+	openId,err :=security.CheckUserAuth(c.Request)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
@@ -66,14 +91,9 @@ func AccountPreRecharge(c *gin.Context)  {
 }
 
 func AccountDetail(c *gin.Context)  {
-	_,err :=CheckAppAuth(c)
-	if err!=nil{
-		log.Error(err)
-		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
-		return
-	}
+
 	//获取用户openid
-	openId,err :=CheckUserAuth(c)
+	openId,err :=security.CheckUserAuth(c.Request)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
