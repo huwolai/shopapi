@@ -56,7 +56,7 @@ func (self *Merchant) InsertTx(tx *dbr.Tx) (int64,error) {
 }
 
 func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,appId string) ([]*MerchantDetail,error)  {
-	var mdetails *MerchantDetail
+	var mdetails []*MerchantDetail
 	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance  from merchant mt where app_id = ? and getDistance(mt.longitude,latitude,?,?)<= mt.cover_distance ",appId,longitude,latitude).LoadStructs(&mdetails)
 
 	return mdetails,err

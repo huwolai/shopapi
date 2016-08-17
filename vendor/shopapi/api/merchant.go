@@ -24,13 +24,6 @@ type MerchantAddParam struct  {
 	AppId string `json:"app_id"`
 }
 
-type MerchatNear struct  {
-	//经度
-	Longitude float64 `json:"longitude"`
-	//维度
-	Latitude float64 `json:"latitude"`
-
-}
 
 type MerchantDetailDto struct  {
 	Name string `json:"name"`
@@ -99,7 +92,7 @@ func MerchatNear(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-	mDetailDtos :=make([]*dao.MerchantDetail,0)
+	mDetailDtos :=make([]*MerchantDetailDto,0)
 	if mDetailList!=nil {
 
 		for _,mDetail :=range mDetailList {
