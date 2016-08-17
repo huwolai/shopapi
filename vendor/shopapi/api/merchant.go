@@ -17,7 +17,7 @@ type MerchantAddParam struct  {
 	Id int64 `json:"id"`
 	//经度
 	Longitude float64 `json:"longitude"`
-	//维度
+	//纬度
 	Latitude float64 `json:"latitude"`
 	//覆盖距离 (单位米)
 	CoverDistance float64 `json:"cover_distance"`
@@ -38,10 +38,6 @@ type MerchantDetailDto struct  {
 	OpenId string `json:"open_id"`
 	Status int `json:"status"`
 	Json string `json:"json"`
-	//经度
-	Longitude float64 `json:"longitude"`
-	//维度
-	Latitude float64 `json:"latitude"`
 	//权重
 	Weight int `json:"weight"`
 	//距离(单位米)
@@ -119,8 +115,6 @@ func merchantDetailToDto(model *dao.MerchantDetail) *MerchantDetailDto  {
 	dto.AppId=model.AppId
 	dto.Distance = model.Distance
 	dto.Json = model.Json
-	dto.Latitude = model.Latitude
-	dto.Longitude = model.Longitude
 	dto.Name = model.Name
 	dto.OpenId = model.OpenId
 	dto.Status = model.Status
