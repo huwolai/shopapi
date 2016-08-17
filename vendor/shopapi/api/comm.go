@@ -92,7 +92,7 @@ func ImageUpload(c *gin.Context)  {
 		return
 	}
 
-	filepath :=rootDir+"/" +fileDir + fileName
+	filepath :=rootDir+"/" +fileDir + "/" + fileName
 	out, err := os.Create(filepath)
 	if err!=nil{
 		log.Debug("创建文件失败",filepath)
@@ -110,7 +110,7 @@ func ImageUpload(c *gin.Context)  {
 	}
 
 	c.JSON(http.StatusOK,gin.H{
-		"path": "/"+fileDir+"/" +fileName,
+		"path": fileDir+"/" +fileName,
 	})
 
 
