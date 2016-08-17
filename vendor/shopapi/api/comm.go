@@ -61,9 +61,7 @@ func ImageUpload(c *gin.Context)  {
 		return
 	}
 
-	file, header , err := c.Request.FormFile("file")
-	filename := header.Filename
-	log.Debug(filename)
+	file, _ , err := c.Request.FormFile("file")
 
 	if err != nil {
 		log.Debug("获取文件错误!")
@@ -72,16 +70,29 @@ func ImageUpload(c *gin.Context)  {
 		return
 	}
 
-	avatar := c.Query("avatar")
+	rootDir :="./config/upload"
+
+	typeS := c.Query("type")
 	uploadTime := time.Now().Format("200601")
-	filepath :="./config/upload/images/" +uploadTime +"/" +util.GenerUUId()
-	if avatar=="1" {
-		filepath = "./config/upload/avatar/" +openId
-		os.MkdirAll("./config/upload/avatar",0777)
+	fileDir :="/images" +"/" +uploadTime
+	fileName :=util.GenerUUId()
+	if typeS=="avatar" {
+		fileDir = "/avatar"
+		fileName =  openId
+	}else if typeS=="merchant" {
+		fileDir = "/merchant"
+		fileName =  openId
 	}else{
-		os.MkdirAll("./config/upload/images/"+uploadTime,0777)
+
+	}
+	err =os.MkdirAll(rootDir+"/" +fileDir,0777)
+	if err!=nil {
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
 	}
 
+	filepath :=rootDir+"/" +fileDir + fileName
 	out, err := os.Create(filepath)
 	if err!=nil{
 		log.Debug("创建文件失败",filepath)
@@ -99,7 +110,7 @@ func ImageUpload(c *gin.Context)  {
 	}
 
 	c.JSON(http.StatusOK,gin.H{
-		"path": filepath,
+		"path": "/"+fileDir+"/" +fileName,
 	})
 
 
