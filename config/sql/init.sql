@@ -44,6 +44,17 @@ CREATE TABLE IF NOT EXISTS merchant(
 
 )CHARACTER SET utf8mb4;
 
+-- 商户图片
+CREATE TABLE IF NOT EXISTS merchant_imgs(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  app_id VARCHAR(255) COMMENT 'APPID',
+  open_id VARCHAR(255) COMMENT 'open_id',
+  merchant_id BIGINT COMMENT '商户ID',
+  flag VARCHAR(100) COMMENT '图片标记',
+  url VARCHAR(400) COMMENT '图片URL',
+  json VARCHAR(1000) COMMENT '附加字段'
+) CHARACTER SET utf8mb4;
+
 
 -- select getDistance(116.3899,39.91578,116.3904,39.91576);
 

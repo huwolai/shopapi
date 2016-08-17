@@ -6,6 +6,7 @@ import (
 )
 
 type Merchant struct  {
+	Id int64
 	Name string
 	AppId string
 	OpenId string
@@ -58,6 +59,22 @@ func (self *Merchant) InsertTx(tx *dbr.Tx) (int64,error) {
 	return lastId,err
 }
 
+func (self *Merchant) MerchantWithId(id int64) (*Merchant,error)  {
+
+	var model *Merchant
+	_,err :=db.NewSession().Select("*").From("merchant").Where("id=?",id).LoadStructs(&model)
+
+	return model,err
+}
+
+func (self *Merchant) MerchantWithOpenId(openId string,appId string) (*Merchant,error)  {
+
+	var model *Merchant
+	_,err :=db.NewSession().Select("*").From("merchant").Where("open_id=?",openId).Where("app_id=?",appId).LoadStructs(&model)
+
+	return model,err
+}
+
 func (self*Merchant) MerchantExistWithOpenId(openId string,appId string) (bool,error)  {
 
 	var count int64
@@ -72,9 +89,17 @@ func (self*Merchant) MerchantExistWithOpenId(openId string,appId string) (bool,e
 	return false,nil
 }
 
+func (self *Merchant) MerchantUpdateTx(merchant *Merchant,tx *dbr.Tx) error  {
+	_,err :=tx.Update("merchant").Set("name",merchant.Name).Set("address",merchant.Address).Set("longitude",merchant.Longitude).Set("latitude",merchant.Latitude).Set("json",merchant.Json).Where("id=?",merchant.Id).Exec()
+	return err
+}
+
 func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,appId string) ([]*MerchantDetail,error)  {
 	var mdetails []*MerchantDetail
 	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance  from merchant mt where app_id = ? and getDistance(mt.longitude,latitude,?,?)<= mt.cover_distance ",longitude,latitude,appId,longitude,latitude).LoadStructs(&mdetails)
 
 	return mdetails,err
 }
+
+
+

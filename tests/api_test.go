@@ -136,3 +136,14 @@ func TestImageUpload(t *testing.T)  {
 	e :=httpexpect.New(t,URL)
 	e.POST("/comm/images/upload").WithHeader("open_id","2323").WithMultipart().WithFile("file","./README.txt").Expect().Status(http.StatusOK)
 }
+
+func TestMerchantUpdate(t *testing.T)  {
+	e :=httpexpect.New(t,URL)
+	param :=map[string]interface{}{
+		"id": 1,
+		"name":"商户名称",
+	}
+	e.POST("/user/234/merchantupdate").WithHeader("app_id",APP_ID).WithHeader("open_id","2323").WithJSON(param).Expect().
+	Status(http.StatusOK).
+	JSON().Object().ContainsKey("id")
+}

@@ -63,8 +63,9 @@ func main() {
 		}
 		user :=v1.Group("/user")
 		{
-
+			user.POST("/:open_id/merchantupdate",api.MerchantUpdate)
 			user.POST("/:open_id/merchant",api.MerchantAdd)
+			user.GET("/:open_id/merchant",api.MerchantWithOpenId)
 			user.POST("/:open_id/recharge",api.AccountPreRecharge)
 			user.POST("/:open_id/account",api.AccountDetail)
 		}
@@ -85,6 +86,8 @@ func main() {
 		{
 			//附近商户
 			merchant.GET("/nearby",api.MerchatNear)
+
+			merchant.GET("/imgs/:open_id/",api.MerchantImgWithFlag)
 		}
 
 		//推荐
