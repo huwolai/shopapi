@@ -39,6 +39,13 @@ type OrderPrePayModel struct  {
 	NotifyUrl string
 }
 
+type OrderPrePayDto struct  {
+	OrderNo string `json:"order_no"`
+	//付款类型(1.支付宝 2.微信 3.现金支付 4.账户)
+	PayType int `json:"pay_type"`
+	AppId string `json:"app_id"`
+}
+
 func OrderAdd(model *OrderModel) (*dao.Order,error)  {
 	sess :=db.NewSession()
 	tx,_ := sess.Begin()
@@ -80,6 +87,25 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 	}
 	log.Info(params)
 
+	resultMap,err :=prepay(params)
+	if err!=nil{
+		return nil,err
+	}
+	if resultMap!=nil{
+		payapiNo :=resultMap["pay_no"].(string)
+		//将payapi的订单号更新到订单数据里
+		err :=order.OrderPayapiUpdateWithNo(payapiNo,comm.ORDER_STATUS_PAY_WAIT,order.No,order.AppId)
+		if err!=nil{
+			log.Error(err)
+			return nil,err
+		}
+	}
+
+	return resultMap,nil
+
+}
+
+func prepay(params map[string]interface{}) (map[string]interface{},error)  {
 	//获取接口签名信息
 	noncestr,timestamp,appid,basesign,sign  :=GetPayapiSign(params)
 	log.Info(fmt.Sprintf("%s.%s",basesign,sign))
@@ -100,15 +126,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 	if response.StatusCode==http.StatusOK {
 		var resultMap map[string]interface{}
 		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
-		if resultMap!=nil{
-			payapiNo :=resultMap["pay_no"].(string)
-			//将payapi的订单号更新到订单数据里
-			err :=order.OrderPayapiUpdateWithNo(payapiNo,comm.ORDER_STATUS_PAY_WAIT,order.No,order.AppId)
-			if err!=nil{
-				log.Error(err)
-				return nil,err
-			}
-		}
+
 
 		return resultMap,nil
 	}else if response.StatusCode==http.StatusBadRequest {
@@ -191,4 +209,14 @@ func orderItemSave(product *dao.Product,item OrderItemModel,orderNo string,tx *d
 	orderItem.BuyTotalPrice = product.DisPrice*float64(item.Num)
 	orderItem.Json = item.Json
 	return  orderItem.InsertTx(tx)
+}
+
+func OrderPrePayDtoToModel(dto OrderPrePayDto ) *OrderPrePayModel  {
+
+	model :=&OrderPrePayModel{}
+	model.AppId = dto.AppId
+	model.OrderNo = dto.OrderNo
+	model.PayType = dto.PayType
+	model.NotifyUrl = config.GetValue("notify_url").ToString()
+	return model
 }

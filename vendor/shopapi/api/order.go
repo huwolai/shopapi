@@ -6,7 +6,6 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"shopapi/service"
 	"shopapi/comm"
-	"gitlab.qiyunxin.com/tangtao/utils/config"
 	"net/http"
 	"shopapi/dao"
 	"strings"
@@ -74,11 +73,7 @@ type OrderItemDto struct  {
 
 }
 
-type OrderPrePayDto struct  {
-	OrderNo string `json:"order_no"`
-	PayType int `json:"pay_type"`
-	AppId string `json:"app_id"`
-}
+
 
 
 //添加订单
@@ -135,7 +130,7 @@ func OrderPrePay(c *gin.Context)  {
 		return
 	}
 
-	var params OrderPrePayDto
+	var params service.OrderPrePayDto
 	err =c.BindJSON(&params)
 	if err!=nil{
 		log.Error(err)
@@ -147,7 +142,7 @@ func OrderPrePay(c *gin.Context)  {
 	params.OrderNo = orderNo
 	params.AppId = appId
 
-	resultMap,err := service.OrderPrePay(orderPrePayDtoToModel(params))
+	resultMap,err := service.OrderPrePay(service.OrderPrePayDtoToModel(params))
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
@@ -328,15 +323,7 @@ func orderItemDetailToDto(model *dao.OrderItemDetail) *OrderItemDetailDto  {
 	return dto
 }
 
-func orderPrePayDtoToModel(dto OrderPrePayDto ) *service.OrderPrePayModel  {
 
-	model :=&service.OrderPrePayModel{}
-	model.AppId = dto.AppId
-	model.OrderNo = dto.OrderNo
-	model.PayType = dto.PayType
-	model.NotifyUrl = config.GetValue("notify_url").ToString()
-	return model
-}
 
 
 func orderDtoToModel(dto OrderDto) *service.OrderModel  {
