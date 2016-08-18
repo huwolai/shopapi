@@ -18,7 +18,7 @@ func NewAccount() *Account  {
 
 func (self *Account) Insert() error {
 
-	_,err :=db.NewSession().InsertInto("account").Columns("app_id","open_id","money","password","status").Exec()
+	_,err :=db.NewSession().InsertInto("account").Columns("app_id","open_id","money","password","status").Record(self).Exec()
 
 	return err
 }
