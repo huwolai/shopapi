@@ -51,11 +51,11 @@ func AddressWithOpenId(c *gin.Context)  {
 }
 
 func AddressUpdate(c *gin.Context)  {
-	//openId,err := security.CheckUserAuth(c.Request)
-	//if err!=nil {
-	//	util.ResponseError(c.Writer,http.StatusUnauthorized,"认证有误!")
-	//	return
-	//}
+	openId,err := security.CheckUserAuth(c.Request)
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证有误!")
+		return
+	}
 }
 
 func AddressAdd(c *gin.Context)  {

@@ -23,7 +23,7 @@ func NewAddress() *Address  {
 
 func (self *Address) InsertTx(tx *dbr.Tx) (int64,error)  {
 
-	result,err :=tx.InsertInto("address").Columns("app_id","open_id","longitude","latitude","address","json").Record(self).Exec()
+	result,err :=tx.InsertInto("address").Columns("app_id","open_id","longitude","latitude","address","weight","json").Record(self).Exec()
 	if err!=nil{
 
 		return 0,err
@@ -36,7 +36,7 @@ func (self *Address) InsertTx(tx *dbr.Tx) (int64,error)  {
 
 func (self *Address) Insert() (int64,error)  {
 
-	result,err :=db.NewSession().InsertInto("address").Columns("app_id","open_id","longitude","latitude","address","json").Record(self).Exec()
+	result,err :=db.NewSession().InsertInto("address").Columns("app_id","open_id","longitude","latitude","address","weight","json").Record(self).Exec()
 	if err!=nil{
 
 		return 0,err
