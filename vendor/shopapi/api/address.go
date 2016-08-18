@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"gitlab.qiyunxin.com/tangtao/utils/security"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
-	"github.com/Azure/azure-sdk-for-go/core/http"
 	"shopapi/service"
+	"net/http"
 )
 
 
