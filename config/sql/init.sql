@@ -194,8 +194,7 @@ CREATE TABLE IF NOT EXISTS order_event (
 ) CHARACTER SET utf8mb4;
 
 
-DROP FUNCTION IF EXISTS getDistance;
-
+-- +migrate StatementBegin
 CREATE  FUNCTION  `getDistance`(
    lon1 float(10,7)
   ,lat1 float(10,7)
@@ -218,3 +217,4 @@ CREATE  FUNCTION  `getDistance`(
                            *SIN((lon1-lon2)*PI()/180/2))))*radius;
     return d;
   end;
+-- +migrate StatementEnd

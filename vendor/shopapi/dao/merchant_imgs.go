@@ -46,7 +46,7 @@ func (self *MerchantImgs) MerchantImgsWithId(id int64) (*MerchantImgs,error)  {
 
 func (self *MerchantImgs) MerchantImgsWithFlag(flags []string,openId string,appId string) ([]*MerchantImgs,error)  {
 	var merchantImgs []*MerchantImgs
-	_,err := db.NewSession().Select("*").From("merchant_imgs").Where("flag in ?",flags).Where("openId=?",openId).Where("app_id=?",appId).LoadStructs(&merchantImgs)
+	_,err := db.NewSession().Select("*").From("merchant_imgs").Where("flag in ?",flags).Where("open_id=?",openId).Where("app_id=?",appId).LoadStructs(&merchantImgs)
 
 	return merchantImgs,err
 }

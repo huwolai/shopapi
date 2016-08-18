@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"net/http"
 	"shopapi/dao"
+	"gitlab.qiyunxin.com/tangtao/utils/security"
 )
 
 type ProductParam struct  {
@@ -169,7 +170,7 @@ func ProductListWithRecomm(c *gin.Context)  {
 }
 
 /**
-商品列表
+商品列表(根据分类查询)
  */
 func ProductListWithCategory(c *gin.Context)  {
 
@@ -199,6 +200,16 @@ func ProductListWithCategory(c *gin.Context)  {
 	c.JSON(http.StatusOK,prodListDtos)
 }
 
+//商品详情
+func ProdDetailWithProdId(c *gin.Context)  {
+	_,err := security.CheckUserAuth(c.Request)
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"校验失败!")
+		return
+	}
+}
+
+//商品图片
 func ProdImgsWithProdId(c *gin.Context)  {
 	appId,err :=CheckAppAuth(c)
 	if err!=nil {

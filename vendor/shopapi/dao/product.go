@@ -142,7 +142,7 @@ func fillProdImgs(appId string,prodList []*ProductDetail) error {
 }
 
 
-func (self *Product) ProductWithId(appId string,id int64) (*Product,error)  {
+func (self *Product) ProductWithId(id int64,appId string) (*Product,error)  {
 	sess :=db.NewSession()
 	var prod *Product
 	_,err :=sess.Select("*").From("product").Where("app_id=?",appId).Where("id=?",id).LoadStructs(&prod)

@@ -42,8 +42,6 @@ type ProductResultDLL struct  {
 }
 
 type ProdImgsDetailDLL struct  {
-	//图片编号
-	ImgNo string
 	//产品ID
 	ProdId int64
 	AppId string

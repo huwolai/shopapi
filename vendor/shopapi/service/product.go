@@ -7,6 +7,11 @@ import (
 	"github.com/gocraft/dbr"
 )
 
+func ProdDetailWithProdId(prodId int64,appId string) (*dao.Product,error)  {
+
+	product := dao.NewProduct()
+	return product.ProductWithId(prodId,appId)
+}
 
 func  ProdImgsWithProdId(prodId int64,appId string) ([]*ProdImgsDetailDLL,error) {
 	prodImgDetail := dao.NewProdImgsDetail()

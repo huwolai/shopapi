@@ -154,7 +154,7 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	totalPrice :=0.0
 	for _,item :=range items  {
 		product :=dao.NewProduct()
-		product,err :=product.ProductWithId(model.AppId,item.ProdId)
+		product,err :=product.ProductWithId(item.ProdId,model.AppId)
 		if err!=nil{
 			return nil,err
 		}
