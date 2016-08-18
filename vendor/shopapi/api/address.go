@@ -50,6 +50,14 @@ func AddressWithOpenId(c *gin.Context)  {
 	c.JSON(http.StatusOK,addressdtos)
 }
 
+func AddressUpdate(c *gin.Context)  {
+	//openId,err := security.CheckUserAuth(c.Request)
+	//if err!=nil {
+	//	util.ResponseError(c.Writer,http.StatusUnauthorized,"认证有误!")
+	//	return
+	//}
+}
+
 func AddressAdd(c *gin.Context)  {
 	openId,err := security.CheckUserAuth(c.Request)
 	if err!=nil {

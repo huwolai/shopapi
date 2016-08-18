@@ -23,7 +23,7 @@ func NewAddress() *Address  {
 
 func (self *Address) InsertTx(tx *dbr.Tx) (int64,error)  {
 
-	result,err :=tx.InsertInto("address").Columns("app_id","open_id","longitude","latitude","address","is_default","json").Record(self).Exec()
+	result,err :=tx.InsertInto("address").Columns("app_id","open_id","longitude","latitude","address","json").Record(self).Exec()
 	if err!=nil{
 
 		return 0,err
@@ -36,7 +36,7 @@ func (self *Address) InsertTx(tx *dbr.Tx) (int64,error)  {
 
 func (self *Address) Insert() (int64,error)  {
 
-	result,err :=db.NewSession().InsertInto("address").Columns("app_id","open_id","longitude","latitude","address","is_default","json").Record(self).Exec()
+	result,err :=db.NewSession().InsertInto("address").Columns("app_id","open_id","longitude","latitude","address","json").Record(self).Exec()
 	if err!=nil{
 
 		return 0,err
@@ -45,6 +45,24 @@ func (self *Address) Insert() (int64,error)  {
 
 	return lastId,err
 
+}
+
+func (self *Address) Update() error  {
+	_,err :=db.NewSession().Update("address").Set("longitude",self.Longitude).Set("latitude",self.Latitude).Set("address",self.Address).Set("json",self.Json).Where("id=?",self.Id).Exec()
+
+	return err
+}
+
+func (self *Address) Delete() error  {
+	_,err :=db.NewSession().DeleteFrom("address").Where("id=?",self.Id).Exec()
+
+	return err
+}
+
+func (self *Address) WithId(id int64) (*Address,error)  {
+	var address *Address
+	_,err :=db.NewSession().Select("*").From("address").Where("id=?",id).LoadStructs(&address)
+	return address,err
 }
 
 //查询推荐用户地址

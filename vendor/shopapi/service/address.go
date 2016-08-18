@@ -39,6 +39,10 @@ func AddressAdd(dto *AddressDto) (*AddressDto,error)  {
 	return AddressToDto(address),err
 }
 
+func AddressUpdate(dto *AddressDto)  {
+
+}
+
 
 func AddressToDto(model *dao.Address) *AddressDto  {
 	dto := &AddressDto{}
