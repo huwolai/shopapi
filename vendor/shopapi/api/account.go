@@ -41,9 +41,9 @@ func LoginForSMS(c *gin.Context)  {
 		return
 	}
 
-	openId := security.GetOpenId(c.Request)
+	appId := security.GetAppId2(c.Request)
 
-	resultMap,err :=service.LoginForSMS(loginSms.Mobile,loginSms.Code,openId)
+	resultMap,err :=service.LoginForSMS(loginSms.Mobile,loginSms.Code,appId)
 	if err!=nil {
 		util.ResponseError400(c.Writer,err.Error())
 		return
