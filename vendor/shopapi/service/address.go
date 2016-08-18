@@ -60,6 +60,10 @@ func AddressUpdate(dto *AddressDto) (*AddressDto,error) {
 	}
 
 	fillAddress(address,dto)
+	err =address.Update()
+	if err!=nil {
+		return nil,err
+	}
 
 	return dto,nil
 }
