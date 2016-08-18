@@ -4,6 +4,8 @@ CREATE TABLE IF NOT EXISTS address(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   app_id VARCHAR(255) COMMENT 'APPID',
   open_id VARCHAR(255) COMMENT '用户ID',
+  longitude NUMERIC(14,10) COMMENT '经度',
+  latitude NUMERIC(14,10) COMMENT '维度',
   address VARCHAR(255) COMMENT '地址',
   is_default VARCHAR(255) COMMENT '0不是默认,1是默认地址',
   json VARCHAR(1000) COMMENT '附加字段',

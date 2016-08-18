@@ -53,6 +53,26 @@ type ProductListDto struct  {
 	Json string `json:"json"`
 }
 
+type ProductBaseDto struct  {
+	Id int64 `json:"id"`
+	AppId string `json:"app_id"`
+	//商品标题
+	Title string `json:"title"`
+	//商品描述
+	Description string `json:"description"`
+	//商品价格
+	Price float64 `json:"price"`
+	//折扣价格
+	DisPrice float64 `json:"dis_price"`
+	//是否推荐
+	IsRecom int `json:"is_recom"`
+	//商品状态
+	Status int `json:"status"`
+	//附加数据
+	Json string `json:"json"`
+
+}
+
 type ProductDetailDto struct {
 	//商品ID
 	Id int64 `json:"id"`
@@ -207,6 +227,17 @@ func ProdDetailWithProdId(c *gin.Context)  {
 		util.ResponseError(c.Writer,http.StatusUnauthorized,"校验失败!")
 		return
 	}
+
+	prodId := c.Param("prod_id")
+	iprodId,_ := strconv.ParseInt(prodId,10,64)
+	appId := security.GetAppId2(c.Request)
+	product,err := service.ProdDetailWithProdId(iprodId,appId)
+
+	if product==nil {
+		util.ResponseError400(c.Writer,"商品没找到!")
+		return
+	}
+	c.JSON(http.StatusOK,productToDto(product))
 }
 
 //商品图片
@@ -312,6 +343,22 @@ func prodImgsDetailToDto(model *dao.ProdImgsDetail) *ProdImgsDetailDto  {
 	dto.Flag = model.Flag
 	dto.ProdId = model.ProdId
 	dto.Url = model.Url
+
+	return dto
+}
+
+func productToDto(model *dao.Product) *ProductBaseDto {
+
+	dto :=&ProductBaseDto{}
+	dto.AppId = model.AppId
+	dto.Description =model.Description
+	dto.DisPrice = model.DisPrice
+	dto.Id = model.Id
+	dto.IsRecom = model.IsRecom
+	dto.Json = model.Json
+	dto.Price = model.Price
+	dto.Status = model.Status
+	dto.Title = model.Title
 
 	return dto
 }

@@ -20,6 +20,8 @@ type MerchantDto struct {
 	Status int `json:"status"`
 	Json string `json:"json"`
 	Address string `json:"address"`
+	//权重
+	Weight int `json:"weight"`
 	CoverDistance float64 `json:"cover_distance"`
 	//经度
 	Longitude float64 `json:"longitude"`
@@ -300,6 +302,7 @@ func merchantToDto(model *dao.Merchant)  *MerchantDto {
 	dto.Name = model.Name
 	dto.Id = model.Id
 	dto.OpenId = model.OpenId
+	dto.Weight = model.Weight
 
 	return dto
 }

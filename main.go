@@ -79,6 +79,7 @@ func main() {
 		{
 			product.POST("/:merchant_id",api.ProductAdd)
 			product.GET("/:prod_id/imgs",api.ProdImgsWithProdId)
+			product.GET("/:prod_id/detail",api.ProdDetailWithProdId)
 
 		}
 
