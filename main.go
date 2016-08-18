@@ -111,6 +111,13 @@ func main() {
 		{
 			pay.POST("/payapi/callback",api.CallbackForPayapi)
 		}
+
+		address := v1.Group("/address")
+		{
+			address.GET("/:open_id",api.AddressWithOpenId)
+			address.POST("/:open_id",api.AddressAdd)
+			address.GET("/:open_id/recom",api.AddressWithRecom)
+		}
 	}
 
 	router.Static("/upload","./config/upload")

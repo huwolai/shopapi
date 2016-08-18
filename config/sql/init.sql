@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS address(
   longitude NUMERIC(14,10) COMMENT '经度',
   latitude NUMERIC(14,10) COMMENT '维度',
   address VARCHAR(255) COMMENT '地址',
-  is_default VARCHAR(255) COMMENT '0不是默认,1是默认地址',
+  weight int COMMENT '地址权重 1.权重越高 越优先',
   json VARCHAR(1000) COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
