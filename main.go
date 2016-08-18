@@ -116,6 +116,9 @@ func main() {
 		{
 			address.GET("/:open_id",api.AddressWithOpenId)
 			address.POST("/:open_id",api.AddressAdd)
+			address.PUT("/:open_id",api.AddressUpdate)
+			address.DELETE("/:open_id/id/:id",api.AddressDelete)
+			address.GET("/:open_id/id/:id",api.AddressWithId)
 			address.GET("/:open_id/recom",api.AddressWithRecom)
 		}
 	}
