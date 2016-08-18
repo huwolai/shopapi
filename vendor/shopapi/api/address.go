@@ -66,8 +66,9 @@ func AddressAdd(c *gin.Context)  {
 	}
 
 	param.OpenId = openId
+	param.AppId = appId
 
-	dto,err :=service.AddressAdd(param,appId)
+	dto,err :=service.AddressAdd(param)
 	if err!=nil {
 		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
 		return

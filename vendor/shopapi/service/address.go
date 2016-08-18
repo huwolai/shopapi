@@ -29,7 +29,7 @@ func AddressWithOpenId(openId,appId string) ([]*dao.Address,error)  {
 	return addressList,err
 }
 
-func AddressAdd(dto *AddressDto,appId string) (*AddressDto,error)  {
+func AddressAdd(dto *AddressDto) (*AddressDto,error)  {
 
 	address :=AddressDtoToModel(dto)
 	address.Weight=0
@@ -50,6 +50,7 @@ func AddressToDto(model *dao.Address) *AddressDto  {
 	dto.OpenId = model.OpenId
 	dto.Weight = model.Weight
 	dto.Id = model.Id
+	dto.AppId  = model.AppId
 
 	return dto
 }
