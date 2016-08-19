@@ -20,8 +20,8 @@ type OrderModel struct  {
 }
 
 type OrderItemModel struct  {
-	//商品ID
-	ProdId int64
+	//商品sku
+	SkuNo string
 	//商品数量
 	Num int
 	Json string
@@ -129,13 +129,6 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 
 }
 
-
-
-
-
-
-
-
 func OrderByUser(openId string,status []int,appId string)  ([]*dao.OrderDetail,error)  {
 
 	orderDetail :=dao.NewOrderDetail()
@@ -228,15 +221,15 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	totalActPrice := 0.0
 	totalPrice :=0.0
 	for _,item :=range items  {
-		product :=dao.NewProduct()
-		product,err :=product.ProductWithId(item.ProdId,model.AppId)
+		prodSku := dao.NewProdSku()
+		prodSku,err :=prodSku.WithSkuNo(prodSku.SkuNo)
 		if err!=nil{
 			return nil,err
 		}
-		totalActPrice+=product.DisPrice*float64(item.Num)
-		totalPrice += product.Price*float64(item.Num)
+		totalActPrice+=prodSku.DisPrice*float64(item.Num)
+		totalPrice += prodSku.Price*float64(item.Num)
 
-		err =orderItemSave(product,item,order.No,tx)
+		err =orderItemSave(prodSku,item,order.No,tx)
 		if err!=nil{
 			return nil,err
 		}
@@ -254,16 +247,17 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	return order,err
 }
 
-func orderItemSave(product *dao.Product,item OrderItemModel,orderNo string,tx *dbr.Tx) error  {
+func orderItemSave(prodSku *dao.ProdSku,item OrderItemModel,orderNo string,tx *dbr.Tx) error  {
 	orderItem :=dao.NewOrderItem()
 	orderItem.No = orderNo
-	orderItem.ProdId = product.Id
-	orderItem.AppId = product.AppId
+	orderItem.ProdId = prodSku.ProdId
+	orderItem.SkuNo = prodSku.SkuNo
+	orderItem.AppId = prodSku.AppId
 	orderItem.Num = item.Num
-	orderItem.OfferUnitPrice = product.Price
-	orderItem.OfferTotalPrice = product.Price*float64(item.Num)
-	orderItem.BuyUnitPrice = product.DisPrice
-	orderItem.BuyTotalPrice = product.DisPrice*float64(item.Num)
+	orderItem.OfferUnitPrice = prodSku.Price
+	orderItem.OfferTotalPrice = prodSku.Price*float64(item.Num)
+	orderItem.BuyUnitPrice = prodSku.DisPrice
+	orderItem.BuyTotalPrice = prodSku.DisPrice*float64(item.Num)
 	orderItem.Json = item.Json
 	return  orderItem.InsertTx(tx)
 }

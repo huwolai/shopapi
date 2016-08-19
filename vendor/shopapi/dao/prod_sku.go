@@ -34,6 +34,13 @@ func (self *ProdSku) Insert() (error)  {
 	return err
 }
 
+func (self *ProdSku) WithSkuNo(skuNo string) (*ProdSku,error)   {
+	var prodSku *ProdSku
+	_,err :=db.NewSession().Select("*").From("prod_sku").Where("sku_no=?",skuNo).LoadStructs(&prodSku)
+
+	return prodSku,err
+}
+
 func (self *ProdSku) WithProdIdAndSymbolPath(attrSymbolPath string,prodId int64) (*ProdSku,error)  {
 	var prodSku *ProdSku
 	_,err :=db.NewSession().Select("*").From("prod_sku").Where("attr_symbol_path=?",attrSymbolPath).Where("prod_id=?",prodId).LoadStructs(&prodSku)

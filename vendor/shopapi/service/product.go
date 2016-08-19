@@ -44,7 +44,7 @@ func  ProdImgsWithProdId(prodId int64,appId string) ([]*ProdImgsDetailDLL,error)
 }
 
 //添加商品
-func ProdAdd(prodbll *ProdBLL) error  {
+func ProdAdd(prodbll *ProdBLL) (*ProdBLL,error)  {
 	session := db.NewSession()
 	tx,_ :=session.Begin()
 	defer func() {
@@ -57,15 +57,17 @@ func ProdAdd(prodbll *ProdBLL) error  {
 	prodId,err := productBaseSave(prodbll,tx)
 	if err!=nil{
 		tx.Rollback()
-		return err
+		return nil,err
 	}
+
+	prodbll.Id = prodId
 
 	//保存商品图片信息
 	if len(prodbll.Imgs)>0 {
 		err := productImgSave(prodbll,prodId,tx)
 		if err!=nil{
 			tx.Rollback()
-			return err
+			return nil,err
 		}
 	}
 
@@ -73,20 +75,59 @@ func ProdAdd(prodbll *ProdBLL) error  {
 	err = merchantProdAdd(prodbll,prodId,tx)
 	if err!=nil{
 		tx.Rollback()
-		return err
+		return nil,err
 	}
 	//商品分类添加
 	if err:=prodCategoryAdd(prodbll,prodId,tx);err!=nil{
 		tx.Rollback()
-		return err
+		return nil,err
 	}
 	err = tx.Commit()
 	if err!=nil{
 		tx.Rollback()
-		return err
+		return nil,err
 	}
 
-	return nil;
+	return prodbll,nil;
+}
+
+type ProdAttrKeyDto struct  {
+	Id int64 `json:"id"`
+	//商品ID
+	ProdId int64 `json:"prod_id"`
+	//属性key
+	AttrKey string `json:"attr_key"`
+	//属性名
+	AttrName string `json:"attr_name"`
+	Flag string `json:"flag"`
+	Json string `json:"json"`
+}
+
+type ProdAttrValueDto struct  {
+	Id int64 `json:"id"`
+	ProdId int64 `json:"prod_id"`
+	AttrKey string `json:"attr_key"`
+	AttrValue string `json:"attr_value"`
+	Flag string `json:"flag"`
+	Json string  `json:"json"`
+}
+
+//添加商品属性
+func ProdAttrKeyAdd(dto *ProdAttrKeyDto) (*ProdAttrKeyDto,error) {
+	prodAttrKey := ProdAttrKeyDtoToModel(dto)
+	lastId,err :=prodAttrKey.Insert()
+
+	dto.Id = lastId
+
+	return dto,err
+}
+
+//添加商品属性值
+func ProdAttrValueAdd(dto *ProdAttrValueDto) (*ProdAttrValueDto,error)  {
+	prodAttrValue :=ProdAttrValueDtoToModel(dto)
+	lastId,err :=prodAttrValue.Insert()
+	dto.Id = lastId
+	return dto,err
 }
 
 func ProductListWithRecomm(appId string) ([]*dao.ProductDetail,error) {
@@ -276,4 +317,42 @@ func productBaseSave(prodbll *ProdBLL,tx *dbr.Tx) (int64,error)  {
 	}
 
 	return prodId,err
+}
+
+func ProdAttrKeyToDto(model *dao.ProdAttrKey) *ProdAttrKeyDto  {
+
+	dto :=&ProdAttrKeyDto{}
+	dto.AttrKey = model.AttrKey
+	dto.AttrName = model.AttrName
+	dto.Id = model.Id
+	dto.ProdId = model.ProdId
+	dto.Flag = model.Flag
+	dto.Json = model.Json
+
+	return dto
+}
+
+func ProdAttrKeyDtoToModel(dto *ProdAttrKeyDto) *dao.ProdAttrKey  {
+	model := &dao.ProdAttrKey{}
+	model.ProdId = dto.ProdId
+	model.AttrName = dto.AttrName
+	model.AttrKey = dto.AttrKey
+	model.Flag = dto.Flag
+	model.Json = dto.Json
+	model.Id = dto.Id
+
+	return model
+}
+
+func ProdAttrValueDtoToModel(dto *ProdAttrValueDto) *dao.ProdAttrVal  {
+	model := dao.NewProdAttrVal()
+	model.Flag = dto.Flag
+	model.ProdId = dto.ProdId
+	model.AttrKey = dto.AttrKey
+	model.AttrValue = dto.AttrValue
+	model.Json = dto.Json
+	model.Id = dto.Id
+
+
+	return model
 }

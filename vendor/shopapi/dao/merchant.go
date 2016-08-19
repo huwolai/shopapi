@@ -13,6 +13,7 @@ type Merchant struct  {
 	Status int
 	Json string
 	Address string
+	Flag string
 	CoverDistance float64
 	//权重
 	Weight int
@@ -54,7 +55,7 @@ func NewMerchant() *Merchant  {
 
 func (self *Merchant) InsertTx(tx *dbr.Tx) (int64,error) {
 
-	result,err :=tx.InsertInto("merchant").Columns("name","app_id","open_id","address","longitude","latitude","status","weight","cover_distance","json").Record(self).Exec()
+	result,err :=tx.InsertInto("merchant").Columns("name","app_id","open_id","address","longitude","latitude","status","weight","cover_distance","json","flag").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
@@ -95,6 +96,22 @@ func (self*Merchant) MerchantExistWithOpenId(openId string,appId string) (bool,e
 func (self *Merchant) MerchantUpdateTx(merchant *Merchant,tx *dbr.Tx) error  {
 	_,err :=tx.Update("merchant").Set("name",merchant.Name).Set("address",merchant.Address).Set("longitude",merchant.Longitude).Set("latitude",merchant.Latitude).Set("json",merchant.Json).Where("id=?",merchant.Id).Exec()
 	return err
+}
+
+func (self *Merchant) UpdateStatus(status int,merchantId int64) error  {
+
+	_,err :=db.NewSession().Update("merchant").Set("status=?",status).Where("merchant_id=?",merchantId).Exec()
+
+	return err
+
+}
+
+func (self *Merchant) UpdateStatusTx(status int,merchantId int64,tx *dbr.Tx) error  {
+
+	_,err :=tx.Update("merchant").Set("status=?",status).Where("merchant_id=?",merchantId).Exec()
+
+	return err
+
 }
 
 func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,appId string) ([]*MerchantDetail,error)  {

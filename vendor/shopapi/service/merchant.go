@@ -219,8 +219,52 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 //审核商户
 func MerchantAudit(merchantId int64,appId string) error  {
 
+	merchant :=dao.NewMerchant()
+	merchant,err :=merchant.MerchantWithId(merchantId)
+	if err!=nil{
+		log.Error(err)
+		return errors.New("查询商户信息错误!")
+	}
+	if merchant==nil{
+		return errors.New("商户不存在!")
+	}
+
+	if merchant.Status!=comm.MERCHANT_STATUS_WAIT_AUIT {
+		return errors.New("商户不是等待商户状态!")
+	}
+
+	err =merchant.UpdateStatus(comm.MERCHANT_STATUS_NORMAL,merchant.Id)
+	if err!=nil{
+		return err
+	}
+
+	//------------- 特殊要求--------------
+	//为商户添加默认产品
+	err =ProdDefaultAddForMerchant(merchant)
+	if err!=nil{
+		return err
+	}
+
 
 	return nil
+}
+
+//为商户添加默认商品
+func ProdDefaultAddForMerchant(merchant *dao.Merchant) error {
+
+
+	prodbll :=&ProdBLL{}
+	prodbll.Title = "默认商品"
+	prodbll.Description="默认商品描述"
+	prodbll.AppId = merchant.AppId
+	prodbll.DisPrice = 158.0
+	prodbll.Price = 158.0
+	prodbll.CategoryId=1
+	prodbll.Flag=comm.MERCHANT_DEFAULT_PRODUCT_FLAG
+	prodbll.MerchantId = merchant.Id
+	err :=ProdAdd(prodbll)
+
+	return err
 }
 
 func  MerchantNear(longitude float64,latitude float64,appId string) ([]*dao.MerchantDetail,error)   {

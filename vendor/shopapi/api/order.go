@@ -64,9 +64,8 @@ type OrderItemDetailDto struct  {
 }
 
 type OrderItemDto struct  {
-	//商品ID
-	ProdId int64 `json:"prod_id"`
-
+	//sku编号
+	SkuNo string `json:"sku_no"`
 	//商品数量
 	Num int `json:"num"`
 
@@ -368,6 +367,6 @@ func orderItemToModel(dto OrderItemDto) service.OrderItemModel  {
 	model :=service.OrderItemModel{}
 	model.Json = dto.Json
 	model.Num = dto.Num
-	model.ProdId = dto.ProdId
+	model.SkuNo = dto.SkuNo
 	return model
 }

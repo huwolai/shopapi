@@ -2,6 +2,7 @@ package service
 
 
 type ProdBLL struct {
+	Id int64
 	AppId string
 	//商品标题
 	Title string
@@ -17,6 +18,8 @@ type ProdBLL struct {
 	DisPrice float64
 	//图片集合
 	Imgs []ProdImgBLL
+	//标记
+	Flag string
 	Json string
 }
 

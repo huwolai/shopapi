@@ -276,6 +276,27 @@ func MerchantImgWithFlag(c *gin.Context)  {
 
 }
 
+func MerchantAudit(c *gin.Context){
+	_,err := security.CheckUserAuth(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,err.Error())
+		return
+	}
+	merchantId := c.Param("merchant_id")
+	appId := security.GetAppId2(c.Request)
+	imerchantId,err := strconv.ParseInt(merchantId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商户ID有误!")
+		return
+	}
+	err =service.MerchantAudit(imerchantId,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	util.ResponseSuccess(c.Writer)
+}
+
 func merchantImgToDto(model *dao.MerchantImgs) *MerchantImgDto   {
 	dto := &MerchantImgDto{}
 	dto.MerchantId = model.MerchantId

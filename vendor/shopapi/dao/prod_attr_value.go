@@ -21,6 +21,16 @@ func NewProdAttrVal() *ProdAttrVal  {
 
 func (self *ProdAttrVal) InsertTx(tx *dbr.Tx) (int64,error)  {
 
+	result,err :=tx.InsertInto("prod_attr_val").Columns("attr_key","attr_value","prod_id","flag","json").Record(self).Exec()
+	if err!=nil{
+		return 0,err
+	}
+	lastId,err := result.LastInsertId()
+	return lastId,err
+}
+
+func (self *ProdAttrVal) Insert() (int64,error)  {
+
 	result,err :=db.NewSession().InsertInto("prod_attr_val").Columns("attr_key","attr_value","prod_id","flag","json").Record(self).Exec()
 	if err!=nil{
 		return 0,err

@@ -100,12 +100,13 @@ func main() {
 			merchants.GET("/user/:open_id/imgs",api.MerchantImgWithFlag)
 		}
 
+		//商户
 		merchant :=v1.Group("/merchant")
 		{
-
 			//商户商品
 			merchant.GET("/:merchant_id/prods",api.MerchantProds)
-
+			//商户审核
+			merchant.POST("/:merchant_id/audit",api.MerchantAudit)
 		}
 
 		//推荐

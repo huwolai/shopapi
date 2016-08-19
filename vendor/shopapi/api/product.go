@@ -12,6 +12,7 @@ import (
 )
 
 type ProductParam struct  {
+	Id int64 `json:"id"`
 	AppId string `json:"app_id"`
 	//商品标题
 	Title string `json:"title"`
@@ -117,7 +118,7 @@ type ProdAttrValDto struct  {
  */
 func ProductAdd(c *gin.Context)  {
 
-	appId,err := CheckAppAuth(c)
+	_,err := CheckUserAuth(c)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return
@@ -162,7 +163,7 @@ func ProductAdd(c *gin.Context)  {
 	}
 	mid,err := strconv.Atoi(midstr)
 	param.MerchantId = int64(mid)
-	param.AppId = appId
+	param.AppId = security.GetAppId2(c.Request)
 
 	prodBll := productParamToBLL(param)
 	err =service.ProdAdd(prodBll)
@@ -171,7 +172,8 @@ func ProductAdd(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-	util.ResponseSuccess(c.Writer)
+	param.Id = prodBll.Id
+	c.JSON(http.StatusOK,param)
 }
 
 //商品推荐列表
@@ -367,6 +369,7 @@ func prodImgsDetailDLLToDto(dll *service.ProdImgsDetailDLL) *ProdImgsDetailDto{
 func productParamToBLL(param *ProductParam) *service.ProdBLL {
 
 	prodBll := &service.ProdBLL{}
+	prodBll.Id = param.Id
 	prodBll.AppId = param.AppId
 	prodBll.MerchantId = param.MerchantId
 	prodBll.CategoryId = param.CategoryId

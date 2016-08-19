@@ -32,6 +32,8 @@ type OrderItemDetail struct  {
 	MerchantId int64
 	//商品ID
 	ProdId int64
+	//商品SKU
+	SkuNo string
 	//商品标题
 	ProdTitle string
 	//商品cover 封面图 url
