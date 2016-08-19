@@ -6,8 +6,12 @@ const (
 )
 
 const (
+
+	//等待审核
+	MERCHANT_STATUS_WAIT_AUIT = 0
 	//商户正常状态
 	MERCHANT_STATUS_NORMAL = 1
+
 )
 
 const (

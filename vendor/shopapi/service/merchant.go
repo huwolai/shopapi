@@ -159,7 +159,7 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 		return nil,errors.New("商户查询错误!")
 	}
 	if isMerchant {
-
+		return nil,errors.New("已经是商户了!")
 	}
 
 	sesson := db.NewSession()
@@ -172,12 +172,11 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 		}
 	}()
 
-
 	merchant = dao.NewMerchant()
 	merchant.Json=dll.Json
 	merchant.Name = dll.Name
 	merchant.OpenId = dll.OpenId
-	merchant.Status = comm.MERCHANT_STATUS_NORMAL
+	merchant.Status = comm.MERCHANT_STATUS_WAIT_AUIT //等待审核
 	merchant.AppId = dll.AppId
 	merchant.Longitude = dll.Longitude
 	merchant.Latitude = dll.Latitude
@@ -186,7 +185,6 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 	mid,err := merchant.InsertTx(tx)
 	if err!=nil{
 		tx.Rollback()
-
 		return nil,err
 	}
 
@@ -207,9 +205,6 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 		}
 	}
 
-
-
-
 	if err :=tx.Commit();err!=nil{
 		tx.Rollback()
 
@@ -219,6 +214,13 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 
 	return dll,nil
 
+}
+
+//审核商户
+func MerchantAudit(merchantId int64,appId string) error  {
+
+
+	return nil
 }
 
 func  MerchantNear(longitude float64,latitude float64,appId string) ([]*dao.MerchantDetail,error)   {
