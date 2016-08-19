@@ -98,7 +98,7 @@ func (self *Merchant) MerchantUpdateTx(merchant *Merchant,tx *dbr.Tx) error  {
 
 func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,appId string) ([]*MerchantDetail,error)  {
 	var mdetails []*MerchantDetail
-	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance  from merchant mt where app_id = ? and getDistance(mt.longitude,latitude,?,?)<= mt.cover_distance ",longitude,latitude,appId,longitude,latitude).LoadStructs(&mdetails)
+	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance  from merchant mt where app_id = ? order by distance",longitude,latitude,appId).LoadStructs(&mdetails)
 
 	return mdetails,err
 }
