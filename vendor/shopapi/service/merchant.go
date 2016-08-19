@@ -262,7 +262,7 @@ func ProdDefaultAddForMerchant(merchant *dao.Merchant) error {
 	prodbll.CategoryId=1
 	prodbll.Flag=comm.MERCHANT_DEFAULT_PRODUCT_FLAG
 	prodbll.MerchantId = merchant.Id
-	err :=ProdAdd(prodbll)
+	_,err :=ProdAdd(prodbll)
 
 	return err
 }

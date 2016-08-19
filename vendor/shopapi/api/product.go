@@ -166,7 +166,7 @@ func ProductAdd(c *gin.Context)  {
 	param.AppId = security.GetAppId2(c.Request)
 
 	prodBll := productParamToBLL(param)
-	err =service.ProdAdd(prodBll)
+	prodBll,err =service.ProdAdd(prodBll)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
