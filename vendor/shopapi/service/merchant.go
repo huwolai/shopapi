@@ -6,6 +6,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/db"
 	"strings"
 	"errors"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 type MerchantDetailDLL struct  {
@@ -150,6 +151,17 @@ func fillMerchant(merchant *dao.Merchant,dll *MerchantDetailDLL)  {
 
 }
 func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
+
+	merchant := dao.NewMerchant()
+	isMerchant,err :=merchant.MerchantExistWithOpenId(dll.OpenId,dll.AppId)
+	if err!=nil{
+		log.Error()
+		return errors.New("商户查询错误!")
+	}
+	if isMerchant==nil{
+
+	}
+
 	sesson := db.NewSession()
 	tx,_  :=sesson.Begin()
 	defer func() {
@@ -161,7 +173,7 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 	}()
 
 
-	merchant := dao.NewMerchant()
+	merchant = dao.NewMerchant()
 	merchant.Json=dll.Json
 	merchant.Name = dll.Name
 	merchant.OpenId = dll.OpenId

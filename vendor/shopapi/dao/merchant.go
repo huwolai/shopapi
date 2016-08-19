@@ -24,6 +24,7 @@ type Merchant struct  {
 }
 
 type MerchantDetail struct  {
+	Id string
 	Name string
 	AppId string
 	OpenId string

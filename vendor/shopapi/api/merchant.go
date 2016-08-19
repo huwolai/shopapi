@@ -59,6 +59,7 @@ type MerchantImgDto struct  {
 
 
 type MerchantDetailDto struct  {
+	Id string `json:"id"`
 	Name string `json:"name"`
 	AppId string `json:"app_id"`
 	OpenId string `json:"open_id"`
@@ -297,7 +298,7 @@ func merchantDetailToDto(model *dao.MerchantDetail) *MerchantDetailDto  {
 	dto.Status = model.Status
 	dto.Address = model.Address
 	dto.Weight = model.Weight
-
+	dto.Id = model.Id
 
 	return dto
 
