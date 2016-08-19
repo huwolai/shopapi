@@ -156,9 +156,9 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 	isMerchant,err :=merchant.MerchantExistWithOpenId(dll.OpenId,dll.AppId)
 	if err!=nil{
 		log.Error()
-		return errors.New("商户查询错误!")
+		return nil,errors.New("商户查询错误!")
 	}
-	if isMerchant==nil{
+	if isMerchant {
 
 	}
 
