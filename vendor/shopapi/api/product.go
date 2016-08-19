@@ -103,6 +103,15 @@ type ProdImgsDetailDto struct  {
 	Json string `json:"json"`
 }
 
+type ProdAttrValDto struct  {
+	Id int64 `json:"id"`
+	ProdId int64 `json:"prod_id"`
+	AttrKey string `json:"attr_key"`
+	AttrValue string `json:"attr_value"`
+	Flag string `json:"flag"`
+	Json string `json:"json"`
+}
+
 /**
 添加商品
  */
@@ -266,6 +275,83 @@ func ProdImgsWithProdId(c *gin.Context)  {
 	c.JSON(http.StatusOK,detailDtos)
 }
 
+
+
+func ProductAndAttrAdd(c *gin.Context) {
+	_,err := security.CheckUserAuth(c.Request)
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"校验失败!")
+		return
+	}
+	param := &service.ProdAndAttrDto{}
+	err =c.BindJSON(&param)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	if param.ProdId==0 {
+		util.ResponseError400(c.Writer,"商品ID不能为空!")
+		return
+	}
+	if param.AttrValue=="" {
+		util.ResponseError400(c.Writer,"属性值不能为空!")
+		return
+	}
+
+	param.AttrKey="time"
+
+	param.AppId = security.GetAppId2(c.Request)
+
+	dto,err :=service.ProductAndAttrAdd(param)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK,dto)
+}
+
+func ProductAttrValues(c *gin.Context)  {
+	_,err := security.CheckUserAuth(c.Request)
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"校验失败!")
+		return
+	}
+
+	attrKey :=c.Param("attr_key")
+	vsearch  :=c.Query("vsearch")
+	prodId :=c.Param("prod_id")
+
+	if attrKey==""{
+		util.ResponseError400(c.Writer,"属性key不能为空")
+		return
+	}
+
+	iprodId,err := strconv.ParseInt(prodId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商品ID错误!")
+		return
+	}
+
+	prodAttrVals,err  :=service.ProductAttrValues(vsearch,attrKey,iprodId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询商品属性失败!")
+		return
+	}
+
+	prodAttrDtos :=make([]*ProdAttrValDto,0)
+	if prodAttrVals!=nil{
+
+		for _,prodAttrVal :=range prodAttrVals {
+			prodAttrDtos = append(prodAttrDtos,prodAttrValToDto(prodAttrVal))
+		}
+	}
+	c.JSON(http.StatusOK,prodAttrDtos)
+}
+
 func prodImgsDetailDLLToDto(dll *service.ProdImgsDetailDLL) *ProdImgsDetailDto{
 
 	dto :=&ProdImgsDetailDto{}
@@ -359,6 +445,18 @@ func productToDto(model *dao.Product) *ProductBaseDto {
 	dto.Price = model.Price
 	dto.Status = model.Status
 	dto.Title = model.Title
+
+	return dto
+}
+
+func prodAttrValToDto(model *dao.ProdAttrVal) *ProdAttrValDto {
+	dto :=&ProdAttrValDto{}
+	dto.AttrKey = model.AttrKey
+	dto.AttrValue = model.AttrValue
+	dto.Id = model.Id
+	dto.Flag  = model.Flag
+	dto.ProdId = model.ProdId
+	dto.Json = model.Json
 
 	return dto
 }

@@ -5,14 +5,9 @@ import (
 	"errors"
 	"github.com/gocraft/dbr"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
-	"gitlab.qiyunxin.com/tangtao/utils/network"
 	"gitlab.qiyunxin.com/tangtao/utils/config"
-	"encoding/json"
-	"fmt"
-	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"shopapi/comm"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
-	"net/http"
 )
 
 type OrderModel struct  {
@@ -68,17 +63,45 @@ func OrderAdd(model *OrderModel) (*dao.Order,error)  {
 
 func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 
+	if model.PayType==comm.Pay_Type_Cash { //现金支付
+
+		return nil,errors.New("暂不支持此支付方式!")
+	}
+
 	order := dao.NewOrder()
 	order,err :=order.OrderWithNo(model.OrderNo,model.AppId)
 	if err!=nil {
 		return nil,err
 	}
+
+	if model.PayType == comm.Pay_Type_Account {//账户支付
+		params := map[string]interface{}{
+			"open_id":order.OpenId,
+			"type": 1,
+			"amount": int64(order.ActPrice*100),
+			"title": order.Title,
+			"remark": order.Title,
+		}
+		resultImprestMap,err := RequestPayApi("/pay/makeimprest",params)
+		if err!=nil{
+			return nil,err
+		}
+		code :=resultImprestMap["code"].(string)
+		err =order.OrderPayapiUpdateWithNoAndCode("",code,comm.ORDER_STATUS_PAY_WAIT,order.No,order.AppId)
+		if err!=nil{
+			log.Error(err)
+			return nil,err
+		}
+		return resultImprestMap,nil
+	}
+
+
 	//参数
 	params := map[string]interface{}{
 		"open_id": order.OpenId,
 		"out_trade_no": order.No,
 		"amount": int64(order.ActPrice*100),
-		"trade_type": 1,  //交易类型(1.充值 2.购买)
+		"trade_type": 2,  //交易类型(1.充值 2.购买)
 		"pay_type": model.PayType,
 		"title": order.Title,
 		"client_ip": "127.0.0.1",
@@ -87,58 +110,31 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 	}
 	log.Info(params)
 
-	resultMap,err :=prepay(params)
+	resultPrepayMap,err :=RequestPayApi("/pay/makeprepay",params)
 	if err!=nil{
 		return nil,err
 	}
-	if resultMap!=nil{
-		payapiNo :=resultMap["pay_no"].(string)
+	if resultPrepayMap!=nil{
+		payapiNo :=resultPrepayMap["pay_no"].(string)
+		code :=resultPrepayMap["code"].(string)
 		//将payapi的订单号更新到订单数据里
-		err :=order.OrderPayapiUpdateWithNo(payapiNo,comm.ORDER_STATUS_PAY_WAIT,order.No,order.AppId)
+		err :=order.OrderPayapiUpdateWithNoAndCode(payapiNo,code,comm.ORDER_STATUS_PAY_WAIT,order.No,order.AppId)
 		if err!=nil{
 			log.Error(err)
 			return nil,err
 		}
 	}
 
-	return resultMap,nil
+	return resultPrepayMap,nil
 
 }
 
-func prepay(params map[string]interface{}) (map[string]interface{},error)  {
-	//获取接口签名信息
-	noncestr,timestamp,appid,basesign,sign  :=GetPayapiSign(params)
-	log.Info(fmt.Sprintf("%s.%s",basesign,sign))
-	//header参数
-	headers := map[string]string{
-		"app_id": appid,
-		"sign": fmt.Sprintf("%s.%s",basesign,sign),
-		"noncestr": noncestr,
-		"timestamp": timestamp,
-	}
-	paramData,_:= json.Marshal(params);
-
-	response,err := network.Post(config.GetValue("payapi_url").ToString()+"/pay/makeprepay",paramData,headers)
-	if err!=nil{
-		return nil,err
-	}
-
-	if response.StatusCode==http.StatusOK {
-		var resultMap map[string]interface{}
-		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
 
 
-		return resultMap,nil
-	}else if response.StatusCode==http.StatusBadRequest {
-		var resultMap map[string]interface{}
-		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
 
-		return nil,errors.New(resultMap["err_msg"].(string))
-	}else{
-		return nil,errors.New("请求支付中心失败!")
-	}
 
-}
+
+
 
 func OrderByUser(openId string,status []int,appId string)  ([]*dao.OrderDetail,error)  {
 
@@ -152,6 +148,67 @@ func OrderDetailWithNo(orderNo string,appId string) (*dao.OrderDetail,error)  {
 	orderDetail :=dao.NewOrderDetail()
 	orderDetail,err := orderDetail.OrderDetailWithNo(orderNo,appId)
 	return orderDetail,err
+}
+
+func OrderPayForAccount(openId string,orderNo string,appId string) error  {
+
+	order :=dao.NewOrder()
+	order,err :=order.OrderWithNo(orderNo,appId)
+	if err!=nil {
+		log.Error(err)
+		return errors.New("订单查询失败!")
+	}
+
+	if order==nil{
+		return  errors.New("没找到订单信息!")
+	}
+	if order.Status==comm.ORDER_STATUS_PAY_WAIT {
+		return  errors.New("订单不是待付款状态!")
+	}
+
+	if order.Code==""{
+		return  errors.New("订单没有预付款代号,订单数据有误!")
+	}
+	account :=dao.NewAccount()
+	account,err =account.AccountWithOpenId(openId,appId)
+	if err!=nil {
+		return err
+	}
+	if account!=nil{
+		return errors.New("没有找到用户的账户信息!请重新登录再试")
+	}
+
+
+
+	//获取支付token
+	params := map[string]interface{}{
+		"open_id": order.OpenId,
+		"password": account.Password,
+	}
+	resultPayTokenMap,err := RequestPayApi("/pay/token",params)
+	if err!=nil{
+		return err
+	}
+	paytoken :=resultPayTokenMap["token"].(string)
+
+	//支付预付款
+	params = map[string]interface{}{
+		"pay_token": paytoken,
+		"open_id": order.OpenId,
+		"code": order.Code,
+	}
+	_,err = RequestPayApi("/pay/payimprest",params)
+	if err!=nil{
+		return err
+	}
+
+	err =order.UpdateWithStatus(comm.ORDER_STATUS_PAY_SUCCESS,orderNo)
+	if err!=nil{
+		log.Error("订单号:",orderNo,"状态更新为支付成功的时候失败!")
+		return errors.New("订单更新错误!")
+	}
+
+	return nil
 }
 
 

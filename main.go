@@ -74,12 +74,22 @@ func main() {
 		{
 			category.GET("/:category_id/products",api.ProductListWithCategory)
 		}
+
+		//商品
+		products :=v1.Group("/products")
+		{
+			products.POST("/:merchant_id",api.ProductAdd)
+		}
 		//商品
 		product :=v1.Group("/product")
 		{
-			product.POST("/:merchant_id",api.ProductAdd)
+
 			product.GET("/:prod_id/imgs",api.ProdImgsWithProdId)
 			product.GET("/:prod_id/detail",api.ProdDetailWithProdId)
+			//通过属性生成sku (特殊接口)
+			product.POST("/:prod_id/sku",api.ProductAndAttrAdd)
+			//通过属性key查询商品属性值
+			product.GET("/:prod_id/attr/:attr_key",api.ProductAttrValues)
 
 		}
 
@@ -100,8 +110,12 @@ func main() {
 		//订单
 		order := v1.Group("/order")
 		{
+			//添加订单
 			order.POST("/",api.OrderAdd)
+			//订单预支付
 			order.POST("/:order_no/prepay",api.OrderPrePay)
+			//订单支付
+			order.POST("/:order_no/pay",api.OrderPayForAccount)
 			order.GET("/detail/:order_no",api.OrderDetailWithNo)
 			order.GET("/status/:status",api.OrderWithUserAndStatus)
 			order.POST("/:order_no/event",api.OrderEventPost)

@@ -94,6 +94,7 @@ CREATE TABLE IF NOT EXISTS product(
   is_recom int COMMENT '是否推荐 1.推荐 0.不推荐',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
+  flag VARCHAR(255) COMMENT '标记',
   json VARCHAR(1000) COMMENT '附加字段'
 
 ) CHARACTER SET utf8mb4;
@@ -108,14 +109,40 @@ CREATE TABLE IF NOT EXISTS prod_imgs(
   json VARCHAR(1000) COMMENT '附加字段'
 ) CHARACTER SET utf8mb4;
 
-
---  商品规格
-CREATE TABLE IF NOT EXISTS prod_spec(
-
+--  商品属性key
+CREATE TABLE IF NOT EXISTS prod_attr_key(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   prod_id BIGINT COMMENT '商品ID',
+  attr_key VARCHAR(255) COMMENT '属性唯一key',
+  attr_name VARCHAR(255) COMMENT '属性名',
+  status int COMMENT '1.正常 0.关闭',
+  flag VARCHAR(100) COMMENT '标记',
+  json VARCHAR(1000) COMMENT '附加字段'
+
+) CHARACTER SET utf8mb4;
+
+-- 商品属性值
+CREATE TABLE IF NOT EXISTS prod_attr_val(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  prod_id BIGINT COMMENT '商品ID',
+  attr_key VARCHAR(255) UNIQUE key COMMENT '属性key',
+  attr_value VARCHAR(255) COMMENT '属性值',
+  flag VARCHAR(100) COMMENT '标记',
+  json VARCHAR(1000) COMMENT '附加字段'
+
+) CHARACTER SET utf8mb4;
+
+--  商品sku
+CREATE TABLE IF NOT EXISTS prod_sku(
+
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  sku_no VARCHAR(255) COMMENT '唯一编号',
+  prod_id BIGINT COMMENT '商品ID',
   app_id VARCHAR(255) COMMENT 'APPID',
-  price_move NUMERIC(14,2) COMMENT '价格波动',
+  price NUMERIC(14,2) COMMENT '原价',
+  dis_price NUMERIC(14,2) COMMENT '折扣价格',
+  attr_symbol_path VARCHAR(255) COMMENT '属性组合出的规格路径',
+  stock int COMMENT '库存量',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
   json VARCHAR(1000) COMMENT '附加字段'
@@ -137,6 +164,7 @@ CREATE TABLE IF NOT EXISTS prod_category (
 CREATE TABLE IF NOT EXISTS `order` (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   no VARCHAR(255)  COMMENT '订单编号',
+  code VARCHAR(255) COMMENT '预付款编号',
   payapi_no VARCHAR(255) COMMENT '支付中心的订单号',
   open_id VARCHAR(255) COMMENT '用户ID',
   app_id VARCHAR(255) COMMENT 'APPID',
@@ -158,6 +186,7 @@ CREATE TABLE IF NOT EXISTS order_item (
   open_id VARCHAR(255) COMMENT '用户ID',
   m_open_id VARCHAR(255) COMMENT '商家ID',
   prod_id BIGINT COMMENT '商品ID',
+  sku_no BIGINT COMMENT '商品SKU编号',
   num int COMMENT '商品数量',
   offer_unit_price NUMERIC(14,2) COMMENT '单价报价',
   buy_unit_price NUMERIC(14,2) COMMENT '购买单价',

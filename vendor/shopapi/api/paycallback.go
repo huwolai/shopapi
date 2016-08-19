@@ -68,5 +68,7 @@ func CallbackForPayapi(c *gin.Context)  {
 			log.Debug("预付款领取成功")
 			util.ResponseSuccess(c.Writer)
 		}
+	}else if params.TradeType == comm.Trade_Type_Buy { //购买交易
+		log.Debug("购买交易")
 	}
 }

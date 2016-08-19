@@ -7,6 +7,10 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/config"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
+	"encoding/json"
+	"gitlab.qiyunxin.com/tangtao/utils/network"
+	"net/http"
+	"errors"
 )
 
 func NewInOrderNo() string  {
@@ -41,4 +45,38 @@ func GetPayAuthHeader(openId string) ( map[string]string) {
 		"app_id":appId,
 	}
 	return header
+}
+
+func RequestPayApi(path string,params map[string]interface{}) (map[string]interface{},error) {
+	//获取接口签名信息
+	noncestr,timestamp,appid,basesign,sign  :=GetPayapiSign(params)
+	log.Info(fmt.Sprintf("%s.%s",basesign,sign))
+	//header参数
+	headers := map[string]string{
+		"app_id": appid,
+		"sign": fmt.Sprintf("%s.%s",basesign,sign),
+		"noncestr": noncestr,
+		"timestamp": timestamp,
+	}
+	paramData,_:= json.Marshal(params);
+
+	response,err := network.Post(config.GetValue("payapi_url").ToString()+path,paramData,headers)
+	if err!=nil{
+		return nil,err
+	}
+
+	if response.StatusCode==http.StatusOK {
+		var resultMap map[string]interface{}
+		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
+
+
+		return resultMap,nil
+	}else if response.StatusCode==http.StatusBadRequest {
+		var resultMap map[string]interface{}
+		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
+
+		return nil,errors.New(resultMap["err_msg"].(string))
+	}else{
+		return nil,errors.New("请求API失败!")
+	}
 }

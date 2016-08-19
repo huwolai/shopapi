@@ -11,6 +11,7 @@ import (
 	"strings"
 	"strconv"
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
+	"gitlab.qiyunxin.com/tangtao/utils/security"
 )
 
 type OrderDto struct  {
@@ -155,12 +156,25 @@ func OrderPrePay(c *gin.Context)  {
 //账户余额付款
 func OrderPayForAccount(c *gin.Context)  {
 	//获取用户openid
-	//openId,err :=CheckUserAuth(c)
-	//if err!=nil{
-	//	log.Error(err)
-	//	util.ResponseError400(c.Writer,err.Error())
-	//	return
-	//}
+	openId,err :=CheckUserAuth(c)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	orderNo := c.Param("order_no")
+	if orderNo =="" {
+		util.ResponseError400(c.Writer,"订单号不能为空!")
+		return
+	}
+
+	appId :=security.GetAppId2(c.Request)
+	err =service.OrderPayForAccount(openId,orderNo,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	util.ResponseSuccess(c.Writer)
 }
 
 

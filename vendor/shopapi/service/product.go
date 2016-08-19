@@ -5,7 +5,20 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/db"
 	"shopapi/comm"
 	"github.com/gocraft/dbr"
+	"errors"
+	"strconv"
+	"gitlab.qiyunxin.com/tangtao/utils/util"
 )
+
+type ProdAndAttrDto struct  {
+	AttrKey string `json:"attr_key"`
+	AttrValue string `json:"attr_value"`
+	AppId string `json:"app_id"`
+	ProdId int64 `json:"prod_id"`
+	SkuNo string `json:"sku_no"`
+	Flag string `json:"flag"`
+	Json string `json:"json"`
+}
 
 func ProdDetailWithProdId(prodId int64,appId string) (*dao.Product,error)  {
 
@@ -94,6 +107,89 @@ func ProductListWithCategory(appId string,categoryId int64) ([]*dao.ProductDetai
 	}
 
 	return prodList,nil
+}
+
+//查询商品指定key的属性值
+func ProductAttrValues(vsearch string,attrKey string,prodId int64) ([]*dao.ProdAttrVal,error)  {
+	prodAttrVal := dao.NewProdAttrVal()
+	prodAttrVals,err :=prodAttrVal.WithAttrKeyStock(vsearch,attrKey,prodId)
+
+	return prodAttrVals,err
+}
+
+func ProductAndAttrAdd(dto *ProdAndAttrDto)  (*ProdAndAttrDto,error) {
+
+	product :=dao.NewProduct()
+	product,err :=product.ProductWithId(dto.ProdId,dto.AppId)
+	if err!=nil{
+
+		return nil,err
+	}
+	if product==nil  {
+		return nil,errors.New("没有找到此商户发布的产品!")
+	}
+
+	prodAttrVal := dao.NewProdAttrVal()
+	prodAttrVal,err =prodAttrVal.WithProdValue(dto.AttrValue,product.Id)
+	if err!=nil{
+		return nil,err
+	}
+
+	if prodAttrVal!=nil{
+		prodSku :=dao.NewProdSku()
+		prodSku,err =prodSku.WithProdIdAndSymbolPath(strconv.Itoa(int(prodAttrVal.Id)),product.Id)
+		if err!=nil{
+			return nil,err
+		}
+		if prodSku!=nil{
+			if prodSku.Stock==0{
+				return nil,errors.New("此商品已无库存!")
+			}else{
+				dto.SkuNo = prodSku.SkuNo
+				return dto,nil
+			}
+		}
+	}
+
+	tx,_ := db.NewSession().Begin()
+	defer func() {
+		if err :=recover();err!=nil{
+			tx.Rollback()
+		}
+	}()
+	//生成商品属性
+	prodAttrVal = dao.NewProdAttrVal()
+	prodAttrVal.AttrValue = dto.AttrValue
+	prodAttrVal.AttrKey = dto.AttrKey
+	prodAttrVal.Flag = dto.Flag
+	prodAttrVal.ProdId = product.Id
+	prodAttrVal.Json = dto.Json
+
+	lastId,err :=prodAttrVal.InsertTx(tx)
+	if err!=nil{
+		tx.Rollback()
+		return nil,err
+	}
+	prodAttrVal.Id=lastId
+
+	//添加商品sku
+	prodSku :=dao.NewProdSku()
+	prodSku.ProdId = product.Id
+	prodSku.AppId = dto.AppId
+	prodSku.AttrSymbolPath = strconv.Itoa(int(product.Id))
+	prodSku.DisPrice = product.DisPrice
+	prodSku.Price = product.Price
+	prodSku.Stock=1
+	prodSku.SkuNo = util.GenerUUId()
+	err =prodSku.InsertTx(tx)
+	if err!=nil{
+		tx.Rollback()
+		return nil,err
+	}
+
+	dto.SkuNo = prodSku.SkuNo
+
+	return dto,nil
 }
 
 //产品分类添加

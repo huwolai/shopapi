@@ -8,6 +8,7 @@ import (
 type Order struct  {
 	Id int64
 	No string
+	Code  string
 	PayapiNo string
 	OpenId string
 	AppId string
@@ -140,8 +141,15 @@ func fillOrderItemDetail(orders []*OrderDetail)  error {
 	return nil
 }
 
-func (self *Order) OrderPayapiUpdateWithNo(payapiNo string,status int,no string,appId string) error  {
+func (self *Order) OrderPayapiUpdateWithNoAndCode(payapiNo string,code string,status int,no string,appId string) error  {
 	sess := db.NewSession()
-	_,err :=sess.Update("order").Set("payapi_no",payapiNo).Set("status",status).Where("app_id=?",appId).Where("`no`=?",no).Exec()
+	_,err :=sess.Update("order").Set("payapi_no",payapiNo).Set("code",code).Set("status",status).Where("app_id=?",appId).Where("`no`=?",no).Exec()
+	return err
+}
+
+func (self *Order) UpdateWithStatus(status int,orderNo string) error {
+
+	_,err :=db.NewSession().Update("order").Set("status",status).Where("no=?",orderNo).Exec()
+
 	return err
 }

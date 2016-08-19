@@ -179,6 +179,8 @@ func LoginForSMS(mobile string,code string,appId string) (map[string]interface{}
 
 }
 
+
+
 //绑定支付
 func payBind(openId string,password string) error  {
 	header := GetPayAuthHeader(openId)

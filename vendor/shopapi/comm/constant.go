@@ -39,3 +39,17 @@ const  (
 	//预付款
 	Trade_Type_Imprest =3
 )
+
+const (
+	//支付宝支付
+	Pay_Type_Alipay = 1
+	//微信支付
+	Pay_Type_WX = 2
+	//现金支付
+	Pay_Type_Cash = 3
+	//账户余额支付
+	Pay_Type_Account =4
+)
+
+//商户默认商品标记
+const MERCHANT_DEFAULT_PRODUCT_FLAG  = "merchant_default"
