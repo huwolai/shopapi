@@ -9,6 +9,7 @@ import (
 	"shopapi/dao"
 	"strconv"
 	"gitlab.qiyunxin.com/tangtao/utils/security"
+	"strings"
 )
 
 
@@ -199,6 +200,52 @@ func MerchatNear(c *gin.Context)  {
 
 	c.JSON(http.StatusOK,mDetailDtos)
 }
+
+func MerchantProds(c *gin.Context)  {
+	_,err := security.CheckUserAuth(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,err.Error())
+		return
+	}
+
+	merchantId := c.Param("merchant_id")
+	imerchantId,err := strconv.ParseInt(merchantId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商户ID格式有误!")
+		return
+	}
+
+	appId := security.GetAppId2(c.Request)
+	flags := c.Query("flags")
+	noflags := c.Query("noflags")
+	var flagsArray []string
+	if flags != "" {
+		flagsArray = strings.Split(flags,",")
+	}
+	var noflagsArray []string
+	if noflags!="" {
+		noflagsArray = strings.Split(noflags,",")
+	}
+
+	prodList,err:=service.MerchantProds(imerchantId,appId,flagsArray,noflagsArray)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	prodListDtos :=make([]*ProductDetailDto,0)
+	if prodList!=nil {
+
+		for _,prodDetail :=range prodList {
+			prodListDtos = append(prodListDtos,productDetailToDto(prodDetail))
+		}
+	}
+
+	c.JSON(http.StatusOK,prodListDtos)
+}
+
+
 
 //根据图片标记查询商户图片
 func MerchantImgWithFlag(c *gin.Context)  {

@@ -92,13 +92,20 @@ func main() {
 			product.GET("/:prod_id/attr/:attr_key",api.ProductAttrValues)
 
 		}
+		merchants :=v1.Group("/merchants")
+		{
+			//附近商户
+			merchants.GET("/nearby",api.MerchatNear)
+			//商户图片
+			merchants.GET("/user/:open_id/imgs",api.MerchantImgWithFlag)
+		}
 
 		merchant :=v1.Group("/merchant")
 		{
-			//附近商户
-			merchant.GET("/nearby",api.MerchatNear)
 
-			merchant.GET("/imgs/:open_id/",api.MerchantImgWithFlag)
+			//商户商品
+			merchant.GET("/:merchant_id/prods",api.MerchantProds)
+
 		}
 
 		//推荐

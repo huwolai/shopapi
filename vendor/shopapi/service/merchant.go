@@ -35,6 +35,14 @@ type MerchantImgDLL struct  {
 	Json string
 }
 
+func MerchantProds(merchantId int64,appId string,flags []string,noflags []string)([]*dao.ProductDetail,error)  {
+
+	productDetail :=dao.NewProductDetail()
+	productDetailList,err :=productDetail.ProductListWithMerchant(merchantId,appId,flags,noflags)
+
+	return productDetailList,err
+}
+
 func MerchantUpdate(dll *MerchantDetailDLL) error  {
 	sesson := db.NewSession()
 	tx,_  :=sesson.Begin()

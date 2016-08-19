@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS prod_attr_key(
 CREATE TABLE IF NOT EXISTS prod_attr_val(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   prod_id BIGINT COMMENT '商品ID',
-  attr_key VARCHAR(255) UNIQUE key COMMENT '属性key',
+  attr_key VARCHAR(255)  COMMENT '属性key',
   attr_value VARCHAR(255) COMMENT '属性值',
   flag VARCHAR(100) COMMENT '标记',
   json VARCHAR(1000) COMMENT '附加字段'

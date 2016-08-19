@@ -94,6 +94,34 @@ func (self *ProductDetail) ProductListWithRecomm(appId string) ([]*ProductDetail
 	return prodList,err
 }
 
+func (self *ProductDetail) ProductListWithMerchant(merchantId int64,appId string,flags []string,noflags []string) ([]*ProductDetail,error)  {
+	session := db.NewSession()
+	var prodList []*ProductDetail
+	var builder *dbr.SelectBuilder
+	if flags!=nil&&len(flags)>0&&(noflags==nil||len(noflags)==0) {
+		builder = session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,prod_category pc,product pt where pt.status=1 and md.app_id=pc.app_id and md.prod_id=pc.prod_id and md.merchant_id=mt.id and pc.app_id=pt.app_id and pc.prod_id=pt.id and mt.id=? and pt.app_id=? and flag in ?",merchantId,appId,flags)
+	}
+
+	if noflags!=nil&&len(noflags)>0&&(flags==nil||len(flags)==0) {
+		builder = session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,prod_category pc,product pt where pt.status=1 and md.app_id=pc.app_id and md.prod_id=pc.prod_id and md.merchant_id=mt.id and pc.app_id=pt.app_id and pc.prod_id=pt.id and mt.id=? and pt.app_id=? and flag not in ?",merchantId,appId,noflags)
+	}
+
+	if noflags==nil&&len(noflags)==0&&flags==nil&&len(flags)==0 {
+		builder = session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,prod_category pc,product pt where pt.status=1 and md.app_id=pc.app_id and md.prod_id=pc.prod_id and md.merchant_id=mt.id and pc.app_id=pt.app_id and pc.prod_id=pt.id and mt.id=? and pt.app_id=?",merchantId,appId)
+	}
+
+	if noflags!=nil&&len(noflags)>0&&flags!=nil&&len(flags)>0 {
+		builder = session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,prod_category pc,product pt where pt.status=1 and md.app_id=pc.app_id and md.prod_id=pc.prod_id and md.merchant_id=mt.id and pc.app_id=pt.app_id and pc.prod_id=pt.id and mt.id=? and pt.app_id=? flag in ? and flag not in ?",merchantId,appId,flags,noflags)
+	}
+	_,err :=builder.LoadStructs(&prodList)
+	if err!=nil{
+		return nil,err
+	}
+	err = fillProdImgs(appId,prodList)
+
+	return prodList,err
+}
+
 func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64) ([]*ProductDetail,error)  {
 	session := db.NewSession()
 	var prodList []*ProductDetail
