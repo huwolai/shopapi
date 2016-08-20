@@ -182,7 +182,7 @@ func OrderPayForAccount(openId string,orderNo string,appId string) error  {
 	if err!=nil{
 		return err
 	}
-	paytoken :=resultPayTokenMap["token"].(string)
+	paytoken :=resultPayTokenMap["pay_token"].(string)
 
 	//支付预付款
 	params = map[string]interface{}{
