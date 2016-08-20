@@ -310,7 +310,6 @@ func ProductAndAttrAdd(c *gin.Context) {
 		return
 	}
 
-	param.AttrKey="time"
 	param.ProdId=iprodId
 
 	param.AppId = security.GetAppId2(c.Request)
