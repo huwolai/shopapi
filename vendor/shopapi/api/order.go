@@ -19,6 +19,7 @@ type OrderDto struct  {
 	Json string `json:"json"`
 	OpenId string `json:"open_id"`
 	AppId string `json:"app_id"`
+	AddressId int64 `json:"address_id"`
 	Title string `json:"title"`
 	OrderNo string `json:"order_no"`
 	Status int `json:"status"`
@@ -29,6 +30,8 @@ type OrderDetailDto struct  {
 	No string `json:"no"`
 	PayapiNo string `json:"payapi_no"`
 	OpenId string `json:"open_id"`
+	AddressId int64 `json:"address_id"`
+	Address string `json:"address"`
 	AppId string `json:"app_id"`
 	Title string `json:"title"`
 	ActPrice float64 `json:"act_price"`
@@ -290,6 +293,8 @@ func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
 	dto.OpenId = model.OpenId
 	dto.OmitMoney = model.OmitMoney
 	dto.PayapiNo = model.PayapiNo
+	dto.AddressId = model.AddressId
+	dto.Address = model.Address
 	dto.Price = model.Price
 	dto.Status = model.Status
 	dto.Title = model.Title
@@ -339,6 +344,7 @@ func orderDtoToModel(dto OrderDto) *service.OrderModel  {
 	model.Json  =dto.Json
 	model.Status = dto.Status
 	model.Title = dto.Title
+	model.AddressId = dto.AddressId
 
 
 	items := dto.Items

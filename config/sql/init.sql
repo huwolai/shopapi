@@ -168,6 +168,7 @@ CREATE TABLE IF NOT EXISTS `order` (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   no VARCHAR(255)  COMMENT '订单编号',
   code VARCHAR(255) COMMENT '预付款编号',
+  address_id VARCHAR(255) COMMENT '地址ID',
   payapi_no VARCHAR(255) COMMENT '支付中心的订单号',
   open_id VARCHAR(255) COMMENT '用户ID',
   app_id VARCHAR(255) COMMENT 'APPID',

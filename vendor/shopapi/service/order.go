@@ -13,6 +13,7 @@ import (
 type OrderModel struct  {
 	Items []OrderItemModel
 	Json string
+	AddressId int64
 	OpenId string
 	AppId string
 	Title string
@@ -214,6 +215,7 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	order.AppId = model.AppId
 	order.Title = model.Title
 	order.Status = model.Status
+	order.AddressId = model.AddressId
 	items := model.Items
 	if items==nil || len(items)<=0 {
 		return nil,errors.New("订单项不能为空!")

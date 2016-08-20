@@ -12,6 +12,7 @@ type Order struct  {
 	PayapiNo string
 	OpenId string
 	AppId string
+	AddressId int64
 	Title string
 	ActPrice float64
 	OmitMoney float64
@@ -26,6 +27,8 @@ type OrderDetail struct  {
 	PayapiNo string
 	OpenId string
 	AppId string
+	AddressId int64
+	Address string
 	Title string
 	ActPrice float64
 	OmitMoney float64
@@ -47,7 +50,7 @@ func NewOrderDetail() *OrderDetail  {
 }
 
 func (self *Order) InsertTx(tx *dbr.Tx) (int64,error)  {
-	result,err :=tx.InsertInto("order").Columns("no","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","status","json").Record(self).Exec()
+	result,err :=tx.InsertInto("order").Columns("no","address_id","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","status","json").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
@@ -89,7 +92,7 @@ func (self *OrderDetail) OrderDetailWithUser(openId string,status []int,appId st
 
 	sess := db.NewSession()
 	var orders []*OrderDetail
-	_,err :=sess.Select("*").From("`order`").Where("open_id=?",openId).Where("app_id=?",appId).Where("status in ?",status).OrderDir("create_time",false).LoadStructs(&orders)
+	_,err :=sess.SelectBySql("select od.*,ad.address from order od,address ad where od.address_id=ad.id and od.open_id=? and od.app_id=? and status in ?",openId,appId,status).OrderDir("create_time",false).LoadStructs(&orders)
 	if err!=nil{
 
 		return nil,err
