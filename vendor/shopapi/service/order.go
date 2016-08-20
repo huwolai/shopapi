@@ -231,7 +231,7 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 		}
 		totalActPrice+=prodSku.DisPrice*float64(item.Num)
 		totalPrice += prodSku.Price*float64(item.Num)
-
+		log.Error("-----prodSku=",prodSku.SkuNo)
 		err =orderItemSave(prodSku,item,order.No,tx)
 		if err!=nil{
 			return nil,err
