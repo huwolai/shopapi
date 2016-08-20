@@ -220,7 +220,7 @@ func ProductAndAttrAdd(dto *ProdAndAttrDto)  (*ProdAndAttrDto,error) {
 	prodSku :=dao.NewProdSku()
 	prodSku.ProdId = product.Id
 	prodSku.AppId = dto.AppId
-	prodSku.AttrSymbolPath = strconv.Itoa(int(product.Id))
+	prodSku.AttrSymbolPath = strconv.Itoa(int(prodAttrVal.Id))
 	prodSku.DisPrice = product.DisPrice
 	prodSku.Price = product.Price
 	prodSku.Stock=1
