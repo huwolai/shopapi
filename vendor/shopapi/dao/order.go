@@ -47,7 +47,7 @@ func NewOrderDetail() *OrderDetail  {
 }
 
 func (self *Order) InsertTx(tx *dbr.Tx) (int64,error)  {
-	result,err :=tx.InsertInto("order").Columns("no","payapi_no","open_id","app_id","title","act_price","omit_money","price","status","json").Record(self).Exec()
+	result,err :=tx.InsertInto("order").Columns("no","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","status","json").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
