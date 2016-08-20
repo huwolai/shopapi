@@ -30,6 +30,7 @@ type OrderItemModel struct  {
 
 type OrderPrePayModel struct  {
 	OrderNo string
+	AddressId int64
 	PayType int
 	AppId string
 	NotifyUrl string
@@ -37,6 +38,7 @@ type OrderPrePayModel struct  {
 
 type OrderPrePayDto struct  {
 	OrderNo string `json:"order_no"`
+	AddressId int64
 	//付款类型(1.支付宝 2.微信 3.现金支付 4.账户)
 	PayType int `json:"pay_type"`
 	AppId string `json:"app_id"`
@@ -273,6 +275,7 @@ func OrderPrePayDtoToModel(dto OrderPrePayDto ) *OrderPrePayModel  {
 	model.AppId = dto.AppId
 	model.OrderNo = dto.OrderNo
 	model.PayType = dto.PayType
+	model.AddressId = dto.AddressId
 	model.NotifyUrl = config.GetValue("notify_url").ToString()
 	return model
 }
