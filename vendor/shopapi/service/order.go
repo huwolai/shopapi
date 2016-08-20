@@ -226,6 +226,9 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 		if err!=nil{
 			return nil,err
 		}
+		if prodSku==nil{
+			return nil,errors.New("没有找到此商品")
+		}
 		totalActPrice+=prodSku.DisPrice*float64(item.Num)
 		totalPrice += prodSku.Price*float64(item.Num)
 

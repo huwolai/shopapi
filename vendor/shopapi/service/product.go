@@ -177,6 +177,8 @@ func ProductAndAttrAdd(dto *ProdAndAttrDto)  (*ProdAndAttrDto,error) {
 		return nil,err
 	}
 
+	log.Error("prodAttrVal----------",prodAttrVal)
+
 	if prodAttrVal!=nil{
 		prodSku :=dao.NewProdSku()
 		prodSku,err =prodSku.WithProdIdAndSymbolPath(strconv.Itoa(int(prodAttrVal.Id)),product.Id)
