@@ -108,7 +108,7 @@ func (self *Merchant) UpdateStatus(status int,merchantId int64) error  {
 
 func (self *Merchant) UpdateStatusTx(status int,merchantId int64,tx *dbr.Tx) error  {
 
-	_,err :=tx.Update("merchant").Set("status=?",status).Where("merchant_id=?",merchantId).Exec()
+	_,err :=tx.Update("merchant").Set("status=?",status).Where("id=?",merchantId).Exec()
 
 	return err
 
