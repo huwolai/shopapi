@@ -291,6 +291,7 @@ func MerchantAudit(c *gin.Context){
 	}
 	err =service.MerchantAudit(imerchantId,appId)
 	if err!=nil{
+		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}

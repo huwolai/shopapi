@@ -235,6 +235,7 @@ func MerchantAudit(merchantId int64,appId string) error  {
 
 	err =merchant.UpdateStatus(comm.MERCHANT_STATUS_NORMAL,merchant.Id)
 	if err!=nil{
+		log.Error("更新商户状态失败",err)
 		return err
 	}
 
@@ -242,6 +243,7 @@ func MerchantAudit(merchantId int64,appId string) error  {
 	//为商户添加默认产品
 	err =ProdDefaultAddForMerchant(merchant)
 	if err!=nil{
+		log.Error("为商户添加默认商品失败",err)
 		return err
 	}
 
