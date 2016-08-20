@@ -155,7 +155,7 @@ func OrderPayForAccount(openId string,orderNo string,appId string) error  {
 	if order==nil{
 		return  errors.New("没找到订单信息!")
 	}
-	if order.Status==comm.ORDER_STATUS_PAY_WAIT {
+	if order.Status!=comm.ORDER_STATUS_PAY_WAIT {
 		return  errors.New("订单不是待付款状态!")
 	}
 

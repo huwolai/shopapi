@@ -189,7 +189,7 @@ CREATE TABLE IF NOT EXISTS order_item (
   open_id VARCHAR(255) COMMENT '用户ID',
   m_open_id VARCHAR(255) COMMENT '商家ID',
   prod_id BIGINT COMMENT '商品ID',
-  sku_no BIGINT COMMENT '商品SKU编号',
+  sku_no VARCHAR(255) COMMENT '商品SKU编号',
   num int COMMENT '商品数量',
   offer_unit_price NUMERIC(14,2) COMMENT '单价报价',
   buy_unit_price NUMERIC(14,2) COMMENT '购买单价',
