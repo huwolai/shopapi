@@ -35,6 +35,7 @@ type OrderDetail struct  {
 	Price float64
 	Status int
 	Items []*OrderItemDetail
+	Flag string
 	Json string
 	BaseDModel
 }

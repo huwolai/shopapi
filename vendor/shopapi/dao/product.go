@@ -100,11 +100,11 @@ func (self *ProductDetail) ProductListWithMerchant(merchantId int64,appId string
 	var prodList []*ProductDetail
 	var builder *dbr.SelectBuilder
 	if flags!=nil&&len(flags)>0&&(noflags==nil||len(noflags)==0) {
-		builder = session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,product pt where md.prod_id=pt.id and pt.status=1  and md.merchant_id=mt.id  and mt.id=? and pt.app_id=? and flag in ?",merchantId,appId,flags)
+		builder = session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,product pt where md.prod_id=pt.id and pt.status=1  and md.merchant_id=mt.id  and mt.id=? and pt.app_id=? and pt.flag in ?",merchantId,appId,flags)
 	}
 
 	if noflags!=nil&&len(noflags)>0&&(flags==nil||len(flags)==0) {
-		builder = session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,product pt where md.prod_id=pt.id and pt.status=1  and md.merchant_id=mt.id  and mt.id=? and pt.app_id=? and flag not in ?",merchantId,appId,noflags)
+		builder = session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,product pt where md.prod_id=pt.id and pt.status=1  and md.merchant_id=mt.id  and mt.id=? and pt.app_id=? and pt.flag not in ?",merchantId,appId,noflags)
 	}
 
 	if noflags==nil&&len(noflags)==0&&flags==nil&&len(flags)==0 {
@@ -112,7 +112,7 @@ func (self *ProductDetail) ProductListWithMerchant(merchantId int64,appId string
 	}
 
 	if noflags!=nil&&len(noflags)>0&&flags!=nil&&len(flags)>0 {
-		builder = session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,product pt where md.prod_id=pt.id and pt.status=1  and md.merchant_id=mt.id  and mt.id=? and pt.app_id=? flag in ? and flag not in ?",merchantId,appId,flags,noflags)
+		builder = session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,product pt where md.prod_id=pt.id and pt.status=1  and md.merchant_id=mt.id  and mt.id=? and pt.app_id=? flag in ? and pt.flag not in ?",merchantId,appId,flags,noflags)
 	}
 	_,err :=builder.LoadStructs(&prodList)
 	if err!=nil{

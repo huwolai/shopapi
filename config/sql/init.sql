@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS address(
   latitude NUMERIC(14,10) COMMENT '维度',
   address VARCHAR(255) COMMENT '地址',
   weight int COMMENT '地址权重 1.权重越高 越优先',
+  flag VARCHAR(100) COMMENT '标记',
   json VARCHAR(1000) COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
@@ -22,6 +23,7 @@ CREATE TABLE IF NOT EXISTS account(
   money NUMERIC(12,2) COMMENT '账户金额',
   password VARCHAR(255) COMMENT '账户密码',
   status int COMMENT '状态 1.正常 0.锁定 2.等待开通支付',
+  flag VARCHAR(100) COMMENT '标记',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 );
@@ -40,6 +42,7 @@ CREATE TABLE IF NOT EXISTS merchant(
   cover_distance INT COMMENT '覆盖距离 单位米',
   weight int COMMENT '商户权重',
   status INT COMMENT '商户状态 1.正常 0.关闭',
+  flag VARCHAR(255) COMMENT '商户标记',
   json VARCHAR(1000) COMMENT '附加数据',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
@@ -66,6 +69,7 @@ CREATE TABLE IF NOT EXISTS merchant_prod(
   app_id VARCHAR(255) COMMENT 'APPID',
   merchant_id BIGINT COMMENT '商户ID',
   prod_id BIGINT COMMENT '产品ID',
+  flag  VARCHAR(255) COMMENT '标记',
   json VARCHAR(1000) COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
@@ -148,6 +152,7 @@ CREATE TABLE IF NOT EXISTS prod_sku(
   stock int COMMENT '库存量',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
+  flag VARCHAR(100) COMMENT '标记',
   json VARCHAR(1000) COMMENT '附加字段'
 
 ) CHARACTER SET utf8mb4;
@@ -159,6 +164,7 @@ CREATE TABLE IF NOT EXISTS prod_category (
   app_id VARCHAR(255) COMMENT 'APPID',
   prod_id BIGINT COMMENT '商品ID',
   json VARCHAR(1000) COMMENT '附加字段',
+  flag VARCHAR(100) COMMENT '标记',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
@@ -178,6 +184,7 @@ CREATE TABLE IF NOT EXISTS `order` (
   price NUMERIC(14,2) COMMENT '订单应付金额',
   status int COMMENT '订单状态 0:订单被取消 1:已下单待付款 2:已付款',
   json VARCHAR(1000) COMMENT '附加字段',
+  flag VARCHAR(100) COMMENT '标记',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
@@ -196,6 +203,7 @@ CREATE TABLE IF NOT EXISTS order_item (
   buy_unit_price NUMERIC(14,2) COMMENT '购买单价',
   offer_total_price NUMERIC(14,2) COMMENT '总价格报价',
   buy_total_price NUMERIC(14,2) COMMENT '购买总金额',
+  flag VARCHAR(100) COMMENT '标记',
   json VARCHAR(1000) COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
@@ -210,6 +218,7 @@ CREATE TABLE IF NOT EXISTS order_address (
   name VARCHAR(255) COMMENT '姓名',
   mobile VARCHAR(255) COMMENT '手机号',
   address VARCHAR(255) COMMENT '送货地址',
+  flag VARCHAR(100) COMMENT '标记',
   json VARCHAR(1000) COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
@@ -225,6 +234,7 @@ CREATE TABLE IF NOT EXISTS order_event (
   event_type INT COMMENT '事件类型',
   event_name VARCHAR(100) COMMENT '事件名',
   event_desc VARCHAR(255) COMMENT '事件描述',
+  flag VARCHAR(100) COMMENT '标记',
   json VARCHAR(1000) COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
