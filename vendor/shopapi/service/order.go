@@ -167,7 +167,7 @@ func OrderPayForAccount(openId string,orderNo string,appId string) error  {
 	if err!=nil {
 		return err
 	}
-	if account!=nil{
+	if account==nil{
 		return errors.New("没有找到用户的账户信息!请重新登录再试")
 	}
 
