@@ -293,7 +293,9 @@ func ProductAndAttrAdd(c *gin.Context) {
 		return
 	}
 
-	if param.ProdId==0 {
+	prodId :=c.Param("prod_id")
+
+	if prodId=="" {
 		util.ResponseError400(c.Writer,"商品ID不能为空!")
 		return
 	}
@@ -302,7 +304,14 @@ func ProductAndAttrAdd(c *gin.Context) {
 		return
 	}
 
+	iprodId,err := strconv.ParseInt(prodId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商品ID格式有误!")
+		return
+	}
+
 	param.AttrKey="time"
+	param.ProdId=iprodId
 
 	param.AppId = security.GetAppId2(c.Request)
 
@@ -314,6 +323,8 @@ func ProductAndAttrAdd(c *gin.Context) {
 
 	c.JSON(http.StatusOK,dto)
 }
+
+
 
 func ProductAttrValues(c *gin.Context)  {
 	_,err := security.CheckUserAuth(c.Request)

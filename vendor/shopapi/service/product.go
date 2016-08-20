@@ -8,6 +8,7 @@ import (
 	"errors"
 	"strconv"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 type ProdAndAttrDto struct  {
@@ -226,6 +227,12 @@ func ProductAndAttrAdd(dto *ProdAndAttrDto)  (*ProdAndAttrDto,error) {
 	if err!=nil{
 		tx.Rollback()
 		return nil,err
+	}
+
+	err =tx.Commit()
+	if err!=nil {
+		log.Error(err)
+		return nil,errors.New("提交失败!")
 	}
 
 	dto.SkuNo = prodSku.SkuNo

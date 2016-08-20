@@ -206,6 +206,8 @@ CREATE TABLE IF NOT EXISTS order_address (
   order_no VARCHAR(255) COMMENT '订单号',
   app_id VARCHAR(255) COMMENT 'APPID',
   open_id VARCHAR(255) COMMENT '用户ID',
+  name VARCHAR(255) COMMENT '姓名',
+  mobile VARCHAR(255) COMMENT '手机号',
   address VARCHAR(255) COMMENT '送货地址',
   json VARCHAR(1000) COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

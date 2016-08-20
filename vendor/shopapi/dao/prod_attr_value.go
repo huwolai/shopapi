@@ -53,3 +53,10 @@ func (self *ProdAttrVal) WithProdValue(value string,prodId int64) (*ProdAttrVal,
 
 	return model,err
 }
+
+func (self *ProdAttrVal) WithProdId(prodId int64) ([]*ProdAttrVal,error)  {
+	var model []*ProdAttrVal
+	_,err :=db.NewSession().Select("*").From("prod_attr_val").Where("prod_id=?",prodId).LoadStructs(&model)
+
+	return model,err
+}

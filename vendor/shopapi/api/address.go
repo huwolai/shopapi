@@ -24,6 +24,10 @@ func AddressWithRecom(c *gin.Context) {
 		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
 		return
 	}
+	if address==nil {
+		util.ResponseError400(c.Writer,"没有地址!")
+		return
+	}
 
 	c.JSON(http.StatusOK,service.AddressToDto(address))
 }

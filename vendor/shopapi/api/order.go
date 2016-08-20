@@ -116,7 +116,6 @@ func OrderAdd(c *gin.Context)  {
 	}
 	orderDto.OrderNo = order.No
 	c.JSON(http.StatusOK,orderDto)
-
 }
 
 
@@ -220,9 +219,7 @@ func OrderWithUserAndStatus(c *gin.Context)  {
 		util.ResponseError(c.Writer,http.StatusBadRequest,"请输入订单状态!")
 		return
 	}
-
 	statusArray := strings.Split(status,",")
-
 	istatusArray :=make([]int,0)
 	if len(statusArray)>0 {
 		for _,statusStr :=range statusArray {
@@ -231,7 +228,6 @@ func OrderWithUserAndStatus(c *gin.Context)  {
 				util.ResponseError(c.Writer,http.StatusBadRequest,"状态不是数字!")
 				return
 			}
-
 			istatusArray = append(istatusArray,stat)
 		}
 	}
@@ -253,20 +249,16 @@ func OrderWithUserAndStatus(c *gin.Context)  {
 }
 
 func OrderDetailWithNo(c *gin.Context)  {
-	appId,err :=CheckAppAuth(c)
+
+	//获取用户openid
+	_,err :=CheckUserAuth(c)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
 		return
 	}
-	//获取用户openid
-	_,err =CheckUserAuth(c)
-	if err!=nil{
-		log.Error(err)
-		util.ResponseError400(c.Writer,err.Error())
-		return
-	}
 
+	appId := security.GetAppId2(c.Request)
 	orderNo := c.Param("order_no")
 	log.Debug(orderNo,appId)
 	orderDetail,err := service.OrderDetailWithNo(orderNo,appId)

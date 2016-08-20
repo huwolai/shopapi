@@ -51,6 +51,7 @@ type ProductDetail struct {
 	ProdImgs []*ProdImgsDetail
 }
 
+
 func NewProductDetail() *ProductDetail {
 
 	return &ProductDetail{}
