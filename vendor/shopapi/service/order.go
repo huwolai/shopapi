@@ -222,7 +222,7 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	totalPrice :=0.0
 	for _,item :=range items  {
 		prodSku := dao.NewProdSku()
-		prodSku,err :=prodSku.WithSkuNo(prodSku.SkuNo)
+		prodSku,err :=prodSku.WithSkuNo(item.SkuNo)
 		if err!=nil{
 			return nil,err
 		}
