@@ -377,11 +377,7 @@ func ProductAttrValues(c *gin.Context)  {
 }
 
 func CategoryWithFlags(c *gin.Context)  {
-	_,err := security.CheckUserAuth(c.Request)
-	if err!=nil {
-		util.ResponseError(c.Writer,http.StatusUnauthorized,"校验失败!")
-		return
-	}
+	
 	flags := c.Param("flags")
 	noflags := c.Param("noflags")
 
