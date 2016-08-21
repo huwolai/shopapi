@@ -410,6 +410,7 @@ func CategoryWithFlags(c *gin.Context)  {
 func categoryToDto(model *dao.Category) *CategoryDto  {
 
 	dto :=&CategoryDto{}
+	dto.Id = model.Id
 	dto.Flag = model.Flag
 	dto.AppId = model.AppId
 	dto.Description = model.Description
