@@ -276,8 +276,8 @@ func  MerchantNear(longitude float64,latitude float64,appId string) ([]*dao.Merc
 	return mDetailList,err
 }
 
-func MerchantImgWithMerchantId(merchantId int64,flags []string,appId string) ([]*dao.MerchantImgs,error) {
-	 merchantimgs :=dao.NewMerchantImgs()
+func MerchantImgWithMerchantId(merchantId int64,flags []string,appId string) ([]*dao.MerchantImgs,error)  {
+	merchantimgs :=dao.NewMerchantImgs()
 
 	return merchantimgs.MerchantImgsWithMerchantId(merchantId,flags)
 }

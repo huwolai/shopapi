@@ -13,7 +13,7 @@ type Address struct  {
 	Latitude float64
 	Name string
 	Mobile string
-	Address string
+	Address *string
 	Weight int
 	Json string
 }

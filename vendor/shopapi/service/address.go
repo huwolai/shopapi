@@ -11,7 +11,7 @@ type AddressDto struct  {
 	OpenId string `json:"open_id"`
 	Longitude float64 `json:"longitude"`
 	Latitude float64 `json:"latitude"`
-	Address string `json:"address"`
+	Address *string `json:"address"`
 	Weight int `json:"weight"`
 	Json string `json:"json"`
 	AppId string `json:"app_id"`

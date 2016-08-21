@@ -41,7 +41,7 @@ func (self *MerchantImgs) MerchantImgsWithId(id int64) (*MerchantImgs,error)  {
 	var merchantImgs *MerchantImgs
 	_,err :=db.NewSession().Select("*").From("merchant_imgs").Where("id=?",id).LoadStructs(&merchantImgs)
 
-	return merchantImgs,err
+	return  merchantImgs,err
 }
 
 func (self *MerchantImgs) MerchantImgsWithMerchantId(merchantId int64,flags []string) ([]*MerchantImgs,error)  {
