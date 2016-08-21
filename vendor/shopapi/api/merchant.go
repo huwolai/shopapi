@@ -152,6 +152,29 @@ func MerchantAdd(c *gin.Context)  {
 
 }
 
+func MerchantWithId(c *gin.Context)  {
+	appId :=security.GetAppId2(c.Request)
+	id := c.Param("merchant_id")
+	iid,err := strconv.ParseInt(id,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"ID有误!")
+		return
+	}
+
+	merchant,err := service.MerchantWithId(iid,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	if merchant!=nil{
+		c.JSON(http.StatusOK,merchantToDto(merchant))
+		return
+	}
+
+	util.ResponseError400(c.Writer,"没有找到信息!")
+}
+
 func MerchantWithOpenId(c *gin.Context)  {
 	_,err := security.CheckUserAuth(c.Request)
 	if err!=nil{
@@ -341,6 +364,7 @@ func merchantDetailParamToDll(param MerchantDetailParam)  *service.MerchantDetai
 	if param.Imgs!=nil {
 		imgdlls := make([]service.MerchantImgDLL,0)
 		for _,imgDto :=range param.Imgs  {
+			imgDto.AppId = dll.AppId
 			imgdlls = append(imgdlls,merchantImgToDLL(imgDto))
 		}
 

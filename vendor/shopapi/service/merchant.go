@@ -295,3 +295,10 @@ func MerchantWithOpenId(openId,appId string) (*dao.Merchant,error)   {
 	return merchant,err
 }
 
+func MerchantWithId(id int64,appId string) (*dao.Merchant,error)  {
+	merchant := dao.NewMerchant()
+	merchant,err := merchant.MerchantWithId(id)
+
+	return merchant,err
+}
+
