@@ -390,7 +390,7 @@ func CategoryWithFlags(c *gin.Context)  {
 		flagsArray =strings.Split(flags,",")
 	}
 	var  noflagsArray []string
-	if noflagsArray!="" {
+	if noflags!="" {
 		noflagsArray =strings.Split(noflags,",")
 	}
 	appId :=security.GetAppId2(c.Request)
