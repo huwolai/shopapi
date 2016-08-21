@@ -94,7 +94,7 @@ func (self *OrderDetail) OrderDetailWithUser(openId string,status []int,appId st
 
 	sess := db.NewSession()
 	var orders []*OrderDetail
-	_,err :=sess.SelectBySql("select od.*,ad.address from `order` od,address ad where od.address_id=ad.id and od.open_id=? and od.app_id=? and status in ?",openId,appId,status).OrderDir("create_time",false).LoadStructs(&orders)
+	_,err :=sess.SelectBySql("select od.*,ad.address from `order` od,left join address ad on od.address_id=ad.id where  od.open_id=? and od.app_id=? and status in ?",openId,appId,status).OrderDir("create_time",false).LoadStructs(&orders)
 	if err!=nil{
 
 		return nil,err
