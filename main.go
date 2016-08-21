@@ -70,6 +70,11 @@ func main() {
 			user.POST("/:open_id/account",api.AccountDetail)
 		}
 		//分类
+		categories := v1.Group("/categories")
+		{
+			categories.GET("/",api.CategoryWithFlags)
+		}
+		//分类
 		category := v1.Group("/category")
 		{
 			category.GET("/:category_id/products",api.ProductListWithCategory)

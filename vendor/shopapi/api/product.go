@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"shopapi/dao"
 	"gitlab.qiyunxin.com/tangtao/utils/security"
+	"strings"
 )
 
 type ProductParam struct  {
@@ -111,6 +112,17 @@ type ProdAttrValDto struct  {
 	AttrValue string `json:"attr_value"`
 	Flag string `json:"flag"`
 	Json string `json:"json"`
+}
+
+type CategoryDto struct  {
+	Id int64 `json:"id"`
+	AppId string `json:"app_id"`
+	Title string `json:"title"`
+	Description string `json:"description"`
+	Icon string `json:"icon"`
+	Flag string `json:"flag"`
+	Json string `json:"json"`
+
 }
 
 /**
@@ -362,6 +374,54 @@ func ProductAttrValues(c *gin.Context)  {
 		}
 	}
 	c.JSON(http.StatusOK,prodAttrDtos)
+}
+
+func CategoryWithFlags(c *gin.Context)  {
+	_,err := security.CheckUserAuth(c.Request)
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"校验失败!")
+		return
+	}
+	flags := c.Param("flags")
+	noflags := c.Param("noflags")
+
+	var flagsArray []string
+	if flags!=""{
+		flagsArray =strings.Split(flags,",")
+	}
+	var  noflagsArray []string
+	if noflagsArray!="" {
+		noflagsArray =strings.Split(noflags,",")
+	}
+	appId :=security.GetAppId2(c.Request)
+	categories,err :=service.CategoryWithFlags(flagsArray,noflagsArray,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	dtos :=make([]*CategoryDto,0)
+	if categories!=nil {
+
+		for _,cateogory :=range categories {
+			dtos = append(dtos,categoryToDto(cateogory))
+		}
+	}
+	c.JSON(http.StatusOK,dtos)
+
+}
+
+func categoryToDto(model *dao.Category) *CategoryDto  {
+
+	dto :=&CategoryDto{}
+	dto.Flag = model.Flag
+	dto.AppId = model.AppId
+	dto.Description = model.Description
+	dto.Icon = model.Icon
+	dto.Title = model.Title
+	dto.Json = model.Json
+
+	return dto
 }
 
 func prodImgsDetailDLLToDto(dll *service.ProdImgsDetailDLL) *ProdImgsDetailDto{

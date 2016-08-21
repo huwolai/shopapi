@@ -17,6 +17,7 @@ type Order struct  {
 	ActPrice float64
 	OmitMoney float64
 	Price float64
+	Flag string
 	Status int
 	Json string
 }
@@ -51,7 +52,7 @@ func NewOrderDetail() *OrderDetail  {
 }
 
 func (self *Order) InsertTx(tx *dbr.Tx) (int64,error)  {
-	result,err :=tx.InsertInto("order").Columns("no","address_id","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","status","json").Record(self).Exec()
+	result,err :=tx.InsertInto("order").Columns("no","address_id","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","status","flag","json").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}

@@ -21,12 +21,35 @@ type ProdAndAttrDto struct  {
 	Json string `json:"json"`
 }
 
+type ProdAttrKeyDto struct  {
+	Id int64 `json:"id"`
+	//商品ID
+	ProdId int64 `json:"prod_id"`
+	//属性key
+	AttrKey string `json:"attr_key"`
+	//属性名
+	AttrName string `json:"attr_name"`
+	Flag string `json:"flag"`
+	Json string `json:"json"`
+}
+
+type ProdAttrValueDto struct  {
+	Id int64 `json:"id"`
+	ProdId int64 `json:"prod_id"`
+	AttrKey string `json:"attr_key"`
+	AttrValue string `json:"attr_value"`
+	Flag string `json:"flag"`
+	Json string  `json:"json"`
+}
+
+//商品详情
 func ProdDetailWithProdId(prodId int64,appId string) (*dao.Product,error)  {
 
 	product := dao.NewProduct()
 	return product.ProductWithId(prodId,appId)
 }
 
+//商品图片
 func  ProdImgsWithProdId(prodId int64,appId string) ([]*ProdImgsDetailDLL,error) {
 	prodImgDetail := dao.NewProdImgsDetail()
 	prodImgDetals,err := prodImgDetail.ProdImgsWithProdId(prodId,appId)
@@ -92,26 +115,14 @@ func ProdAdd(prodbll *ProdBLL) (*ProdBLL,error)  {
 	return prodbll,nil;
 }
 
-type ProdAttrKeyDto struct  {
-	Id int64 `json:"id"`
-	//商品ID
-	ProdId int64 `json:"prod_id"`
-	//属性key
-	AttrKey string `json:"attr_key"`
-	//属性名
-	AttrName string `json:"attr_name"`
-	Flag string `json:"flag"`
-	Json string `json:"json"`
+//商品分类
+func CategoryWithFlags(flags []string,noflags []string,appId string) ([]*dao.Category,error)   {
+
+	category :=dao.NewCategory()
+	categories,err := category.WithFlags(flags,noflags,appId)
+	return categories,err
 }
 
-type ProdAttrValueDto struct  {
-	Id int64 `json:"id"`
-	ProdId int64 `json:"prod_id"`
-	AttrKey string `json:"attr_key"`
-	AttrValue string `json:"attr_value"`
-	Flag string `json:"flag"`
-	Json string  `json:"json"`
-}
 
 //添加商品属性
 func ProdAttrKeyAdd(dto *ProdAttrKeyDto) (*ProdAttrKeyDto,error) {
@@ -319,6 +330,7 @@ func productBaseSave(prodbll *ProdBLL,tx *dbr.Tx) (int64,error)  {
 	prod.Price = prodbll.Price
 	prod.Status = comm.PRODUCT_STATUS_NORMAL
 	prod.Json = prodbll.Json
+	prod.Flag = prodbll.Flag
 	prodId,err := prod.InsertTx(tx)
 	if err!=nil{
 		tx.Rollback()
