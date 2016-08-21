@@ -108,7 +108,9 @@ func main() {
 		//商户
 		merchant :=v1.Group("/merchant")
 		{
-			//商户商品
+			//商户图片
+			merchant.GET("/:merchant_id/imgs",api.MerchantImgWithMerchantId)
+			//商户资料
 			merchant.GET("/:merchant_id",api.MerchantWithId)
 			//商户商品
 			merchant.GET("/:merchant_id/prods",api.MerchantProds)

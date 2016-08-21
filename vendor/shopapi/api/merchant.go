@@ -269,7 +269,34 @@ func MerchantProds(c *gin.Context)  {
 	c.JSON(http.StatusOK,prodListDtos)
 }
 
+func MerchantImgWithMerchantId(c *gin.Context)  {
+	flags :=c.Query("flags")
+	merchantId := c.Param("merchant_id")
+	imerchantId,err :=strconv.ParseInt(merchantId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商户ID有误!")
+		return
+	}
 
+	var flagsArray []string;
+	if flags!="" {
+		flagsArray = strings.Split(flags,",")
+	}
+	appId := security.GetAppId2(c.Request)
+
+	merchantImgs,err :=service.MerchantImgWithMerchantId(imerchantId,flagsArray,appId)
+	if err!=nil {
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	imgddtos := make([]*MerchantImgDto,0)
+	if merchantImgs!=nil {
+		for _,mImgsModel :=range merchantImgs{
+			imgddtos = append(imgddtos,merchantImgToDto(mImgsModel))
+		}
+	}
+	c.JSON(http.StatusOK,imgddtos)
+}
 
 //根据图片标记查询商户图片
 func MerchantImgWithFlag(c *gin.Context)  {

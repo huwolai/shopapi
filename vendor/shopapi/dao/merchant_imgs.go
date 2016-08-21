@@ -44,6 +44,18 @@ func (self *MerchantImgs) MerchantImgsWithId(id int64) (*MerchantImgs,error)  {
 	return merchantImgs,err
 }
 
+func (self *MerchantImgs) MerchantImgsWithMerchantId(merchantId int64,flags []string) ([]*MerchantImgs,error)  {
+	var merchantImgs []*MerchantImgs
+	builder :=db.NewSession().Select("*").From("merchant_imgs").Where("merchant_id=?",merchantId)
+	if flags!=nil&&len(flags)>0 {
+		builder = builder.Where("flag in ?",flags)
+	}
+
+	_,err :=builder.LoadStructs(&merchantImgs)
+
+	return merchantImgs,err
+}
+
 func (self *MerchantImgs) MerchantImgsWithFlag(flags []string,openId string,appId string) ([]*MerchantImgs,error)  {
 	var merchantImgs []*MerchantImgs
 	_,err := db.NewSession().Select("*").From("merchant_imgs").Where("flag in ?",flags).Where("open_id=?",openId).Where("app_id=?",appId).LoadStructs(&merchantImgs)
@@ -57,3 +69,4 @@ func (self *MerchantImgs) MerchantImgs(openId string,appId string) ([]*MerchantI
 
 	return merchantImgs,err
 }
+
