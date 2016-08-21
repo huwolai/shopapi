@@ -29,7 +29,7 @@ type OrderDetail struct  {
 	OpenId string
 	AppId string
 	AddressId int64
-	Address string
+	Address *string
 	Title string
 	ActPrice float64
 	OmitMoney float64
