@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS category(
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
 
-INSERT INTO category(app_id, title, description, flag) VALUES ('hwl','默认分类','默认分类描述','default');
+-- INSERT INTO category(app_id, title, description, flag,json) VALUES ('hwl','默认分类','默认分类描述','default','');
 
 -- 商品
 CREATE TABLE IF NOT EXISTS product(

@@ -377,9 +377,9 @@ func ProductAttrValues(c *gin.Context)  {
 }
 
 func CategoryWithFlags(c *gin.Context)  {
-	
-	flags := c.Param("flags")
-	noflags := c.Param("noflags")
+
+	flags := c.Query("flags")
+	noflags := c.Query("noflags")
 
 	var flagsArray []string
 	if flags!=""{
