@@ -2,16 +2,16 @@
 -- 地址信息
 CREATE TABLE IF NOT EXISTS address(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  app_id VARCHAR(255) COMMENT 'APPID',
-  open_id VARCHAR(100) COMMENT '用户ID',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
+  open_id VARCHAR(100) DEFAULT '' COMMENT '用户ID',
   longitude NUMERIC(14,10) COMMENT '经度',
   latitude NUMERIC(14,10) COMMENT '维度',
-  name VARCHAR(255) COMMENT '姓名',
-  mobile VARCHAR(255) COMMENT '手机号',
-  address VARCHAR(255) COMMENT '地址',
+  name VARCHAR(255) DEFAULT '' COMMENT '姓名',
+  mobile VARCHAR(255) DEFAULT '' COMMENT '手机号',
+  address VARCHAR(255) DEFAULT '' COMMENT '地址',
   weight int COMMENT '地址权重 1.权重越高 越优先',
-  flag VARCHAR(100) COMMENT '标记',
-  json VARCHAR(1000) COMMENT '附加字段',
+  flag VARCHAR(100) DEFAULT '' COMMENT '标记',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
   KEY open_id (open_id)
@@ -21,12 +21,12 @@ CREATE TABLE IF NOT EXISTS address(
 -- 账户信息
 CREATE TABLE IF NOT EXISTS account(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  app_id VARCHAR(255) COMMENT 'APPID',
-  open_id VARCHAR(255) COMMENT '用户ID',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
+  open_id VARCHAR(255) DEFAULT '' COMMENT '用户ID',
   money NUMERIC(12,2) COMMENT '账户金额',
-  password VARCHAR(255) COMMENT '账户密码',
+  password VARCHAR(255) DEFAULT '' COMMENT '账户密码',
   status int COMMENT '状态 1.正常 0.锁定 2.等待开通支付',
-  flag VARCHAR(100) COMMENT '标记',
+  flag VARCHAR(100) DEFAULT '' COMMENT '标记',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
   KEY open_id (open_id)
@@ -37,17 +37,17 @@ CREATE TABLE IF NOT EXISTS account(
 CREATE TABLE IF NOT EXISTS merchant(
 
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(255) COMMENT '商户名称',
-  app_id VARCHAR(255) COMMENT 'APPID',
-  open_id VARCHAR(255) COMMENT '商户open_id',
-  longitude NUMERIC(14,10) COMMENT '经度',
+  name VARCHAR(255) DEFAULT '' COMMENT '商户名称',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
+  open_id VARCHAR(255) DEFAULT '' COMMENT '商户open_id',
+  longitude NUMERIC(14,10)  COMMENT '经度',
   latitude NUMERIC(14,10) COMMENT '维度',
-  address VARCHAR(255) COMMENT '商户地址',
+  address VARCHAR(255) DEFAULT '' COMMENT '商户地址',
   cover_distance INT COMMENT '覆盖距离 单位米',
   weight int COMMENT '商户权重',
   status INT COMMENT '商户状态 1.正常 0.关闭',
-  flag VARCHAR(255) COMMENT '商户标记',
-  json VARCHAR(1000) COMMENT '附加数据',
+  flag VARCHAR(255) DEFAULT '' COMMENT '商户标记',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加数据',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 
@@ -56,12 +56,12 @@ CREATE TABLE IF NOT EXISTS merchant(
 -- 商户图片
 CREATE TABLE IF NOT EXISTS merchant_imgs(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  app_id VARCHAR(255) COMMENT 'APPID',
-  open_id VARCHAR(255) COMMENT 'open_id',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
+  open_id VARCHAR(255) DEFAULT '' COMMENT 'open_id',
   merchant_id BIGINT COMMENT '商户ID',
-  flag VARCHAR(100) COMMENT '图片标记',
-  url VARCHAR(400) COMMENT '图片URL',
-  json VARCHAR(1000) COMMENT '附加字段'
+  flag VARCHAR(100) DEFAULT '' COMMENT '图片标记',
+  url VARCHAR(400) DEFAULT '' COMMENT '图片URL',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加字段'
 ) CHARACTER SET utf8mb4;
 
 
@@ -70,11 +70,11 @@ CREATE TABLE IF NOT EXISTS merchant_imgs(
 -- 商户产品
 CREATE TABLE IF NOT EXISTS merchant_prod(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  app_id VARCHAR(255) COMMENT 'APPID',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
   merchant_id BIGINT COMMENT '商户ID',
   prod_id BIGINT COMMENT '产品ID',
-  flag  VARCHAR(255) COMMENT '标记',
-  json VARCHAR(1000) COMMENT '附加字段',
+  flag  VARCHAR(255 ) DEFAULT '' COMMENT '标记',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
@@ -82,12 +82,12 @@ CREATE TABLE IF NOT EXISTS merchant_prod(
 -- 类别
 CREATE TABLE IF NOT EXISTS category(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  app_id VARCHAR(255) COMMENT 'APPID',
-  title VARCHAR(255) COMMENT '标题',
-  description VARCHAR(255) COMMENT '描述',
-  icon VARCHAR(255) COMMENT '图标',
-  flag VARCHAR(255) COMMENT '标记',
-  json VARCHAR(1000) COMMENT '附加字段',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
+  title VARCHAR(255) DEFAULT '' COMMENT '标题',
+  description VARCHAR(255) DEFAULT '' COMMENT '描述',
+  icon VARCHAR(255) DEFAULT '' COMMENT '图标',
+  flag VARCHAR(255) DEFAULT '' COMMENT '标记',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
@@ -97,39 +97,39 @@ CREATE TABLE IF NOT EXISTS category(
 -- 商品
 CREATE TABLE IF NOT EXISTS product(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  app_id VARCHAR(255) COMMENT 'APPID',
-  title VARCHAR(255) COMMENT '标题',
-  description VARCHAR(1000) COMMENT '描述',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
+  title VARCHAR(255) DEFAULT '' COMMENT '标题',
+  description VARCHAR(1000) DEFAULT '' COMMENT '描述',
   price NUMERIC(14,2) COMMENT '原价',
   dis_price NUMERIC(14,2) COMMENT '折扣价格',
   status int COMMENT '商品状态',
   is_recom int COMMENT '是否推荐 1.推荐 0.不推荐',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
-  flag VARCHAR(255) COMMENT '标记',
-  json VARCHAR(1000) COMMENT '附加字段'
+  flag VARCHAR(255) DEFAULT '' COMMENT '标记',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加字段'
 
 ) CHARACTER SET utf8mb4;
 
 -- 商品图片
 CREATE TABLE IF NOT EXISTS prod_imgs(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  app_id VARCHAR(255) COMMENT 'APPID',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
   prod_id BIGINT COMMENT '产品ID',
-  flag VARCHAR(100) COMMENT '图片标记',
-  url VARCHAR(400) COMMENT '图片URL',
-  json VARCHAR(1000) COMMENT '附加字段'
+  flag VARCHAR(100) DEFAULT '' COMMENT '图片标记',
+  url VARCHAR(400) DEFAULT '' COMMENT '图片URL',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加字段'
 ) CHARACTER SET utf8mb4;
 
 --  商品属性key
 CREATE TABLE IF NOT EXISTS prod_attr_key(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   prod_id BIGINT COMMENT '商品ID',
-  attr_key VARCHAR(255) COMMENT '属性唯一key',
-  attr_name VARCHAR(255) COMMENT '属性名',
+  attr_key VARCHAR(255) DEFAULT '' COMMENT '属性唯一key',
+  attr_name VARCHAR(255) DEFAULT '' COMMENT '属性名',
   status int COMMENT '1.正常 0.关闭',
-  flag VARCHAR(100) COMMENT '标记',
-  json VARCHAR(1000) COMMENT '附加字段'
+  flag VARCHAR(100) DEFAULT '' COMMENT '标记',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加字段'
 
 ) CHARACTER SET utf8mb4;
 
@@ -137,10 +137,10 @@ CREATE TABLE IF NOT EXISTS prod_attr_key(
 CREATE TABLE IF NOT EXISTS prod_attr_val(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   prod_id BIGINT COMMENT '商品ID',
-  attr_key VARCHAR(255)  COMMENT '属性key',
-  attr_value VARCHAR(255) COMMENT '属性值',
-  flag VARCHAR(100) COMMENT '标记',
-  json VARCHAR(1000) COMMENT '附加字段'
+  attr_key VARCHAR(255) DEFAULT ''  COMMENT '属性key',
+  attr_value VARCHAR(255) DEFAULT '' COMMENT '属性值',
+  flag VARCHAR(100) DEFAULT '' COMMENT '标记',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加字段'
 
 ) CHARACTER SET utf8mb4;
 
@@ -148,17 +148,17 @@ CREATE TABLE IF NOT EXISTS prod_attr_val(
 CREATE TABLE IF NOT EXISTS prod_sku(
 
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  sku_no VARCHAR(255) COMMENT '唯一编号',
+  sku_no VARCHAR(255) DEFAULT '' COMMENT '唯一编号',
   prod_id BIGINT COMMENT '商品ID',
-  app_id VARCHAR(255) COMMENT 'APPID',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
   price NUMERIC(14,2) COMMENT '原价',
   dis_price NUMERIC(14,2) COMMENT '折扣价格',
-  attr_symbol_path VARCHAR(255) COMMENT '属性组合出的规格路径',
+  attr_symbol_path VARCHAR(255) DEFAULT '' COMMENT '属性组合出的规格路径',
   stock int COMMENT '库存量',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
-  flag VARCHAR(100) COMMENT '标记',
-  json VARCHAR(1000) COMMENT '附加字段'
+  flag VARCHAR(100) DEFAULT '' COMMENT '标记',
+  json VARCHAR(1000)  DEFAULT '' COMMENT '附加字段'
 
 ) CHARACTER SET utf8mb4;
 
@@ -166,10 +166,10 @@ CREATE TABLE IF NOT EXISTS prod_sku(
 CREATE TABLE IF NOT EXISTS prod_category (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   category_id BIGINT COMMENT '类别ID',
-  app_id VARCHAR(255) COMMENT 'APPID',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
   prod_id BIGINT COMMENT '商品ID',
-  json VARCHAR(1000) COMMENT '附加字段',
-  flag VARCHAR(100) COMMENT '标记',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加字段',
+  flag VARCHAR(100) DEFAULT '' COMMENT '标记',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
@@ -177,24 +177,24 @@ CREATE TABLE IF NOT EXISTS prod_category (
 -- 订单
 CREATE TABLE IF NOT EXISTS `order` (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  no VARCHAR(30)  COMMENT '订单编号',
-  code VARCHAR(255) COMMENT '预付款编号',
-  address_id VARCHAR(255) COMMENT '地址ID',
-  address VARCHAR(255) COMMENT '配送地址',
-  payapi_no VARCHAR(255) COMMENT '支付中心的订单号',
-  merchant_id VARCHAR(255) COMMENT '商户ID',
-  m_open_id VARCHAR(255) COMMENT '商户OpenId',
-  open_id VARCHAR(255) COMMENT '用户ID',
-  app_id VARCHAR(255) COMMENT 'APPID',
-  title VARCHAR(255) COMMENT '订单标题',
-  act_price NUMERIC(14,2) COMMENT '订单实际金额',
+  no VARCHAR(30)  DEFAULT '' COMMENT '订单编号',
+  code VARCHAR(255) DEFAULT '' COMMENT '预付款编号',
+  address_id VARCHAR(255) DEFAULT '' COMMENT '地址ID',
+  address VARCHAR(255) DEFAULT '' COMMENT '配送地址',
+  payapi_no VARCHAR(255) DEFAULT '' COMMENT '支付中心的订单号',
+  merchant_id VARCHAR(255) DEFAULT '' COMMENT '商户ID',
+  m_open_id VARCHAR(255) DEFAULT '' COMMENT '商户OpenId',
+  open_id VARCHAR(255) DEFAULT '' COMMENT '用户ID',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
+  title VARCHAR(255) DEFAULT '' COMMENT '订单标题',
+  act_price NUMERIC(14,2)  COMMENT '订单实际金额',
   omit_money NUMERIC(10,4) COMMENT '省略金额',
   price NUMERIC(14,2) COMMENT '订单应付金额',
   order_status int COMMENT '订单状态 0，未确认；1，已确认；2，已取消；3，无效；4，退货',
   pay_status int COMMENT '付款状态 支付状态；0，未付款；2，付款中；1，已付款',
   shipping_fee  decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '配送费用',
-  json VARCHAR(1000) COMMENT '附加字段',
-  flag VARCHAR(100) COMMENT '标记',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加字段',
+  flag VARCHAR(100) DEFAULT '' COMMENT '标记',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
   UNIQUE (`no`),
@@ -205,11 +205,11 @@ CREATE TABLE IF NOT EXISTS `order` (
 -- 对订单操作日志表
 CREATE TABLE IF NOT EXISTS order_action(
   id mediumint(8) unsigned  PRIMARY KEY AUTO_INCREMENT,
-  order_no VARCHAR(30) COMMENT '订单号',
-  action_open_id VARCHAR(30) COMMENT '操作用户openID',
+  order_no VARCHAR(30) DEFAULT '' COMMENT '订单号',
+  action_open_id VARCHAR(30) DEFAULT '' COMMENT '操作用户openID',
   order_status int COMMENT '订单状态 0，未确认；1，已确认；2，已取消；3，无效；4，退货',
   pay_status int COMMENT '付款状态 支付状态；0，未付款；2，付款中；1，已付款',
-  `action_note` varchar(255)  COMMENT '操作备注',
+  `action_note` varchar(255)  DEFAULT '' COMMENT '操作备注',
   `action_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP  COMMENT '操作时间',
   key order_no (order_no)
 ) CHARACTER SET utf8mb4 COMMENT='对订单操作日志表';
@@ -218,19 +218,19 @@ CREATE TABLE IF NOT EXISTS order_action(
 -- 订单项
 CREATE TABLE IF NOT EXISTS order_item (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  `no` VARCHAR(30) COMMENT '订单编号',
-  app_id VARCHAR(255) COMMENT 'APPID',
-  open_id VARCHAR(255) COMMENT '用户ID',
-  m_open_id VARCHAR(255) COMMENT '商家ID',
+  `no` VARCHAR(30) DEFAULT '' COMMENT '订单编号',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
+  open_id VARCHAR(255)  DEFAULT '' COMMENT '用户ID',
+  m_open_id VARCHAR(255) DEFAULT '' COMMENT '商家ID',
   prod_id BIGINT COMMENT '商品ID',
-  sku_no VARCHAR(255) COMMENT '商品SKU编号',
+  sku_no VARCHAR(255) DEFAULT '' COMMENT '商品SKU编号',
   num int COMMENT '商品数量',
   offer_unit_price NUMERIC(14,2) COMMENT '单价报价',
   buy_unit_price NUMERIC(14,2) COMMENT '购买单价',
   offer_total_price NUMERIC(14,2) COMMENT '总价格报价',
   buy_total_price NUMERIC(14,2) COMMENT '购买总金额',
-  flag VARCHAR(100) COMMENT '标记',
-  json VARCHAR(1000) COMMENT '附加字段',
+  flag VARCHAR(100) DEFAULT '' COMMENT '标记',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 )CHARACTER SET utf8mb4;
@@ -239,20 +239,31 @@ CREATE TABLE IF NOT EXISTS order_item (
 -- 订单地址
 CREATE TABLE IF NOT EXISTS order_address (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  order_no VARCHAR(255) COMMENT '订单号',
-  app_id VARCHAR(255) COMMENT 'APPID',
-  open_id VARCHAR(255) COMMENT '用户ID',
-  name VARCHAR(255) COMMENT '姓名',
-  mobile VARCHAR(255) COMMENT '手机号',
-  address VARCHAR(255) COMMENT '送货地址',
-  flag VARCHAR(100) COMMENT '标记',
-  json VARCHAR(1000) COMMENT '附加字段',
+  order_no VARCHAR(255) DEFAULT '' COMMENT '订单号',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
+  open_id VARCHAR(255) DEFAULT '' COMMENT '用户ID',
+  name VARCHAR(255) DEFAULT '' COMMENT '姓名',
+  mobile VARCHAR(255) DEFAULT '' COMMENT '手机号',
+  address VARCHAR(255) DEFAULT '' COMMENT '送货地址',
+  flag VARCHAR(100) DEFAULT '' COMMENT '标记',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
 
 
+INSERT INTO product(app_id, title, description, price, dis_price, status, is_recom) VALUES ('23232','测试商品','测试商品',10.00,9.0,1,1);
+INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','家常用餐','家常菜','../static/area_1.png','home');
+INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','系列套餐','私人订制','../static/area_2.png','home');
+INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','私人订制','家常菜','../static/area_3.png','home');
 
+INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','优惠','优惠','../../static/mall-icon1.png','');
+INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','促销','促销','../static/mall-icon2.png','');
+INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','海鲜','海鲜','../static/mall-icon3.png','');
+INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','食材','食材','../static/mall-icon4.png','');
+
+
+INSERT INTO prod_attr_key(prod_id, attr_key, attr_name, status) VALUES (1,'time','时间',1);
 -- +migrate StatementBegin
 CREATE  FUNCTION  `getDistance`(
    lon1 float(10,7)

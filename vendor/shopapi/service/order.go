@@ -14,6 +14,7 @@ type OrderModel struct  {
 	Items []OrderItemModel
 	Json string
 	AddressId int64
+	Address string
 	OpenId string
 	AppId string
 	Title string
@@ -176,9 +177,6 @@ func OrderPayForAccount(openId string,orderNo string,appId string) error  {
 	if account==nil{
 		return errors.New("没有找到用户的账户信息!请重新登录再试")
 	}
-
-
-
 	//获取支付token
 	params := map[string]interface{}{
 		"open_id": order.OpenId,
@@ -189,7 +187,6 @@ func OrderPayForAccount(openId string,orderNo string,appId string) error  {
 		return err
 	}
 	paytoken :=resultPayTokenMap["pay_token"].(string)
-
 	//支付预付款
 	params = map[string]interface{}{
 		"pay_token": paytoken,
@@ -255,6 +252,15 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	order.MerchantId = model.MerchantId
 	order.MOpenId = model.MOpenId
 
+	address := dao.NewAddress()
+	address,err :=address.WithId(model.AddressId)
+	if err!=nil{
+		return err
+	}
+	if address==nil{
+		return errors.New("没有找到对应的地址信息!")
+	}
+	order.Address = address.Address
 	items := model.Items
 	if items==nil || len(items)<=0 {
 		return nil,errors.New("订单项不能为空!")

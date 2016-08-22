@@ -15,6 +15,7 @@ type Order struct  {
 	MOpenId string
 	AppId string
 	AddressId int64
+	Address string
 	Title string
 	ActPrice float64
 	OmitMoney float64
@@ -32,7 +33,7 @@ type OrderDetail struct  {
 	OpenId string
 	AppId string
 	AddressId int64
-	Address *string
+	Address string
 	Title string
 	ActPrice float64
 	OmitMoney float64
@@ -99,16 +100,16 @@ func (self *OrderDetail) OrderDetailWithUser(openId string,orderStatus []int,pay
 	sess := db.NewSession()
 	var orders []*OrderDetail
 
-	builder :=sess.Select("*").From("`order`").LeftJoin("address","`order`.address_id = address.id").Where("`order`.open_id=?",openId).Where("`order`.app_id=?",appId)
+	builder :=sess.Select("*").From("`order`").Where("open_id=?",openId).Where("app_id=?",appId)
 
 	if orderStatus!=nil&&len(orderStatus)>0{
-		builder =builder.Where("`order`.order_status in ?",orderStatus)
+		builder =builder.Where("order_status in ?",orderStatus)
 	}
 
 	if payStatus!=nil&&len(payStatus) >0 {
-		builder =builder.Where("`order`.pay_status in ?",payStatus)
+		builder =builder.Where("pay_status in ?",payStatus)
 	}
-	_,err :=builder.OrderDir("`order`.create_time",false).LoadStructs(&orders)
+	_,err :=builder.OrderDir("create_time",false).LoadStructs(&orders)
 	if err!=nil{
 
 		return nil,err
