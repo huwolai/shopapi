@@ -81,6 +81,12 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		return nil,err
 	}
 
+	address := dao.NewAddress()
+	address,err = address.WithId(model.AddressId)
+	if address==nil{
+		return nil,errors.New("没有找到对应的地址信息!")
+	}
+
 	if model.PayType == comm.Pay_Type_Account {//账户支付
 		params := map[string]interface{}{
 			"open_id":order.OpenId,
@@ -94,7 +100,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 			return nil,err
 		}
 		code :=resultImprestMap["code"].(string)
-		err =order.OrderPayapiUpdateWithNoAndCode("",code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
+		err =order.OrderPayapiUpdateWithNoAndCode("",address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
 		if err!=nil{
 			log.Error(err)
 			return nil,err
@@ -115,7 +121,12 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		"notify_url": model.NotifyUrl,
 		"remark": order.Title,
 	}
-	log.Info(params)
+
+
+	if err!=nil{
+		return nil,err
+	}
+
 
 	resultPrepayMap,err :=RequestPayApi("/pay/makeprepay",params)
 	if err!=nil{
@@ -125,7 +136,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		payapiNo :=resultPrepayMap["pay_no"].(string)
 		code :=resultPrepayMap["code"].(string)
 		//将payapi的订单号更新到订单数据里
-		err :=order.OrderPayapiUpdateWithNoAndCode(payapiNo,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
+		err :=order.OrderPayapiUpdateWithNoAndCode(payapiNo,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
 		if err!=nil{
 			log.Error(err)
 			return nil,err
@@ -262,15 +273,7 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	order.MerchantId = model.MerchantId
 	order.MOpenId = model.MOpenId
 
-	address := dao.NewAddress()
-	address,err :=address.WithId(model.AddressId)
-	if err!=nil{
-		return nil,err
-	}
-	if address==nil{
-		return nil,errors.New("没有找到对应的地址信息!")
-	}
-	order.Address = address.Address
+
 	items := model.Items
 	if items==nil || len(items)<=0 {
 		return nil,errors.New("订单项不能为空!")

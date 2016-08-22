@@ -192,9 +192,9 @@ func fillOrderItemDetail(orders []*OrderDetail)  error {
 	return nil
 }
 
-func (self *Order) OrderPayapiUpdateWithNoAndCode(payapiNo string,code string,orderStatus int,payStatus int,no string,appId string) error  {
+func (self *Order) OrderPayapiUpdateWithNoAndCode(payapiNo string,address string,code string,orderStatus int,payStatus int,no string,appId string) error  {
 	sess := db.NewSession()
-	_,err :=sess.Update("order").Set("payapi_no",payapiNo).Set("code",code).Set("order_status",orderStatus).Set("pay_status",payStatus).Where("app_id=?",appId).Where("`no`=?",no).Exec()
+	_,err :=sess.Update("order").Set("payapi_no",payapiNo).Set("address",address).Set("code",code).Set("order_status",orderStatus).Set("pay_status",payStatus).Where("app_id=?",appId).Where("`no`=?",no).Exec()
 	return err
 }
 
