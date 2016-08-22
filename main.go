@@ -118,6 +118,8 @@ func main() {
 			merchant.GET("/:merchant_id",api.MerchantWithId)
 			//商户商品
 			merchant.GET("/:merchant_id/prods",api.MerchantProds)
+			//商户订单
+			merchant.GET("/:merchant_id/orders",api.MerchantOrders)
 			//商户审核
 			merchant.POST("/:merchant_id/audit",api.MerchantAudit)
 		}

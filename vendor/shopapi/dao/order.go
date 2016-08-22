@@ -95,6 +95,37 @@ func (self *OrderDetail) OrderDetailWithNo(no string,appId string) (*OrderDetail
 	return orders[0],err
 }
 
+func (self *OrderDetail) OrderDetailWithMerchantId(merchantId int64,orderStatus []int,payStatus []int,appId string) ([]*OrderDetail,error) {
+	sess := db.NewSession()
+	var orders []*OrderDetail
+
+	builder :=sess.Select("*").From("`order`").Where("merchant_id=?",merchantId).Where("app_id=?",appId)
+
+	if orderStatus!=nil&&len(orderStatus)>0{
+		builder =builder.Where("order_status in ?",orderStatus)
+	}
+
+	if payStatus!=nil&&len(payStatus) >0 {
+		builder =builder.Where("pay_status in ?",payStatus)
+	}
+	_,err :=builder.OrderDir("create_time",false).LoadStructs(&orders)
+	if err!=nil{
+
+		return nil,err
+	}
+	if orders==nil{
+		return nil,nil
+	}
+
+	err = fillOrderItemDetail(orders)
+	if err!=nil {
+		return nil,err
+	}
+
+
+	return orders,err
+}
+
 func (self *OrderDetail) OrderDetailWithUser(openId string,orderStatus []int,payStatus []int,appId string) ([]*OrderDetail,error)  {
 
 	sess := db.NewSession()

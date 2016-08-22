@@ -41,7 +41,8 @@ type OrderDetailDto struct  {
 	ActPrice float64 `json:"act_price"`
 	OmitMoney float64 `json:"omit_money"`
 	Price float64 `json:"price"`
-	Status int `json:"status"`
+	OrderStatus int `json:"order_status"`
+	PayStatus int `json:"pay_status"`
 	Items []*OrderItemDetailDto `json:"items"`
 	Json string `json:"json"`
 	CreateTime string `json:"create_time"`
@@ -322,6 +323,72 @@ func OrderDetailWithNo(c *gin.Context)  {
 	}
 }
 
+func MerchantOrders(c *gin.Context)  {
+	_,err :=CheckUserAuth(c)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+
+	merchantId := c.Param("merchant_id")
+	imerchantId,err := strconv.ParseInt(merchantId,10,64)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"商户ID有误!")
+		return
+	}
+
+	orderStatus := c.Query("order_status")
+	iorderStatusArray :=make([]int,0)
+	if orderStatus!="" {
+		orderStatusArray := strings.Split(orderStatus,",")
+		if len(orderStatusArray)>0 {
+			for _,statusStr :=range orderStatusArray {
+				stat,err :=strconv.Atoi(statusStr)
+				if err!=nil {
+					log.Error(err)
+					util.ResponseError(c.Writer,http.StatusBadRequest,"状态不是数字!")
+					return
+				}
+				iorderStatusArray = append(iorderStatusArray,stat)
+			}
+		}
+	}
+	payStatus := c.Query("pay_status")
+	ipayStatusArray :=make([]int,0)
+	if payStatus!="" {
+		payStatusArray := strings.Split(payStatus,",")
+		if len(payStatusArray)>0 {
+			for _,statusStr :=range payStatusArray {
+				stat,err :=strconv.Atoi(statusStr)
+				if err!=nil {
+					log.Error(err)
+					util.ResponseError(c.Writer,http.StatusBadRequest,"状态不是数字!")
+					return
+				}
+				ipayStatusArray = append(ipayStatusArray,stat)
+			}
+		}
+	}
+
+	appId := security.GetAppId2(c.Request)
+	orderList,err :=service.OrderDetailWithMerchantId(imerchantId,iorderStatusArray,ipayStatusArray,appId)
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
+		return
+	}
+
+	orderDetailDtos :=make([]*OrderDetailDto,0)
+	if orderList!=nil{
+		for _,orderDetail :=range orderList {
+			orderDetailDtos = append(orderDetailDtos,orderDetailToDto(orderDetail))
+		}
+	}
+
+	c.JSON(http.StatusOK,orderDetailDtos)
+}
+
 func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
 
 	dto :=&OrderDetailDto{}
@@ -336,7 +403,8 @@ func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
 	dto.AddressId = model.AddressId
 	dto.Address = model.Address
 	dto.Price = model.Price
-	dto.Status = model.OrderStatus
+	dto.OrderStatus = model.OrderStatus
+	dto.PayStatus = model.PayStatus
 	dto.Title = model.Title
 	dto.CreateTime = qtime.ToyyyyMMddHHmm(model.CreateTime)
 

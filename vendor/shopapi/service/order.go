@@ -144,6 +144,14 @@ func OrderByUser(openId string,orderStatus []int,payStatus []int,appId string)  
 	return orderDetails,err
 }
 
+//查询订单信息通过商户ID
+func OrderDetailWithMerchantId(merchantId int64,orderStatus []int,payStatus []int,appId string) ([]*dao.OrderDetail,error) {
+	orderDetail :=dao.NewOrderDetail()
+	orderDetails,err := orderDetail.OrderDetailWithMerchantId(merchantId,orderStatus,payStatus,appId)
+
+	return orderDetails,err
+}
+
 func OrderDetailWithNo(orderNo string,appId string) (*dao.OrderDetail,error)  {
 	orderDetail :=dao.NewOrderDetail()
 	orderDetail,err := orderDetail.OrderDetailWithNo(orderNo,appId)

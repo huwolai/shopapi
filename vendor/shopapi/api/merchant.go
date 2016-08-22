@@ -175,6 +175,7 @@ func MerchantWithId(c *gin.Context)  {
 	util.ResponseError400(c.Writer,"没有找到信息!")
 }
 
+
 func MerchantWithOpenId(c *gin.Context)  {
 
 	appId :=security.GetAppId2(c.Request)
