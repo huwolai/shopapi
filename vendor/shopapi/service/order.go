@@ -100,7 +100,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 			return nil,err
 		}
 		code :=resultImprestMap["code"].(string)
-		err =order.OrderPayapiUpdateWithNoAndCode("",address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
+		err =order.OrderPayapiUpdateWithNoAndCode("",address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
 		if err!=nil{
 			log.Error(err)
 			return nil,err
@@ -136,7 +136,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		payapiNo :=resultPrepayMap["pay_no"].(string)
 		code :=resultPrepayMap["code"].(string)
 		//将payapi的订单号更新到订单数据里
-		err :=order.OrderPayapiUpdateWithNoAndCode(payapiNo,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
+		err :=order.OrderPayapiUpdateWithNoAndCode(payapiNo,address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
 		if err!=nil{
 			log.Error(err)
 			return nil,err

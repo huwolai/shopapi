@@ -11,6 +11,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"shopapi/dao"
 	"shopapi/comm"
+	"shopapi/redis"
 )
 
 type AccountRechargeModel struct  {
@@ -124,6 +125,7 @@ func AccountDetail(openId string) (*AccountDetailModel,error)  {
 	return nil,errors.New("充值失败")
 }
 
+//通过短信登录
 func LoginForSMS(mobile string,code string,appId string) (map[string]interface{},error)  {
 
 	commusermap,err  :=loginSMSOfCommuser(mobile,code,appId)
@@ -131,7 +133,6 @@ func LoginForSMS(mobile string,code string,appId string) (map[string]interface{}
 
 		return nil,err
 	}
-
 	openId := commusermap["open_id"].(string)
 
 	account := dao.NewAccount()
@@ -179,7 +180,25 @@ func LoginForSMS(mobile string,code string,appId string) (map[string]interface{}
 
 }
 
+//修改支付密码
+func PayPwdUpdate(openId string,mobile string,newpwd string,code string,appId string) error  {
 
+	paycode :=redis.GetString(comm.CODE_PAYPWD_PREFIX+mobile)
+	if paycode==""{
+
+		return errors.New("请先获取验证码!")
+	}
+
+	if paycode!=code {
+		return errors.New("验证码输入不对!")
+	}
+	//account :=dao.NewAccount()
+	//account.AccountWithOpenId()
+	//
+	//RequestPayApi("")
+
+	return nil
+}
 
 //绑定支付
 func payBind(openId string,password string) error  {

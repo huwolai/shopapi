@@ -81,9 +81,6 @@ type OrderItemDto struct  {
 
 }
 
-
-
-
 //添加订单
 func OrderAdd(c *gin.Context)  {
 
@@ -117,6 +114,7 @@ func OrderAdd(c *gin.Context)  {
 
 	if openId == "" {
 		util.ResponseError400(c.Writer,"open_id不能为空!")
+		return
 	}
 	orderDto.AppId = appId
 	orderDto.OpenId = openId
@@ -167,7 +165,6 @@ func OrderPrePay(c *gin.Context)  {
 		return
 	}
 	c.JSON(http.StatusOK,resultMap)
-
 }
 
 //账户余额付款

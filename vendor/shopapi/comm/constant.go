@@ -68,5 +68,12 @@ const (
 	Pay_Type_Account =4
 )
 
+const (
+	//修改支付付款密码前缀
+	CODE_PAYPWD_PREFIX = "pay_code_"
+	//验证码过期时间
+	CODE_PAYPWD_EXPIRE  = 60*5
+)
+
 //商户默认商品标记
 const MERCHANT_DEFAULT_PRODUCT_FLAG  = "merchant_default"

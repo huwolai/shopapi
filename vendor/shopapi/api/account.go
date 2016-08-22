@@ -7,6 +7,11 @@ import (
 	"net/http"
 	"shopapi/service"
 	"gitlab.qiyunxin.com/tangtao/utils/security"
+	"shopapi/redis"
+	"shopapi/comm"
+	"strconv"
+	"math/rand"
+	"time"
 )
 
 type AccountPreRechargeDto struct  {
@@ -31,6 +36,7 @@ type LoginForSMSParam struct  {
 	Code string `json:"code"`
 }
 
+
 func LoginForSMS(c *gin.Context)  {
 
 	var loginSms LoginForSMSParam
@@ -48,10 +54,67 @@ func LoginForSMS(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-
 	c.JSON(http.StatusOK,resultMap)
+}
+
+//支付密码修改短信
+func PayPwdUpdateSMS(c *gin.Context)  {
+	//获取用户openid
+	_,err :=security.CheckUserAuth(c.Request)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError(c.Writer,http.StatusUnauthorized,err.Error())
+		return
+	}
+	mobile := c.Param("mobile")
+	if mobile=="" {
+
+		util.ResponseError400(c.Writer,"请输入手机号!")
+		return
+	}
+
+	if len(mobile)!=11 {
+		util.ResponseError400(c.Writer,"手机号输入有误!")
+		return
+	}
+
+	code :=redis.GetString(comm.CODE_PAYPWD_PREFIX+mobile)
+	if code== ""{
+		code =GetRandCode()
+	}
+	redis.SetAndExpire(comm.CODE_PAYPWD_PREFIX+mobile,code,comm.CODE_PAYPWD_EXPIRE)
+
+	err =service.SendCodeSMS(mobile,code)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"短信发送失败!")
+		return
+	}
+
+	util.ResponseSuccess(c.Writer)
+}
+
+func PayPwdUpdate(c *gin.Context)  {
+	_,err :=security.CheckUserAuth(c.Request)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError(c.Writer,http.StatusUnauthorized,err.Error())
+		return
+	}
+
 
 }
+
+func GetRandCode() string {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	var code string
+	for i:=0; i<4; i++ {
+		code+=strconv.Itoa(r.Intn(9))
+	}
+
+	return code
+}
+
 
 //账户充值
 func AccountPreRecharge(c *gin.Context)  {
