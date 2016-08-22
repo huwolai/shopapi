@@ -222,8 +222,8 @@ func OrderCancel(orderNo string,appId string) error {
 	if err!=nil{
 		return err
 	}
-	if order.OrderStatus!=comm.ORDER_STATUS_WAIT_SURE||order.PayStatus!=comm.ORDER_PAY_STATUS_SUCCESS {
-		return errors.New("订单状态有误!")
+	if order.OrderStatus==comm.ORDER_STATUS_SURED {
+		return errors.New("订单已确认,不能取消!")
 	}
 	if order.Code=="" {
 		return errors.New("订单不存在预付款code!")
