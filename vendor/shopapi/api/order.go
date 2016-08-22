@@ -247,7 +247,7 @@ func OrderWithUserAndStatus(c *gin.Context)  {
 	}
 	orderStatus := c.Query("order_status")
 	iorderStatusArray :=make([]int,0)
-	if orderStatus=="" {
+	if orderStatus!="" {
 		orderStatusArray := strings.Split(orderStatus,",")
 		if len(orderStatusArray)>0 {
 			for _,statusStr :=range orderStatusArray {
