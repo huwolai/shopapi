@@ -42,7 +42,7 @@ type OrderPrePayModel struct  {
 
 type OrderPrePayDto struct  {
 	OrderNo string `json:"order_no"`
-	AddressId int64
+	AddressId int64 `json:"address_id"`
 	//付款类型(1.支付宝 2.微信 3.现金支付 4.账户)
 	PayType int `json:"pay_type"`
 	AppId string `json:"app_id"`
@@ -83,8 +83,6 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 
 	address := dao.NewAddress()
 	address,err = address.WithId(model.AddressId)
-	log.Error(model.AddressId)
-	log.Error(address)
 	if address==nil{
 		return nil,errors.New("没有找到对应的地址信息!")
 	}

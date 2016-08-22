@@ -151,6 +151,11 @@ func OrderPrePay(c *gin.Context)  {
 		return
 	}
 
+	if params.AddressId==0 {
+		util.ResponseError400(c.Writer,"地址ID不能为空!")
+		return
+	}
+
 	orderNo := c.Param("order_no")
 	params.OrderNo = orderNo
 	params.AppId = appId
