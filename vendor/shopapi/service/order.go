@@ -233,9 +233,11 @@ func OrderCancel(orderNo string,appId string) error {
 		"code":order.Code,
 	}
 
-	_,err =RequestPayApi("/imprest/refund",params)
-	if err!=nil{
-		return err
+	if order.OrderStatus==comm.ORDER_PAY_STATUS_SUCCESS { //付款了的订单需要退款
+		_,err =RequestPayApi("/imprest/refund",params)
+		if err!=nil{
+			return err
+		}
 	}
 	err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED,orderNo)
 	if err!=nil{
