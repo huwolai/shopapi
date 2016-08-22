@@ -3,7 +3,7 @@
 CREATE TABLE IF NOT EXISTS address(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   app_id VARCHAR(255) COMMENT 'APPID',
-  open_id VARCHAR(255) COMMENT '用户ID',
+  open_id VARCHAR(100) COMMENT '用户ID',
   longitude NUMERIC(14,10) COMMENT '经度',
   latitude NUMERIC(14,10) COMMENT '维度',
   name VARCHAR(255) COMMENT '姓名',
@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS prod_category (
 -- 订单
 CREATE TABLE IF NOT EXISTS `order` (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  no VARCHAR(255)  COMMENT '订单编号',
+  no VARCHAR(30)  COMMENT '订单编号',
   code VARCHAR(255) COMMENT '预付款编号',
   address_id VARCHAR(255) COMMENT '地址ID',
   address VARCHAR(255) COMMENT '配送地址',
@@ -217,7 +217,7 @@ CREATE TABLE IF NOT EXISTS order_action(
 -- 订单项
 CREATE TABLE IF NOT EXISTS order_item (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  `no` VARCHAR(255) COMMENT '订单编号',
+  `no` VARCHAR(30) COMMENT '订单编号',
   app_id VARCHAR(255) COMMENT 'APPID',
   open_id VARCHAR(255) COMMENT '用户ID',
   m_open_id VARCHAR(255) COMMENT '商家ID',
