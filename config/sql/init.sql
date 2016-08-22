@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS category(
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
 
--- INSERT INTO category(app_id, title, description, flag,json) VALUES ('hwl','默认分类','默认分类描述','default','');
+ -- INSERT INTO category(app_id, title, description, flag,json) VALUES ('hwl','默认分类','默认分类描述','default','');
 
 -- 商品
 CREATE TABLE IF NOT EXISTS product(
@@ -182,7 +182,8 @@ CREATE TABLE IF NOT EXISTS `order` (
   address_id VARCHAR(255) COMMENT '地址ID',
   address VARCHAR(255) COMMENT '配送地址',
   payapi_no VARCHAR(255) COMMENT '支付中心的订单号',
-  m_open_id VARCHAR(255) COMMENT '商户ID',
+  merchant_id VARCHAR(255) COMMENT '商户ID',
+  m_open_id VARCHAR(255) COMMENT '商户OpenId',
   open_id VARCHAR(255) COMMENT '用户ID',
   app_id VARCHAR(255) COMMENT 'APPID',
   title VARCHAR(255) COMMENT '订单标题',

@@ -69,6 +69,9 @@ func main() {
 			user.GET("/:open_id/merchant",api.MerchantWithOpenId)
 			user.POST("/:open_id/recharge",api.AccountPreRecharge)
 			user.POST("/:open_id/account",api.AccountDetail)
+			//用户订单
+			user.GET("/:open_id/orders",api.OrderWithUserAndStatus)
+
 		}
 		//分类
 		categories := v1.Group("/categories")
@@ -135,7 +138,6 @@ func main() {
 			//订单支付
 			order.POST("/:order_no/pay",api.OrderPayForAccount)
 			order.GET("/detail/:order_no",api.OrderDetailWithNo)
-			order.GET("/status/:status",api.OrderWithUserAndStatus)
 			//取消订单
 			order.PUT("/:order_no/cancel",api.OrderCancel)
 		}

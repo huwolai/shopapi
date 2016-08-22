@@ -17,6 +17,8 @@ type OrderModel struct  {
 	OpenId string
 	AppId string
 	Title string
+	MOpenId string
+	MerchantId int64
 	OrderStatus int
 	PayStatus int
 }
@@ -133,10 +135,10 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 
 }
 
-func OrderByUser(openId string,status []int,appId string)  ([]*dao.OrderDetail,error)  {
+func OrderByUser(openId string,orderStatus []int,payStatus []int,appId string)  ([]*dao.OrderDetail,error)  {
 
 	orderDetail :=dao.NewOrderDetail()
-	orderDetails,err := orderDetail.OrderDetailWithUser(openId,status,appId)
+	orderDetails,err := orderDetail.OrderDetailWithUser(openId,orderStatus,payStatus,appId)
 
 	return orderDetails,err
 }
@@ -250,6 +252,9 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	order.OrderStatus = model.OrderStatus
 	order.PayStatus = model.PayStatus
 	order.AddressId = model.AddressId
+	order.MerchantId = model.MerchantId
+	order.MOpenId = model.MOpenId
+
 	items := model.Items
 	if items==nil || len(items)<=0 {
 		return nil,errors.New("订单项不能为空!")
@@ -267,7 +272,6 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 		}
 		totalActPrice+=prodSku.DisPrice*float64(item.Num)
 		totalPrice += prodSku.Price*float64(item.Num)
-		log.Error("-----prodSku=",prodSku.SkuNo)
 		err =orderItemSave(prodSku,item,order.No,tx)
 		if err!=nil{
 			return nil,err

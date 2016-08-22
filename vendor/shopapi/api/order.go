@@ -19,6 +19,7 @@ type OrderDto struct  {
 	Json string `json:"json"`
 	OpenId string `json:"open_id"`
 	AppId string `json:"app_id"`
+	MOpenId string
 	//商户ID
 	MerchantId int64 `json:"merchant_id"`
 	AddressId int64 `json:"address_id"`
@@ -244,26 +245,40 @@ func OrderWithUserAndStatus(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-
-	status := c.Param("status")
-	if status=="" {
-		util.ResponseError(c.Writer,http.StatusBadRequest,"请输入订单状态!")
-		return
-	}
-	statusArray := strings.Split(status,",")
-	istatusArray :=make([]int,0)
-	if len(statusArray)>0 {
-		for _,statusStr :=range statusArray {
-			stat,err :=strconv.Atoi(statusStr)
-			if err!=nil {
-				util.ResponseError(c.Writer,http.StatusBadRequest,"状态不是数字!")
-				return
+	orderStatus := c.Query("order_status")
+	iorderStatusArray :=make([]int,0)
+	if orderStatus=="" {
+		orderStatusArray := strings.Split(orderStatus,",")
+		if len(orderStatusArray)>0 {
+			for _,statusStr :=range orderStatusArray {
+				stat,err :=strconv.Atoi(statusStr)
+				if err!=nil {
+					util.ResponseError(c.Writer,http.StatusBadRequest,"状态不是数字!")
+					return
+				}
+				iorderStatusArray = append(iorderStatusArray,stat)
 			}
-			istatusArray = append(istatusArray,stat)
 		}
 	}
 
-	orderList,err := service.OrderByUser(openId,istatusArray,appId)
+
+	payStatus := c.Query("pay_status")
+	ipayStatusArray :=make([]int,0)
+	if payStatus!="" {
+		payStatusArray := strings.Split(payStatus,",")
+		if len(payStatusArray)>0 {
+			for _,statusStr :=range payStatusArray {
+				stat,err :=strconv.Atoi(statusStr)
+				if err!=nil {
+					util.ResponseError(c.Writer,http.StatusBadRequest,"状态不是数字!")
+					return
+				}
+				ipayStatusArray = append(ipayStatusArray,stat)
+			}
+		}
+	}
+
+	orderList,err := service.OrderByUser(openId,iorderStatusArray,ipayStatusArray,appId)
 	if err!=nil {
 		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
 		return
@@ -366,6 +381,8 @@ func orderDtoToModel(dto OrderDto) *service.OrderModel  {
 	model.OpenId = dto.OpenId
 	model.Json  =dto.Json
 	model.OrderStatus = dto.OrderStatus
+	model.MerchantId = dto.MerchantId
+	model.MOpenId = dto.MOpenId
 	model.PayStatus = dto.PayStatus
 	model.Title = dto.Title
 	model.AddressId = dto.AddressId
