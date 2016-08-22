@@ -145,6 +145,7 @@ func LoginForSMS(mobile string,code string,appId string) (map[string]interface{}
 		account = dao.NewAccount()
 		account.AppId = appId
 		account.Money = 0
+		account.Mobile = mobile
 		account.OpenId = openId
 		account.Password = password
 		account.Status =comm.ACCOUNT_STATUS_WAIT_BINDPAY //等待开通支付
@@ -192,12 +193,25 @@ func PayPwdUpdate(openId string,mobile string,newpwd string,code string,appId st
 	if paycode!=code {
 		return errors.New("验证码输入不对!")
 	}
-	//account :=dao.NewAccount()
-	//account.AccountWithOpenId()
-	//
-	//RequestPayApi("")
 
-	return nil
+	account :=dao.NewAccount()
+	account,err :=account.AccountWithMobile(mobile,appId)
+	if err!=nil{
+		return err
+	}
+
+	params :=map[string]interface{}{
+		"newpwd":newpwd,
+		"oldpwd": account.Password,
+		"open_id": openId,
+	}
+	_,err = RequestPayApi("/pay/password",params)
+	if err!=nil{
+		return err
+	}
+	err =account.AccountUpdatePwd(newpwd,openId,appId)
+
+	return err
 }
 
 //绑定支付

@@ -36,6 +36,13 @@ type LoginForSMSParam struct  {
 	Code string `json:"code"`
 }
 
+type PayPwdUpdateDto struct  {
+	Mobile string `json:"mobile"`
+	Code string `json:"code"`
+	Password string `json:"password"`
+
+}
+
 
 func LoginForSMS(c *gin.Context)  {
 
@@ -95,13 +102,31 @@ func PayPwdUpdateSMS(c *gin.Context)  {
 }
 
 func PayPwdUpdate(c *gin.Context)  {
-	_,err :=security.CheckUserAuth(c.Request)
+	openId,err :=security.CheckUserAuth(c.Request)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError(c.Writer,http.StatusUnauthorized,err.Error())
 		return
 	}
+	var param PayPwdUpdateDto
+	err =c.BindJSON(&param)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"参数有误!")
+		return
+	}
+	mobile :=c.Param("mobile")
+	param.Mobile = mobile
+	appId := security.GetAppId2(c.Request)
 
+	err = service.PayPwdUpdate(openId,mobile,param.Password,param.Code,appId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	util.ResponseSuccess(c.Writer)
 
 }
 

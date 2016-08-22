@@ -127,7 +127,6 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		return nil,err
 	}
 
-
 	resultPrepayMap,err :=RequestPayApi("/pay/makeprepay",params)
 	if err!=nil{
 		return nil,err

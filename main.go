@@ -64,6 +64,8 @@ func main() {
 		}
 		user :=v1.Group("/user")
 		{
+			user.GET("/:open_id/mobile/:mobile/sms",api.PayPwdUpdateSMS)
+			user.PUT("/:open_id/mobile/:mobile/paypwd",api.PayPwdUpdate)
 			user.POST("/:open_id/merchantupdate",api.MerchantUpdate)
 			user.POST("/:open_id/merchant",api.MerchantAdd)
 			user.GET("/:open_id/merchant",api.MerchantWithOpenId)
