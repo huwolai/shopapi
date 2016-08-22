@@ -83,6 +83,8 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 
 	address := dao.NewAddress()
 	address,err = address.WithId(model.AddressId)
+	log.Error(model.AddressId)
+	log.Error(address)
 	if address==nil{
 		return nil,errors.New("没有找到对应的地址信息!")
 	}
