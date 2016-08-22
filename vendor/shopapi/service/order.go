@@ -255,10 +255,10 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	address := dao.NewAddress()
 	address,err :=address.WithId(model.AddressId)
 	if err!=nil{
-		return err
+		return nil,err
 	}
 	if address==nil{
-		return errors.New("没有找到对应的地址信息!")
+		return nil,errors.New("没有找到对应的地址信息!")
 	}
 	order.Address = address.Address
 	items := model.Items
