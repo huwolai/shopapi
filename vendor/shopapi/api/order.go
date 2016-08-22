@@ -253,6 +253,7 @@ func OrderWithUserAndStatus(c *gin.Context)  {
 			for _,statusStr :=range orderStatusArray {
 				stat,err :=strconv.Atoi(statusStr)
 				if err!=nil {
+					log.Error(err)
 					util.ResponseError(c.Writer,http.StatusBadRequest,"状态不是数字!")
 					return
 				}
@@ -270,6 +271,7 @@ func OrderWithUserAndStatus(c *gin.Context)  {
 			for _,statusStr :=range payStatusArray {
 				stat,err :=strconv.Atoi(statusStr)
 				if err!=nil {
+					log.Error(err)
 					util.ResponseError(c.Writer,http.StatusBadRequest,"状态不是数字!")
 					return
 				}
