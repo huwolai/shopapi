@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS address(
   flag VARCHAR(100) COMMENT '标记',
   json VARCHAR(1000) COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
+  KEY open_id (open_id)
 
 )CHARACTER SET utf8mb4;
 
@@ -27,7 +28,8 @@ CREATE TABLE IF NOT EXISTS account(
   status int COMMENT '状态 1.正常 0.锁定 2.等待开通支付',
   flag VARCHAR(100) COMMENT '标记',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
+  KEY open_id (open_id)
 );
 
 
@@ -178,19 +180,39 @@ CREATE TABLE IF NOT EXISTS `order` (
   no VARCHAR(255)  COMMENT '订单编号',
   code VARCHAR(255) COMMENT '预付款编号',
   address_id VARCHAR(255) COMMENT '地址ID',
+  address VARCHAR(255) COMMENT '配送地址',
   payapi_no VARCHAR(255) COMMENT '支付中心的订单号',
+  m_open_id VARCHAR(255) COMMENT '商户ID',
   open_id VARCHAR(255) COMMENT '用户ID',
   app_id VARCHAR(255) COMMENT 'APPID',
   title VARCHAR(255) COMMENT '订单标题',
   act_price NUMERIC(14,2) COMMENT '订单实际金额',
   omit_money NUMERIC(10,4) COMMENT '省略金额',
   price NUMERIC(14,2) COMMENT '订单应付金额',
-  status int COMMENT '订单状态 0:订单被取消 1:已下单待付款 2:已付款',
+  order_status int COMMENT '订单状态 0，未确认；1，已确认；2，已取消；3，无效；4，退货',
+  pay_status int COMMENT '付款状态 支付状态；0，未付款；2，付款中；1，已付款',
+  shipping_fee  decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '配送费用',
   json VARCHAR(1000) COMMENT '附加字段',
   flag VARCHAR(100) COMMENT '标记',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
+  UNIQUE (`no`),
+  KEY `order_status` (`order_status`),
+  KEY `pay_status` (`pay_status`)
 ) CHARACTER SET utf8mb4;
+
+-- 对订单操作日志表
+CREATE TABLE IF NOT EXISTS order_action(
+  id mediumint(8) unsigned  PRIMARY KEY AUTO_INCREMENT,
+  order_no VARCHAR(30) COMMENT '订单号',
+  action_open_id VARCHAR(30) COMMENT '操作用户openID',
+  order_status int COMMENT '订单状态 0，未确认；1，已确认；2，已取消；3，无效；4，退货',
+  pay_status int COMMENT '付款状态 支付状态；0，未付款；2，付款中；1，已付款',
+  `action_note` varchar(255)  COMMENT '操作备注',
+  `action_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP  COMMENT '操作时间',
+  key order_no (order_no)
+) CHARACTER SET utf8mb4 COMMENT='对订单操作日志表';
+
 
 -- 订单项
 CREATE TABLE IF NOT EXISTS order_item (
@@ -212,6 +234,7 @@ CREATE TABLE IF NOT EXISTS order_item (
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 )CHARACTER SET utf8mb4;
 
+
 -- 订单地址
 CREATE TABLE IF NOT EXISTS order_address (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -227,21 +250,6 @@ CREATE TABLE IF NOT EXISTS order_address (
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
 
-
--- 订单事件
-CREATE TABLE IF NOT EXISTS order_event (
-  id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  order_no VARCHAR(255) COMMENT '订单号',
-  app_id VARCHAR(255) COMMENT 'APPID',
-  open_id VARCHAR(255) COMMENT '用户ID',
-  event_type INT COMMENT '事件类型',
-  event_name VARCHAR(100) COMMENT '事件名',
-  event_desc VARCHAR(255) COMMENT '事件描述',
-  flag VARCHAR(100) COMMENT '标记',
-  json VARCHAR(1000) COMMENT '附加字段',
-  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
-) CHARACTER SET utf8mb4;
 
 
 -- +migrate StatementBegin

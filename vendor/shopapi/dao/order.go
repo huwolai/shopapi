@@ -18,7 +18,8 @@ type Order struct  {
 	OmitMoney float64
 	Price float64
 	Flag string
-	Status int
+	OrderStatus int
+	PayStatus int
 	Json string
 }
 
@@ -34,7 +35,8 @@ type OrderDetail struct  {
 	ActPrice float64
 	OmitMoney float64
 	Price float64
-	Status int
+	OrderStatus int
+	PayStatus int
 	Items []*OrderItemDetail
 	Flag string
 	Json string
@@ -52,7 +54,7 @@ func NewOrderDetail() *OrderDetail  {
 }
 
 func (self *Order) InsertTx(tx *dbr.Tx) (int64,error)  {
-	result,err :=tx.InsertInto("order").Columns("no","address_id","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","status","flag","json").Record(self).Exec()
+	result,err :=tx.InsertInto("order").Columns("no","address_id","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
@@ -146,15 +148,22 @@ func fillOrderItemDetail(orders []*OrderDetail)  error {
 	return nil
 }
 
-func (self *Order) OrderPayapiUpdateWithNoAndCode(payapiNo string,code string,status int,no string,appId string) error  {
+func (self *Order) OrderPayapiUpdateWithNoAndCode(payapiNo string,code string,orderStatus int,payStatus int,no string,appId string) error  {
 	sess := db.NewSession()
-	_,err :=sess.Update("order").Set("payapi_no",payapiNo).Set("code",code).Set("status",status).Where("app_id=?",appId).Where("`no`=?",no).Exec()
+	_,err :=sess.Update("order").Set("payapi_no",payapiNo).Set("code",code).Set("order_status",orderStatus).Set("pay_status",payStatus).Where("app_id=?",appId).Where("`no`=?",no).Exec()
 	return err
 }
 
-func (self *Order) UpdateWithStatus(status int,orderNo string) error {
+func (self *Order) UpdateWithStatus(orderStatus int,payStatus int,orderNo string) error {
 
-	_,err :=db.NewSession().Update("order").Set("status",status).Where("no=?",orderNo).Exec()
+	_,err :=db.NewSession().Update("order").Set("order_status",orderStatus).Set("pay_status",payStatus).Where("no=?",orderNo).Exec()
+
+	return err
+}
+
+func (self *Order) UpdateWithOrderStatus(orderStatus int,orderNo string) error  {
+
+	_,err :=db.NewSession().Update("order").Set("order_status",orderStatus).Where("no=?",orderNo).Exec()
 
 	return err
 }

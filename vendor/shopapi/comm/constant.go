@@ -15,11 +15,24 @@ const (
 )
 
 const (
-	//订单等待预支付
-	ORDER_STATUS_PAY_WAIT = 1
+	//没有付款
+	ORDER_PAY_STATUS_NOPAY = 0
+	//付款中
+	ORDER_PAY_STATUS_PAYING = 2
+	//付款成功
+	ORDER_PAY_STATUS_SUCCESS=1
 
-	//订单付款成功
-	ORDER_STATUS_PAY_SUCCESS=2
+	//等待确认
+	ORDER_STATUS_WAIT_SURE = 0
+
+	//已确认
+	ORDER_STATUS_SURED = 1
+	//已取消
+	ORDER_STATUS_CANCELED = 2
+	//无效
+	ORDER_STATUS_INVALID = 3
+	//退货
+	ORDER_STATUS_REJECTED = 4
 )
 
 const (

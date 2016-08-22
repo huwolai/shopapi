@@ -48,6 +48,7 @@ func main() {
 
 	router.Use(CORSMiddleware())
 
+
 	v1 := router.Group("/v1")
 	{
 		comm :=v1.Group("/comm")
@@ -135,7 +136,8 @@ func main() {
 			order.POST("/:order_no/pay",api.OrderPayForAccount)
 			order.GET("/detail/:order_no",api.OrderDetailWithNo)
 			order.GET("/status/:status",api.OrderWithUserAndStatus)
-			order.POST("/:order_no/event",api.OrderEventPost)
+			//取消订单
+			order.PUT("/:order_no/cancel",api.OrderCancel)
 		}
 
 		pay := v1.Group("/pay")

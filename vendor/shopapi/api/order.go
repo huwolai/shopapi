@@ -19,10 +19,13 @@ type OrderDto struct  {
 	Json string `json:"json"`
 	OpenId string `json:"open_id"`
 	AppId string `json:"app_id"`
+	//商户ID
+	MerchantId int64 `json:"merchant_id"`
 	AddressId int64 `json:"address_id"`
 	Title string `json:"title"`
 	OrderNo string `json:"order_no"`
-	Status int `json:"status"`
+	OrderStatus int `json:"order_status"`
+	PayStatus int `json:"pay_status"`
 }
 
 type OrderDetailDto struct  {
@@ -104,12 +107,18 @@ func OrderAdd(c *gin.Context)  {
 		return
 	}
 
+	if orderDto.MerchantId== 0 {
+		log.Error(err)
+		util.ResponseError400(c.Writer,"商户ID不能为空!")
+		return
+	}
+
 	if openId == "" {
 		util.ResponseError400(c.Writer,"open_id不能为空!")
 	}
 	orderDto.AppId = appId
 	orderDto.OpenId = openId
-	orderDto.Status = comm.ORDER_STATUS_PAY_WAIT
+	orderDto.OrderStatus = comm.ORDER_STATUS_WAIT_SURE
 
 	order,err := service.OrderAdd(orderDtoToModel(orderDto))
 	if err!=nil{
@@ -178,6 +187,25 @@ func OrderPayForAccount(c *gin.Context)  {
 	util.ResponseSuccess(c.Writer)
 }
 
+//取消订单
+func OrderCancel(c *gin.Context)  {
+	_,err := security.CheckUserAuth(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+	orderNo :=c.Param("order_no")
+	appId := security.GetAppId2(c.Request)
+
+	err =service.OrderCancel(orderNo,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	util.ResponseSuccess(c.Writer)
+
+}
 
 //根据编号查询订单信息
 func OrderByNo(c *gin.Context)  {
@@ -277,11 +305,6 @@ func OrderDetailWithNo(c *gin.Context)  {
 	}
 }
 
-//post订单事件
-func OrderEventPost(c *gin.Context)  {
-	
-}
-
 func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
 
 	dto :=&OrderDetailDto{}
@@ -296,7 +319,7 @@ func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
 	dto.AddressId = model.AddressId
 	dto.Address = model.Address
 	dto.Price = model.Price
-	dto.Status = model.Status
+	dto.Status = model.OrderStatus
 	dto.Title = model.Title
 	dto.CreateTime = qtime.ToyyyyMMddHHmm(model.CreateTime)
 
@@ -342,7 +365,8 @@ func orderDtoToModel(dto OrderDto) *service.OrderModel  {
 	model.AppId = dto.AppId
 	model.OpenId = dto.OpenId
 	model.Json  =dto.Json
-	model.Status = dto.Status
+	model.OrderStatus = dto.OrderStatus
+	model.PayStatus = dto.PayStatus
 	model.Title = dto.Title
 	model.AddressId = dto.AddressId
 

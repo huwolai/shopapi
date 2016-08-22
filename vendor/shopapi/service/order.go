@@ -17,7 +17,8 @@ type OrderModel struct  {
 	OpenId string
 	AppId string
 	Title string
-	Status int
+	OrderStatus int
+	PayStatus int
 }
 
 type OrderItemModel struct  {
@@ -90,7 +91,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 			return nil,err
 		}
 		code :=resultImprestMap["code"].(string)
-		err =order.OrderPayapiUpdateWithNoAndCode("",code,comm.ORDER_STATUS_PAY_WAIT,order.No,order.AppId)
+		err =order.OrderPayapiUpdateWithNoAndCode("",code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
 		if err!=nil{
 			log.Error(err)
 			return nil,err
@@ -121,7 +122,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		payapiNo :=resultPrepayMap["pay_no"].(string)
 		code :=resultPrepayMap["code"].(string)
 		//将payapi的订单号更新到订单数据里
-		err :=order.OrderPayapiUpdateWithNoAndCode(payapiNo,code,comm.ORDER_STATUS_PAY_WAIT,order.No,order.AppId)
+		err :=order.OrderPayapiUpdateWithNoAndCode(payapiNo,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
 		if err!=nil{
 			log.Error(err)
 			return nil,err
@@ -158,7 +159,7 @@ func OrderPayForAccount(openId string,orderNo string,appId string) error  {
 	if order==nil{
 		return  errors.New("没找到订单信息!")
 	}
-	if order.Status!=comm.ORDER_STATUS_PAY_WAIT {
+	if order.PayStatus!=comm.ORDER_PAY_STATUS_PAYING {
 		return  errors.New("订单不是待付款状态!")
 	}
 
@@ -198,12 +199,42 @@ func OrderPayForAccount(openId string,orderNo string,appId string) error  {
 		return err
 	}
 
-	err =order.UpdateWithStatus(comm.ORDER_STATUS_PAY_SUCCESS,orderNo)
+	err =order.UpdateWithStatus(comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_SUCCESS,orderNo)
 	if err!=nil{
 		log.Error("订单号:",orderNo,"状态更新为支付成功的时候失败!")
 		return errors.New("订单更新错误!")
 	}
 
+	return nil
+}
+
+func OrderCancel(orderNo string,appId string) error {
+
+	order :=dao.NewOrder()
+	order,err :=order.OrderWithNo(orderNo,appId)
+	if err!=nil{
+		return err
+	}
+	if order.OrderStatus!=comm.ORDER_STATUS_WAIT_SURE||order.PayStatus!=comm.ORDER_PAY_STATUS_SUCCESS {
+		return errors.New("订单状态有误!")
+	}
+	if order.Code=="" {
+		return errors.New("订单不存在预付款code!")
+	}
+
+	params :=map[string]interface{}{
+		"code":order.Code,
+	}
+
+	_,err =RequestPayApi("/imprest/refund",params)
+	if err!=nil{
+		return err
+	}
+	err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED,orderNo)
+	if err!=nil{
+		log.Error("更新订单状态失败! 订单号:",orderNo)
+		return err
+	}
 	return nil
 }
 
@@ -216,7 +247,8 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	order.No = NewInOrderNo()
 	order.AppId = model.AppId
 	order.Title = model.Title
-	order.Status = model.Status
+	order.OrderStatus = model.OrderStatus
+	order.PayStatus = model.PayStatus
 	order.AddressId = model.AddressId
 	items := model.Items
 	if items==nil || len(items)<=0 {

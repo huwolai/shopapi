@@ -176,16 +176,15 @@ func MerchantWithId(c *gin.Context)  {
 }
 
 func MerchantWithOpenId(c *gin.Context)  {
-	_,err := security.CheckUserAuth(c.Request)
-	if err!=nil{
-		util.ResponseError(c.Writer,http.StatusUnauthorized,err.Error())
-		return
-	}
+
 	appId :=security.GetAppId2(c.Request)
 	openId := c.Param("open_id")
 
 	merchant,err := service.MerchantWithOpenId(openId,appId)
-
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
 	if merchant!=nil{
 		c.JSON(http.StatusOK,merchantToDto(merchant))
 		return
@@ -198,11 +197,7 @@ func MerchantWithOpenId(c *gin.Context)  {
 
 //附近商户
 func MerchatNear(c *gin.Context)  {
-	appId,err := CheckAppAuth(c)
-	if err!=nil{
-		util.ResponseError400(c.Writer,err.Error())
-		return
-	}
+	appId := security.GetAppId2(c.Request)
 
 	longitude :=c.Query("longitude")
 	latitude :=c.Query("latitude")
@@ -226,11 +221,6 @@ func MerchatNear(c *gin.Context)  {
 }
 
 func MerchantProds(c *gin.Context)  {
-	_,err := security.CheckUserAuth(c.Request)
-	if err!=nil{
-		util.ResponseError(c.Writer,http.StatusUnauthorized,err.Error())
-		return
-	}
 
 	merchantId := c.Param("merchant_id")
 	imerchantId,err := strconv.ParseInt(merchantId,10,64)
@@ -238,7 +228,6 @@ func MerchantProds(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"商户ID格式有误!")
 		return
 	}
-
 	appId := security.GetAppId2(c.Request)
 	flags := c.Query("flags")
 	noflags := c.Query("noflags")
@@ -301,12 +290,7 @@ func MerchantImgWithMerchantId(c *gin.Context)  {
 //根据图片标记查询商户图片
 func MerchantImgWithFlag(c *gin.Context)  {
 
-	appId,err := CheckAppAuth(c)
-	if err!=nil{
-		util.ResponseError(c.Writer,http.StatusUnauthorized,err.Error())
-		return
-	}
-
+	appId :=security.GetAppId2(c.Request)
 	flags :=c.Query("flags")
 	mopenId := c.Param("open_id")
 
