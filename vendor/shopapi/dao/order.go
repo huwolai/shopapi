@@ -56,7 +56,7 @@ func NewOrderDetail() *OrderDetail  {
 }
 
 func (self *Order) InsertTx(tx *dbr.Tx) (int64,error)  {
-	result,err :=tx.InsertInto("order").Columns("no","address_id","merchant_id","m_open_id","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
+	result,err :=tx.InsertInto("order").Columns("no","address_id","address","merchant_id","m_open_id","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
@@ -108,7 +108,7 @@ func (self *OrderDetail) OrderDetailWithUser(openId string,orderStatus []int,pay
 	if payStatus!=nil&&len(payStatus) >0 {
 		builder =builder.Where("`order`.pay_status in ?",payStatus)
 	}
-	_,err :=builder.OrderDir("create_time",false).LoadStructs(&orders)
+	_,err :=builder.OrderDir("`order`.create_time",false).LoadStructs(&orders)
 	if err!=nil{
 
 		return nil,err
