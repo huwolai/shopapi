@@ -179,6 +179,12 @@ func fillProdImgs(appId string,prodList []*ProductDetail) error {
 	return nil
 }
 
+func (self *Product) ProductDetailWithId(id int64) (*ProductDetail,error) {
+	var prodDetail *ProductDetail
+	_,err :=db.NewSession().SelectBySql("select pt.*,mt.`name` merchant_name,mt.id merchant_id from product pt,merchant_prod md,merchant mt WHERE pt.id=md.merchant_id and md.merchant_id=mt.id and pt.id=?",id).LoadStructs(&prodDetail)
+
+	return prodDetail,err
+}
 
 func (self *Product) ProductWithId(id int64,appId string) (*Product,error)  {
 	sess :=db.NewSession()

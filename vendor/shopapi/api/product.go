@@ -307,7 +307,7 @@ func ProdDetailWithProdId(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"商品没找到!")
 		return
 	}
-	c.JSON(http.StatusOK,productToDto(product))
+	c.JSON(http.StatusOK,productDetailToDto(product))
 }
 
 //商品图片

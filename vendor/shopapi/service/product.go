@@ -43,10 +43,10 @@ type ProdAttrValueDto struct  {
 }
 
 //商品详情
-func ProdDetailWithProdId(prodId int64,appId string) (*dao.Product,error)  {
+func ProdDetailWithProdId(prodId int64,appId string) (*dao.ProductDetail,error)  {
 
 	product := dao.NewProduct()
-	return product.ProductWithId(prodId,appId)
+	return product.ProductDetailWithId(prodId)
 }
 
 //商品图片
