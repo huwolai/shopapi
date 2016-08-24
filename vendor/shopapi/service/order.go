@@ -219,6 +219,26 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	return nil
 }
 
+func OrderAutoCancel(orderNo string,appId string)error  {
+	order :=dao.NewOrder()
+	order,err :=order.OrderWithNo(orderNo,appId)
+	if err!=nil{
+		return err
+	}
+
+	if order.OrderStatus!=comm.ORDER_PAY_STATUS_NOPAY ||
+	    order.OrderStatus!=comm.ORDER_PAY_STATUS_PAYING {
+		return nil
+	}
+	err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED,orderNo)
+	if err!=nil{
+		log.Error("更新订单状态失败! 订单号:",orderNo)
+		return err
+	}
+	log.Error("订单状态为:",order.PayStatus,"不能取消!")
+	return errors.New("订单状态错误!")
+}
+
 func OrderCancel(orderNo string,appId string) error {
 
 	order :=dao.NewOrder()

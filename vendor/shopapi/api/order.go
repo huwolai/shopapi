@@ -130,7 +130,7 @@ func OrderAdd(c *gin.Context)  {
 	orderDto.OrderNo = order.No
 	//开启订单过期取消
 	OrderAutoCancel(orderDto.OrderNo,appId)
-	
+
 	c.JSON(http.StatusOK,orderDto)
 }
 
@@ -140,7 +140,8 @@ func OrderAutoCancel(orderNo string,appId string)  {
 	go func() {
 		<-t.C
 		log.Debug("订单",orderNo,"自动取消!")
-		err :=service.OrderCancel(orderNo,appId)
+		//#bug 存在bug可能性(如果订单已取消,第三方支付回调的时候订单已是取消状态)
+		err :=service.OrderAutoCancel(orderNo,appId)
 		if err!=nil{
 			log.Error(err)
 			return
