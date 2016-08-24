@@ -48,7 +48,6 @@ func main() {
 
 	router.Use(CORSMiddleware())
 
-
 	v1 := router.Group("/v1")
 	{
 		comm :=v1.Group("/comm")

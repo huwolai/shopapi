@@ -168,7 +168,7 @@ func OrderDetailWithNo(orderNo string,appId string) (*dao.OrderDetail,error)  {
 	return orderDetail,err
 }
 
-func OrderPayForAccount(openId string,orderNo string,appId string) error  {
+func OrderPayForAccount(openId string,orderNo string,payToken string,appId string) error  {
 
 	order :=dao.NewOrder()
 	order,err :=order.OrderWithNo(orderNo,appId)
@@ -184,30 +184,9 @@ func OrderPayForAccount(openId string,orderNo string,appId string) error  {
 		return  errors.New("订单不是待付款状态!")
 	}
 
-	if order.Code==""{
-		return  errors.New("订单没有预付款代号,订单数据有误!")
-	}
-	account :=dao.NewAccount()
-	account,err =account.AccountWithOpenId(openId,appId)
-	if err!=nil {
-		return err
-	}
-	if account==nil{
-		return errors.New("没有找到用户的账户信息!请重新登录再试")
-	}
-	//获取支付token
-	params := map[string]interface{}{
-		"open_id": order.OpenId,
-		"password": account.Password,
-	}
-	resultPayTokenMap,err := RequestPayApi("/pay/token",params)
-	if err!=nil{
-		return err
-	}
-	paytoken :=resultPayTokenMap["pay_token"].(string)
 	//支付预付款
-	params = map[string]interface{}{
-		"pay_token": paytoken,
+	params := map[string]interface{}{
+		"pay_token": payToken,
 		"open_id": order.OpenId,
 		"code": order.Code,
 	}

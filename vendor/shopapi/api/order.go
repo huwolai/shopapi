@@ -181,9 +181,20 @@ func OrderPayForAccount(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"订单号不能为空!")
 		return
 	}
+	var paramMap map[string]interface{}
+	err = c.BindJSON(&paramMap)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"参数有误!")
+		return
+	}
+	payToken :=paramMap["pay_token"]
+	if payToken==nil{
+		util.ResponseError400(c.Writer,"支付token不能为空!")
+		return
+	}
 
 	appId :=security.GetAppId2(c.Request)
-	err =service.OrderPayForAccount(openId,orderNo,appId)
+	err =service.OrderPayForAccount(openId,orderNo,payToken.(string),appId)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return
