@@ -115,6 +115,12 @@ func main() {
 		//商户
 		merchant :=v1.Group("/merchant")
 		{
+			//添加商户服务时间
+			merchant.POST("/:merchant_id/servicetimes",api.MerchantServiceTimeAdd)
+			//查询商户服务时间
+			merchant.GET("/:merchant_id/servicetimes",api.MerchantServiceTimeGet)
+			//商户营业时间信息
+			merchant.GET("/:merchant_id/open",api.MerchantOpenWithMerchantId)
 			//商户图片
 			merchant.GET("/:merchant_id/imgs",api.MerchantImgWithMerchantId)
 			//商户资料

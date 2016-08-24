@@ -53,6 +53,26 @@ CREATE TABLE IF NOT EXISTS merchant(
 
 )CHARACTER SET utf8mb4;
 
+-- 商户营业时间
+CREATE TABLE IF NOT EXISTS merchant_open(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
+  merchant_id INT NOT NULL unique COMMENT '商户ID',
+  is_open int COMMENT '是否营业',
+  open_time_start VARCHAR(30) DEFAULT '' COMMENT '营业开始时间',
+  open_time_end VARCHAR(30) DEFAULT '' COMMENT '营业结束时间',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+
+)CHARACTER SET utf8mb4;
+
+-- 商户每天服务时间(特殊表,不是标准电商表)
+CREATE TABLE IF NOT EXISTS merchant_service_time(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  merchant_id BIGINT COMMENT '商户ID',
+  stime VARCHAR(20) COMMENT '时间'
+) CHARACTER SET utf8mb4;
+
 -- 商户图片
 CREATE TABLE IF NOT EXISTS merchant_imgs(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -263,6 +283,10 @@ CREATE TABLE IF NOT EXISTS order_address (
 -- INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','海鲜','海鲜','../static/mall-icon3.png','');
 -- INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','食材','食材','../static/mall-icon4.png','');
 -- INSERT INTO prod_attr_key(prod_id, attr_key, attr_name, status) VALUES (1,'time','时间',1);
+
+#INSERT INTO prod_imgs(app_id, prod_id, flag, url, json) VALUES ('23232',1,'','http://img3.redocn.com/tupian/20141029/yipinyangpaimeishi_3346599.jpg','');
+#INSERT INTO prod_imgs(app_id, prod_id, flag, url, json) VALUES ('23232',1,'','http://pic47.nipic.com/20140909/11902156_133459495000_2.jpg','');
+
 -- +migrate StatementBegin
 CREATE  FUNCTION  `getDistance`(
    lon1 float(10,7)

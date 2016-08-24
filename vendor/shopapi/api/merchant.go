@@ -74,6 +74,23 @@ type MerchantDetailDto struct  {
 
 }
 
+type MerchantOpenDto struct  {
+	Id int64 `json:"id"`
+	AppId string `json:"app_id"`
+	MerchantId int64 `json:"merchant_id"`
+	IsOpen int
+	OpenTimeStart string `json:"open_time_start"`
+	OpenTimeEnd string `json:"open_time_end"`
+}
+
+type MerchantServiceTimeDto struct  {
+	//商户ID
+	MerchantId int64 `json:"merchant_id"`
+	//服务时间
+	Stime []string `json:"stimes"`
+
+}
+
 func MerchantUpdate(c *gin.Context)  {
 	openId,err := security.CheckUserAuth(c.Request)
 	if err!=nil{
@@ -152,6 +169,27 @@ func MerchantAdd(c *gin.Context)  {
 
 }
 
+func MerchantOpenWithMerchantId(c *gin.Context)  {
+	merchantId := c.Param("merchant_id")
+	imerchantId,err := strconv.ParseInt(merchantId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商户ID有误!")
+		return
+	}
+
+	merchantOpen,err :=service.MerchantOpenWithMerchantId(imerchantId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	if merchantOpen==nil{
+		util.ResponseError400(c.Writer,"商户没有设置营业时间!")
+		return
+	}
+
+	c.JSON(http.StatusOK,merchantOpenToDto(merchantOpen))
+}
+
 func MerchantWithId(c *gin.Context)  {
 	appId :=security.GetAppId2(c.Request)
 	id := c.Param("merchant_id")
@@ -194,6 +232,55 @@ func MerchantWithOpenId(c *gin.Context)  {
 	util.ResponseError400(c.Writer,"没有找到信息!")
 
 
+}
+
+func MerchantServiceTimeGet(c *gin.Context)  {
+	merchantId :=c.Param("merchant_id")
+	imerchantId,err := strconv.ParseInt(merchantId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商户ID有误!")
+		return
+	}
+
+	merchantServiceTimes,err := service.MerchantServiceTimeGet(imerchantId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	if merchantServiceTimes==nil{
+		dto :=&MerchantServiceTimeDto{}
+		dto.MerchantId = imerchantId
+		c.JSON(http.StatusOK,dto)
+		return
+	}
+
+	c.JSON(http.StatusOK,merchantServiceTimesToDto(merchantServiceTimes,imerchantId))
+}
+
+func MerchantServiceTimeAdd(c *gin.Context)  {
+	_,err := security.CheckUserAuth(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,err.Error())
+		return
+	}
+	var params *MerchantServiceTimeDto
+	err =c.BindJSON(&params)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"参数有误!")
+		return
+	}
+	merchantId :=c.Param("merchant_id")
+	imerchantId,err := strconv.ParseInt(merchantId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商户ID有误!")
+		return
+	}
+	err =service.MerchantServiceTimeAdd(imerchantId,params.Stime)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	util.ResponseSuccess(c.Writer)
 }
 
 //附近商户
@@ -409,6 +496,31 @@ func merchantToDto(model *dao.Merchant)  *MerchantDto {
 	dto.Id = model.Id
 	dto.OpenId = model.OpenId
 	dto.Weight = model.Weight
+
+	return dto
+}
+
+func merchantOpenToDto(model *dao.MerchantOpen) *MerchantOpenDto  {
+	dto :=&MerchantOpenDto{}
+	dto.Id = model.Id
+	dto.AppId = model.AppId
+	dto.IsOpen = model.IsOpen
+	dto.MerchantId = model.MerchantId
+	dto.OpenTimeEnd = model.OpenTimeEnd
+	dto.OpenTimeStart = model.OpenTimeStart
+
+	return dto
+}
+
+func merchantServiceTimesToDto(models []*dao.MerchantServiceTime,merchantId int64) *MerchantServiceTimeDto  {
+
+	dto :=&MerchantServiceTimeDto{}
+	stimes :=make([]string,0)
+	for _,model :=range models  {
+		stimes = append(stimes,model.Stime)
+	}
+	dto.MerchantId = merchantId
+	dto.Stime = stimes
 
 	return dto
 }

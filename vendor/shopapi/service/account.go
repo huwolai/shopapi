@@ -170,11 +170,15 @@ func LoginForSMS(mobile string,code string,appId string) (map[string]interface{}
 	}
 
 	merchant := dao.NewMerchant()
-	isMerchant,err :=merchant.MerchantExistWithOpenId(openId,appId)
+	merchant,err =merchant.MerchantWithOpenId(openId,appId)
+	if err!=nil{
+		return nil,err
+	}
 
 	commusermap["is_merchant"] = 0
-	if isMerchant {
+	if merchant!=nil {
 		commusermap["is_merchant"]=1
+		commusermap["merchant_id"] = merchant.Id
 	}
 
 	return commusermap,nil

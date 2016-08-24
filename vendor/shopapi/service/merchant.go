@@ -269,6 +269,47 @@ func ProdDefaultAddForMerchant(merchant *dao.Merchant) error {
 	return err
 }
 
+func MerchantServiceTimeGet(merchantId int64) ([]*dao.MerchantServiceTime,error) {
+
+	merchantServiceTime:=dao.NewMerchantServiceTime()
+	return merchantServiceTime.WithMerchantId(merchantId)
+}
+
+//merchantId 商户ID  stimes服务时间(例如 0901)
+func MerchantServiceTimeAdd(merchantId int64,stimes []string) error  {
+
+	sesison :=db.NewSession()
+	tx,_ :=sesison.Begin()
+	defer func() {
+		if err :=recover();err!=nil{
+			tx.Rollback()
+		}
+	}()
+	if stimes!=nil&&len(stimes)>0 {
+		merchantServiceTime := dao.NewMerchantServiceTime()
+		err :=merchantServiceTime.DeleteWithMerchantIdTx(merchantId,tx)
+		if err!=nil{
+			tx.Rollback()
+			return err
+		}
+		for _,stime :=range stimes {
+			merchantServiceTime := dao.NewMerchantServiceTime()
+			merchantServiceTime.MerchantId = merchantId
+			merchantServiceTime.Stime = stime
+			err :=merchantServiceTime.InsertTx(tx)
+			if err!=nil{
+				tx.Rollback()
+				return err
+			}
+		}
+	}
+
+	tx.Commit()
+
+	return nil
+
+}
+
 func  MerchantNear(longitude float64,latitude float64,appId string) ([]*dao.MerchantDetail,error)   {
 	mDetail :=dao.NewMerchantDetail()
 	mDetailList,err := mDetail.MerchantNear(longitude,latitude,appId)
@@ -306,5 +347,12 @@ func MerchantWithId(id int64,appId string) (*dao.Merchant,error)  {
 	merchant,err := merchant.MerchantWithId(id)
 
 	return merchant,err
+}
+
+func MerchantOpenWithMerchantId(merchantId int64)  (*dao.MerchantOpen,error)  {
+	merchantOpen :=  dao.NewMerchantOpen()
+	merchantOpen,err :=merchantOpen.WithMerchantId(merchantId)
+
+	return merchantOpen,err
 }
 
