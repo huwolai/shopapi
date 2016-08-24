@@ -80,6 +80,9 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 	if err!=nil {
 		return nil,err
 	}
+	if order==nil{
+		return nil,errors.New("没有找到对应的订单信息!")
+	}
 
 	address := dao.NewAddress()
 	address,err = address.WithId(model.AddressId)
@@ -88,27 +91,39 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 	}
 
 	if model.PayType == comm.Pay_Type_Account {//账户支付
-		params := map[string]interface{}{
-			"open_id":order.OpenId,
-			"type": 1,
-			"amount": int64(order.ActPrice*100),
-			"title": order.Title,
-			"remark": order.Title,
+
+		if order.PayStatus==comm.ORDER_PAY_STATUS_NOPAY{
+			params := map[string]interface{}{
+				"open_id":order.OpenId,
+				"type": 1,
+				"amount": int64(order.ActPrice*100),
+				"title": order.Title,
+				"remark": order.Title,
+			}
+			resultImprestMap,err := RequestPayApi("/pay/makeimprest",params)
+			if err!=nil{
+				return nil,err
+			}
+			code :=resultImprestMap["code"].(string)
+			err =order.OrderPayapiUpdateWithNoAndCode("",address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
+			if err!=nil{
+				log.Error(err)
+				return nil,err
+			}
+
+			resultMap := map[string]interface{}{
+				"open_id": resultImprestMap["open_id"],
+				"code": resultImprestMap["code"],
+			}
+			return resultMap,nil
+		}else {
+			resultMap := map[string]interface{}{
+				"open_id": order.OpenId,
+				"code": order.Code,
+			}
+			return resultMap,nil
 		}
-		resultImprestMap,err := RequestPayApi("/pay/makeimprest",params)
-		if err!=nil{
-			return nil,err
-		}
-		code :=resultImprestMap["code"].(string)
-		err =order.OrderPayapiUpdateWithNoAndCode("",address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
-		if err!=nil{
-			log.Error(err)
-			return nil,err
-		}
-		return resultImprestMap,nil
 	}
-
-
 	//参数
 	params := map[string]interface{}{
 		"open_id": order.OpenId,

@@ -3,7 +3,7 @@
   "mysql_password":"123456",
   "mysql_user":"qiyunxin",
   "mysql_db":"sampledb",
-  "payapi_appid": "shopapi",
+  "payapi_appid": "hwl",
   "payapi_appkey": "4537C07A563C4899B5A592DA3CC84A10",
   "payapi_url": "http://payapi.qiyunxin.svc.cluster.local:8080",
   "commuser_url": "http://commuserapi.qiyunxin.svc.cluster.local:8080/v1",

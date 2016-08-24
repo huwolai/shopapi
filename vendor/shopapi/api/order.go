@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 	"gitlab.qiyunxin.com/tangtao/utils/security"
+	"time"
 )
 
 type OrderDto struct  {
@@ -130,6 +131,19 @@ func OrderAdd(c *gin.Context)  {
 	c.JSON(http.StatusOK,orderDto)
 }
 
+func OrderAutoCancel(orderNo string,appId string)  {
+	t := time.NewTimer(time.Minute * 30)
+
+	go func() {
+		<-t.C
+		log.Debug("订单",orderNo,"自动取消!")
+		err :=service.OrderCancel(orderNo,appId)
+		if err!=nil{
+			log.Error(err)
+			return
+		}
+	}()
+}
 
 
 //预支付订单
