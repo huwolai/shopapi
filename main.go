@@ -95,7 +95,7 @@ func main() {
 		product :=v1.Group("/product")
 		{
 			//根据属性path查询商品的SKU
-			product.GET("/:prod_id/sku/:attr_symbol_path",api.ProductSkuWithProdIdAndSymbolPath)
+			product.GET("/:prod_id/sku",api.ProductSkuWithProdIdAndSymbolPath)
 			product.GET("/:prod_id/imgs",api.ProdImgsWithProdId)
 			product.GET("/:prod_id/detail",api.ProdDetailWithProdId)
 			//通过属性生成sku (特殊接口)

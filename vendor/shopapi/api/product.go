@@ -140,7 +140,7 @@ type ProdSkuDto struct  {
 func ProductSkuWithProdIdAndSymbolPath(c *gin.Context) {
 
 	prodId :=c.Param("prod_id")
-	symbolPath :=c.Param("attr_symbol_path")
+	symbolPath :=c.Query("attr_symbol_path")
 	iprodId,err := strconv.ParseInt(prodId,10,64)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
