@@ -223,7 +223,6 @@ func payBind(openId string,password string) error  {
 	header := GetPayAuthHeader(openId)
 	params :=map[string]interface{}{
 		"open_id":openId,
-		"password":password,
 	}
 	paramData,_:= json.Marshal(params);
 	response,err :=network.Post(config.GetValue("payapi_url").ToString()+"/pay/bind",paramData,header)
