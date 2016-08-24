@@ -170,6 +170,14 @@ func ProductAttrValues(vsearch string,attrKey string,prodId int64) ([]*dao.ProdA
 	return prodAttrVals,err
 }
 
+func ProductSkuWithProdIdAndSymbolPath(prodId int64,symbolPath string) (*dao.ProdSku,error)  {
+
+	prodSku :=dao.NewProdSku()
+	prodSku,err :=prodSku.WithProdIdAndSymbolPath(symbolPath,prodId)
+
+	return prodSku,err
+}
+
 func ProductAndAttrAdd(dto *ProdAndAttrDto)  (*ProdAndAttrDto,error) {
 
 	product :=dao.NewProduct()

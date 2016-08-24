@@ -125,6 +125,53 @@ type CategoryDto struct  {
 
 }
 
+type ProdSkuDto struct  {
+	Id int64 `json:"id"`
+	SkuNo string `json:"sku_no"`
+	ProdId int64 `json:"prod_id"`
+	AppId string `json:"app_id"`
+	Price float64 `json:"price"`
+	DisPrice float64 `json:"dis_price"`
+	AttrSymbolPath string `json:"attr_symbol_path"`
+	Stock int `json:"stock"`
+	Json string `json:"json"`
+}
+
+func ProductSkuWithProdIdAndSymbolPath(c *gin.Context) {
+
+	prodId :=c.Param("prod_id")
+	symbolPath :=c.Param("attr_symbol_path")
+	iprodId,err := strconv.ParseInt(prodId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	prodSku,err :=service.ProductSkuWithProdIdAndSymbolPath(iprodId,symbolPath)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	if prodSku==nil{
+		util.ResponseError400(c.Writer,"商品sku没找到!")
+		return
+	}
+
+	c.JSON(http.StatusOK,prodSkuToDto(prodSku))
+}
+
+func prodSkuToDto(model *dao.ProdSku) *ProdSkuDto  {
+	prodSku :=&ProdSkuDto{}
+	prodSku.DisPrice = model.DisPrice
+	prodSku.Price = model.Price
+	prodSku.AppId = model.AppId
+	prodSku.ProdId = model.ProdId
+	prodSku.AttrSymbolPath = model.AttrSymbolPath
+	prodSku.Stock = model.Stock
+	prodSku.SkuNo = model.SkuNo
+	prodSku.Id = model.Id
+	return prodSku
+}
+
 /**
 添加商品
  */
