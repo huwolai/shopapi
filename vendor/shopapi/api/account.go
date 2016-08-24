@@ -90,6 +90,7 @@ func PayPwdUpdateSMS(c *gin.Context)  {
 		//code =GetRandCode()
 		code = "1111"
 	}
+	code = "1111"
 	redis.SetAndExpire(comm.CODE_PAYPWD_PREFIX+mobile,code,comm.CODE_PAYPWD_EXPIRE)
 
 	//err =service.SendCodeSMS(mobile,code)
