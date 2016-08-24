@@ -84,7 +84,7 @@ func (self *Product) WithFlag(flag string,merchantId int64)  ([]*Product,error) 
 func (self *ProductDetail) ProductListWithRecomm(appId string) ([]*ProductDetail,error)  {
 	session := db.NewSession()
 	var prodList []*ProductDetail
-	_,err :=session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.`status`,pt.flag,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,prod_category pc,product pt where md.app_id=pc.app_id and md.prod_id=pc.prod_id and md.merchant_id=mt.id and pc.app_id=pt.app_id and pc.prod_id=pt.id and pt.is_recom=1 and pt.app_id=?",appId).LoadStructs(&prodList)
+	_,err :=session.SelectBySql("select * from product  where is_recom=1 and app_id=?",appId).LoadStructs(&prodList)
 	if err!=nil{
 		log.Debug("----err",err)
 		return nil,err
