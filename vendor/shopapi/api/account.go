@@ -92,12 +92,12 @@ func PayPwdUpdateSMS(c *gin.Context)  {
 	}
 	redis.SetAndExpire(comm.CODE_PAYPWD_PREFIX+mobile,code,comm.CODE_PAYPWD_EXPIRE)
 
-	err =service.SendCodeSMS(mobile,code)
-	if err!=nil{
-		log.Error(err)
-		util.ResponseError400(c.Writer,"短信发送失败!")
-		return
-	}
+	//err =service.SendCodeSMS(mobile,code)
+	//if err!=nil{
+	//	log.Error(err)
+	//	util.ResponseError400(c.Writer,"短信发送失败!")
+	//	return
+	//}
 
 	util.ResponseSuccess(c.Writer)
 }
