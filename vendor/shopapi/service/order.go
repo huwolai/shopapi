@@ -214,15 +214,15 @@ func OrderCancel(orderNo string,appId string) error {
 	if order.OrderStatus==comm.ORDER_STATUS_SURED {
 		return errors.New("订单已确认,不能取消!")
 	}
-	if order.Code=="" {
-		return errors.New("订单不存在预付款code!")
-	}
 
-	params :=map[string]interface{}{
-		"code":order.Code,
-	}
 
 	if order.OrderStatus==comm.ORDER_PAY_STATUS_SUCCESS { //付款了的订单需要退款
+		if order.Code=="" {
+			return errors.New("订单不存在预付款code!")
+		}
+		params :=map[string]interface{}{
+			"code":order.Code,
+		}
 		_,err =RequestPayApi("/imprest/refund",params)
 		if err!=nil{
 			return err
