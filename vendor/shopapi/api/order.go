@@ -128,6 +128,9 @@ func OrderAdd(c *gin.Context)  {
 		return
 	}
 	orderDto.OrderNo = order.No
+	//开启订单过期取消
+	OrderAutoCancel(orderDto.OrderNo,appId)
+	
 	c.JSON(http.StatusOK,orderDto)
 }
 
