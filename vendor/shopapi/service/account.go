@@ -141,13 +141,13 @@ func LoginForSMS(mobile string,code string,appId string) (map[string]interface{}
 		return nil,err
 	}
 	if account==nil {
-		password :=util.GenerUUId()
+		//password :=util.GenerUUId()
 		account = dao.NewAccount()
 		account.AppId = appId
 		account.Money = 0
 		account.Mobile = mobile
 		account.OpenId = openId
-		account.Password = password
+		//account.Password = password
 		account.Status =comm.ACCOUNT_STATUS_WAIT_BINDPAY //等待开通支付
 		err =account.Insert()
 		if err!=nil {
