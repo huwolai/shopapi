@@ -99,7 +99,7 @@ func (self *OrderDetail) OrderDetailWithMerchantId(merchantId int64,orderStatus 
 	sess := db.NewSession()
 	var orders []*OrderDetail
 
-	builder :=sess.Select("*").From("`order`").Where("merchant_id=?",merchantId).Where("app_id=?",appId)
+	builder :=sess.Select("`order`.*","address.name","address.mobile").From("`order`").LeftJoin("address","`order`.address_id=address.id").Where("merchant_id=?",merchantId).Where("app_id=?",appId)
 
 	if orderStatus!=nil&&len(orderStatus)>0{
 		builder =builder.Where("order_status in ?",orderStatus)
