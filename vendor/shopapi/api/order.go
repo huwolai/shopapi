@@ -241,6 +241,11 @@ func OrderCancel(c *gin.Context)  {
 	util.ResponseSuccess(c.Writer)
 }
 
+//订单拒绝取消
+func OrderRefuseCancel(c *gin.Context)  {
+	
+}
+
 //根据编号查询订单信息
 func OrderByNo(c *gin.Context)  {
 

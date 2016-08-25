@@ -226,8 +226,8 @@ func OrderAutoCancel(orderNo string,appId string)error  {
 		return err
 	}
 
-	if order.OrderStatus!=comm.ORDER_PAY_STATUS_NOPAY ||
-	    order.OrderStatus!=comm.ORDER_PAY_STATUS_PAYING {
+	if order.PayStatus!=comm.ORDER_PAY_STATUS_NOPAY ||
+	    order.PayStatus!=comm.ORDER_PAY_STATUS_PAYING {
 		return nil
 	}
 	err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED,orderNo)
@@ -237,6 +237,11 @@ func OrderAutoCancel(orderNo string,appId string)error  {
 	}
 	log.Error("订单状态为:",order.PayStatus,"不能取消!")
 	return errors.New("订单状态错误!")
+}
+
+func OrderRefuseCancel(orderNo string,appId string) error {
+
+	return nil
 }
 
 func OrderCancel(orderNo string,appId string) error {
@@ -251,7 +256,7 @@ func OrderCancel(orderNo string,appId string) error {
 	}
 
 
-	if order.OrderStatus==comm.ORDER_PAY_STATUS_SUCCESS { //付款了的订单需要退款
+	if order.PayStatus==comm.ORDER_PAY_STATUS_SUCCESS { //付款了的订单需要退款
 		if order.Code=="" {
 			return errors.New("订单不存在预付款code!")
 		}
