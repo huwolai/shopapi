@@ -435,8 +435,13 @@ func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
 	dto.AddressId = model.AddressId
 	dto.Address = model.Address
 	dto.Price = model.Price
-	dto.Name = model.Name
-	dto.Mobile = model.Mobile
+	if model.Name!=nil{
+		dto.Name = *model.Name
+	}
+	if model.Mobile!=nil{
+		dto.Mobile = *model.Mobile
+	}
+
 	dto.OrderStatus = model.OrderStatus
 	dto.PayStatus = model.PayStatus
 	dto.Title = model.Title
