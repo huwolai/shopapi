@@ -262,12 +262,20 @@ func OrderCancel(orderNo string,appId string) error {
 		if err!=nil{
 			return err
 		}
+		err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED_WAIT_SURE,orderNo)
+		if err!=nil{
+			log.Error("更新订单状态失败! 订单号:",orderNo)
+			return err
+		}
+
+	} else {
+		err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED,orderNo)
+		if err!=nil{
+			log.Error("更新订单状态失败! 订单号:",orderNo)
+			return err
+		}
 	}
-	err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED,orderNo)
-	if err!=nil{
-		log.Error("更新订单状态失败! 订单号:",orderNo)
-		return err
-	}
+
 	return nil
 }
 
