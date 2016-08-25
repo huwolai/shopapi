@@ -291,20 +291,21 @@ CREATE TABLE IF NOT EXISTS order_address (
 ) CHARACTER SET utf8mb4;
 
 
--- INSERT INTO product(app_id, title, description, price, dis_price, status, is_recom) VALUES ('23232','测试商品','测试商品',10.00,9.0,1,1);
--- INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','家常用餐','家常菜','../static/area_1.png','home');
--- INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','系列套餐','私人订制','../static/area_2.png','home');
--- INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','私人订制','家常菜','../static/area_3.png','home');
-
--- INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','优惠','优惠','../../static/mall-icon1.png','');
--- INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','促销','促销','../static/mall-icon2.png','');
--- INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','海鲜','海鲜','../static/mall-icon3.png','');
--- INSERT INTO category(app_id, title, description, icon, flag) VALUES ('23232','食材','食材','../static/mall-icon4.png','');
--- INSERT INTO prod_attr_key(prod_id, attr_key, attr_name, status) VALUES (1,'time','时间',1);
-
-#INSERT INTO prod_imgs(app_id, prod_id, flag, url, json) VALUES ('23232',1,'','http://img3.redocn.com/tupian/20141029/yipinyangpaimeishi_3346599.jpg','');
-#INSERT INTO prod_imgs(app_id, prod_id, flag, url, json) VALUES ('23232',1,'','http://pic47.nipic.com/20140909/11902156_133459495000_2.jpg','');
-
+# INSERT INTO product(app_id, title, description, price, dis_price, status, is_recom) VALUES ('shopapi','测试商品','测试商品',10.00,9.0,1,1);
+# INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','家常用餐','家常菜','../static/area_1.png','home');
+# INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','系列套餐','私人订制','../static/area_2.png','home');
+# INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','私人订制','家常菜','../static/area_3.png','home');
+#
+# INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','优惠','优惠','../../static/mall-icon1.png','');
+# INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','促销','促销','../static/mall-icon2.png','');
+# INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','海鲜','海鲜','../static/mall-icon3.png','');
+# INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','食材','食材','../static/mall-icon4.png','');
+# INSERT INTO prod_attr_key(prod_id, attr_key, attr_name, status) VALUES (1,'time','时间',1);
+#
+# INSERT INTO prod_imgs(app_id, prod_id, flag, url, json) VALUES ('shopapi',1,'','http://img3.redocn.com/tupian/20141029/yipinyangpaimeishi_3346599.jpg','');
+# INSERT INTO prod_imgs(app_id, prod_id, flag, url, json) VALUES ('shopapi',1,'','http://pic47.nipic.com/20140909/11902156_133459495000_2.jpg','');
+#INSERT INTO merchant_prod(app_id, merchant_id, prod_id) VALUES ('shopapi',1,1);
+#INSERT INTO prod_sku(sku_no, prod_id, app_id, price, dis_price, attr_symbol_path, stock) VALUES ('1234',1,'shopapi',0.01,0.01,'',1);
 -- +migrate StatementBegin
 CREATE  FUNCTION  `getDistance`(
    lon1 float(10,7)

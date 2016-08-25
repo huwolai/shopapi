@@ -176,7 +176,7 @@ func LoginForSMS(mobile string,code string,appId string) (map[string]interface{}
 	}
 
 	commusermap["is_merchant"] = 0
-	if merchant!=nil {
+	if merchant!=nil&&merchant.Status==1 {
 		commusermap["is_merchant"]=1
 		commusermap["merchant_id"] = merchant.Id
 	}
