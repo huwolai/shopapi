@@ -24,7 +24,6 @@ const (
 
 	//等待确认
 	ORDER_STATUS_WAIT_SURE = 0
-
 	//已确认
 	ORDER_STATUS_SURED = 1
 	//已取消
@@ -33,6 +32,10 @@ const (
 	ORDER_STATUS_INVALID = 3
 	//退货
 	ORDER_STATUS_REJECTED = 4
+	//订单取消等待确认
+	ORDER_STATUS_CANCELED_WAIT_SURE = 5
+	//订单取消拒绝确认
+	ORDER_STATUS_CANCELED_REJECTED_SURE = 6
 )
 
 const (

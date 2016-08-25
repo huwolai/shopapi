@@ -11,6 +11,8 @@ type AddressDto struct  {
 	OpenId string `json:"open_id"`
 	Longitude float64 `json:"longitude"`
 	Latitude float64 `json:"latitude"`
+	Mobile string `json:"mobile"`
+	Name string `json:"name"`
 	Address string `json:"address"`
 	Weight int `json:"weight"`
 	Json string `json:"json"`
@@ -83,6 +85,8 @@ func fillAddress(model *dao.Address,dto *AddressDto)  {
 	model.Latitude = dto.Latitude
 	model.AppId = dto.AppId
 	model.Json = dto.Json
+	model.Name = dto.Name
+	model.Mobile = dto.Mobile
 	model.OpenId = dto.OpenId
 
 }
@@ -98,6 +102,8 @@ func AddressToDto(model *dao.Address) *AddressDto  {
 	dto.OpenId = model.OpenId
 	dto.Weight = model.Weight
 	dto.Id = model.Id
+	dto.Name = model.Name
+	dto.Mobile = model.Mobile
 	dto.AppId  = model.AppId
 
 	return dto
@@ -112,6 +118,8 @@ func AddressDtoToModel(dto *AddressDto) *dao.Address {
 	model.Latitude = dto.Latitude
 	model.Longitude = dto.Longitude
 	model.Weight = dto.Weight
+	model.Name = dto.Name
+	model.Mobile = dto.Mobile
 	model.Id = dto.Id
 	return model
 }

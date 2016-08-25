@@ -216,6 +216,8 @@ CREATE TABLE IF NOT EXISTS `order` (
   shipping_fee  decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '配送费用',
   json VARCHAR(1000) DEFAULT '' COMMENT '附加字段',
   flag VARCHAR(100) DEFAULT '' COMMENT '标记',
+  cancel_reason VARCHAR(1000) DEFAULT '' COMMENT '取消订单原因',
+  reject_cancel_reason VARCHAR(1000) DEFAULT '' COMMENT '拒绝取消订单的原因(商户方)',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
   UNIQUE (`no`),
