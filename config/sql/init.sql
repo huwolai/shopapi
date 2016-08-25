@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS account(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
   open_id VARCHAR(255) DEFAULT '' COMMENT '用户ID',
+  mobile VARCHAR(255) DEFAULT '' COMMENT '手机号',
   money NUMERIC(12,2) COMMENT '账户金额',
   password VARCHAR(255) DEFAULT '' COMMENT '账户密码',
   status int COMMENT '状态 1.正常 0.锁定 2.等待开通支付',
