@@ -346,13 +346,13 @@ func OrderCancel(orderNo string,reason string,appId string) error {
 		if order.Code=="" {
 			return errors.New("订单不存在预付款code!")
 		}
-		params :=map[string]interface{}{
-			"code":order.Code,
-		}
-		_,err =RequestPayApi("/imprest/refund",params)
-		if err!=nil{
-			return err
-		}
+		//params :=map[string]interface{}{
+		//	"code":order.Code,
+		//}
+		//_,err =RequestPayApi("/imprest/refund",params)
+		//if err!=nil{
+		//	return err
+		//}
 
 		tx,_ :=db.NewSession().Begin()
 		err = order.UpdateWithOrderStatusTx(comm.ORDER_STATUS_CANCELED_WAIT_SURE,orderNo,tx)
