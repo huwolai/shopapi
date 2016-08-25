@@ -243,7 +243,35 @@ func OrderCancel(c *gin.Context)  {
 
 //订单拒绝取消
 func OrderRefuseCancel(c *gin.Context)  {
-	
+	_,err := security.CheckUserAuth(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+	orderNo :=c.Param("order_no")
+	appId := security.GetAppId2(c.Request)
+	err =service.OrderRefuseCancel(orderNo,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	util.ResponseSuccess(c.Writer)
+}
+
+func OrderAgreeCancel(c *gin.Context)  {
+	_,err := security.CheckUserAuth(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+	orderNo :=c.Param("order_no")
+	appId := security.GetAppId2(c.Request)
+	err = service.OrderAgreeCancel(orderNo,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	util.ResponseSuccess(c.Writer)
 }
 
 //根据编号查询订单信息

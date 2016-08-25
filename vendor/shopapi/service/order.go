@@ -239,7 +239,67 @@ func OrderAutoCancel(orderNo string,appId string)error  {
 	return errors.New("订单状态错误!")
 }
 
+//商户同意取消订单
+func OrderAgreeCancel(orderNo string,appId string) error {
+	order := dao.NewOrder()
+	order, err := order.OrderWithNo(orderNo, appId)
+	if err != nil {
+		return err
+	}
+	if order == nil {
+		return errors.New("没有找到此订单!")
+	}
+	if order.OrderStatus != comm.ORDER_STATUS_CANCELED_WAIT_SURE {
+		return errors.New("订单状态不是等待取消确认状态!")
+	}
+
+	if order.PayStatus == comm.ORDER_PAY_STATUS_SUCCESS {
+		if order.Code=="" {
+			return errors.New("订单不存在预付款code!")
+		}
+		params :=map[string]interface{}{
+			"code":order.Code,
+		}
+		_,err =RequestPayApi("/imprest/refund",params)
+		if err!=nil{
+			return err
+		}
+		err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED,orderNo)
+		if err!=nil{
+			log.Error("更新订单状态失败! 订单号:",orderNo)
+			return err
+		}
+	}else {
+		err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED,orderNo)
+		if err!=nil{
+			log.Error("更新订单状态失败! 订单号:",orderNo)
+			return err
+		}
+	}
+
+	return nil
+
+}
+
 func OrderRefuseCancel(orderNo string,appId string) error {
+	order :=dao.NewOrder()
+	order,err :=order.OrderWithNo(orderNo,appId)
+	if err!=nil{
+		return err
+	}
+	if order==nil{
+		return errors.New("没有找到此订单!")
+	}
+	if order.OrderStatus!=comm.ORDER_STATUS_CANCELED_WAIT_SURE {
+		return errors.New("订单状态不是等待取消确认状态!")
+	}
+
+	//更新为拒绝取消订单状态
+	err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED_REJECTED,orderNo)
+	if err!=nil{
+		log.Error("更新订单状态失败! 订单号:",orderNo)
+		return err
+	}
 
 	return nil
 }
@@ -283,6 +343,7 @@ func OrderCancel(orderNo string,appId string) error {
 
 	return nil
 }
+
 
 
 func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {

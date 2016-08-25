@@ -150,6 +150,10 @@ func main() {
 			order.GET("/detail/:order_no",api.OrderDetailWithNo)
 			//取消订单
 			order.PUT("/:order_no/cancel",api.OrderCancel)
+			//商户同意取消订单
+			order.PUT("/:order_no/agree_cancel",api.OrderAgreeCancel)
+			//商户拒绝取消订单
+			order.PUT("/:order_no/refuse_cancel",api.OrderRefuseCancel)
 		}
 
 		pay := v1.Group("/pay")
