@@ -260,7 +260,7 @@ func OrderRefuseCancel(c *gin.Context)  {
 	}
 	orderNo :=c.Param("order_no")
 	var params map[string]interface{}
-	err =c.BindJSON(params)
+	err =c.BindJSON(&params)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"参数有误!")
 		return
