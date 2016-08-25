@@ -249,8 +249,14 @@ func OrderRefuseCancel(c *gin.Context)  {
 		return
 	}
 	orderNo :=c.Param("order_no")
+	var params map[string]interface{}
+	err =c.BindJSON(params)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"参数有误!")
+		return
+	}
 	appId := security.GetAppId2(c.Request)
-	err =service.OrderRefuseCancel(orderNo,appId)
+	err =service.OrderRefuseCancel(orderNo,params["reason"].(string),appId)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return
@@ -265,8 +271,14 @@ func OrderAgreeCancel(c *gin.Context)  {
 		return
 	}
 	orderNo :=c.Param("order_no")
+	var params map[string]interface{}
+	err =c.BindJSON(params)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"参数有误!")
+		return
+	}
 	appId := security.GetAppId2(c.Request)
-	err = service.OrderAgreeCancel(orderNo,appId)
+	err = service.OrderAgreeCancel(orderNo,params["reason"].(string),appId)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return

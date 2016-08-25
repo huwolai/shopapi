@@ -240,7 +240,7 @@ func OrderAutoCancel(orderNo string,appId string)error  {
 }
 
 //商户同意取消订单
-func OrderAgreeCancel(orderNo string,appId string) error {
+func OrderAgreeCancel(orderNo string,reason string,appId string) error {
 	order := dao.NewOrder()
 	order, err := order.OrderWithNo(orderNo, appId)
 	if err != nil {
@@ -264,11 +264,26 @@ func OrderAgreeCancel(orderNo string,appId string) error {
 		if err!=nil{
 			return err
 		}
-		err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED,orderNo)
+		tx,_ :=db.NewSession().Begin()
+		defer func() {
+			if err :=recover();err!=nil{
+				tx.Rollback()
+				log.Error(err)
+			}
+		}()
+		err = order.UpdateWithOrderStatusTx(comm.ORDER_STATUS_CANCELED,orderNo,tx)
 		if err!=nil{
+			tx.Rollback()
 			log.Error("更新订单状态失败! 订单号:",orderNo)
 			return err
 		}
+		err :=order.UpdateWithCancelReasonTx(reason,orderNo,tx)
+		if err!=nil{
+			log.Error(err)
+			tx.Rollback()
+			return err
+		}
+		tx.Commit()
 	}else {
 		err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED,orderNo)
 		if err!=nil{
@@ -281,7 +296,7 @@ func OrderAgreeCancel(orderNo string,appId string) error {
 
 }
 
-func OrderRefuseCancel(orderNo string,appId string) error {
+func OrderRefuseCancel(orderNo string,reason string,appId string) error {
 	order :=dao.NewOrder()
 	order,err :=order.OrderWithNo(orderNo,appId)
 	if err!=nil{
@@ -294,12 +309,28 @@ func OrderRefuseCancel(orderNo string,appId string) error {
 		return errors.New("订单状态不是等待取消确认状态!")
 	}
 
+	tx,_ :=db.NewSession().Begin()
+
+	defer func() {
+		if err :=recover();err!=nil{
+			tx.Rollback()
+			return
+		}
+	}()
 	//更新为拒绝取消订单状态
-	err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED_REJECTED,orderNo)
+	err = order.UpdateWithOrderStatusTx(comm.ORDER_STATUS_CANCELED_REJECTED,orderNo,tx)
 	if err!=nil{
 		log.Error("更新订单状态失败! 订单号:",orderNo)
+		tx.Rollback()
 		return err
 	}
+	err =order.UpdateWithRefuseCancelReasonTx(reason,orderNo,tx)
+	if err!=nil{
+		log.Error(err)
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
 
 	return nil
 }

@@ -213,3 +213,23 @@ func (self *Order) UpdateWithOrderStatus(orderStatus int,orderNo string) error  
 
 	return err
 }
+
+func (self *Order) UpdateWithOrderStatusTx(orderStatus int,orderNo string,tx *dbr.Tx) error  {
+
+	_,err :=tx.Update("order").Set("order_status",orderStatus).Where("no=?",orderNo).Exec()
+
+	return err
+}
+
+func (self *Order) UpdateWithRefuseCancelReasonTx(refuseCancelReason string,orderNo string,tx *dbr.Tx) error  {
+	_,err :=db.NewSession().Update("order").Set("reject_cancel_reason",refuseCancelReason).Where("order_no=?",orderNo).Exec()
+
+	return err
+}
+
+func (self *Order) UpdateWithCancelReasonTx(cancelReason string,orderNo string,tx *dbr.Tx) error  {
+	_,err :=tx.Update("order").Set("cancel_reason",cancelReason).Where("order_no=?",orderNo).Exec()
+
+	return err
+
+}
