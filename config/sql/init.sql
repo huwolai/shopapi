@@ -165,6 +165,21 @@ CREATE TABLE IF NOT EXISTS prod_attr_val(
 
 ) CHARACTER SET utf8mb4;
 
+-- 订单折扣
+CREATE TABLE IF NOT EXISTS order_discount(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  t_coupon_code VARCHAR(100) DEFAULT ''COMMENT '第三方券代号',
+  order_no VARCHAR(100) DEFAULT '' COMMENT '订单号',
+  act_price NUMERIC(14,2)  COMMENT '实际价格',
+  dis_price NUMERIC(14,2) COMMENT '折扣价格',
+  dis_money NUMERIC(10,2) COMMENT '折掉的金额',
+  flag VARCHAR(100) DEFAULT '' COMMENT '标记',
+  json VARCHAR(1000)  DEFAULT '' COMMENT '附加字段',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+
+) CHARACTER SET utf8mb4;
+
 --  商品sku
 CREATE TABLE IF NOT EXISTS prod_sku(
 
@@ -208,9 +223,9 @@ CREATE TABLE IF NOT EXISTS `order` (
   open_id VARCHAR(255) DEFAULT '' COMMENT '用户ID',
   app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
   title VARCHAR(255) DEFAULT '' COMMENT '订单标题',
-  act_price NUMERIC(14,2)  COMMENT '订单实际金额',
+  act_price NUMERIC(14,2)  COMMENT '订单实际金额(此金额为实际付款金额)',
   omit_money NUMERIC(10,4) COMMENT '省略金额',
-  price NUMERIC(14,2) COMMENT '订单应付金额',
+  price NUMERIC(14,2) COMMENT '订单金额',
   order_status int COMMENT '订单状态 0，未确认；1，已确认；2，已取消；3，无效；4，退货',
   pay_status int COMMENT '付款状态 支付状态；0，未付款；2，付款中；1，已付款',
   shipping_fee  decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '配送费用',

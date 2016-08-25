@@ -21,6 +21,8 @@ type Order struct  {
 	OmitMoney float64
 	Price float64
 	Flag string
+	RejectCancelReason string
+	CancelReason string
 	OrderStatus int
 	PayStatus int
 	Json string
@@ -40,6 +42,8 @@ type OrderDetail struct  {
 	ActPrice float64
 	OmitMoney float64
 	Price float64
+	RejectCancelReason string
+	CancelReason string
 	OrderStatus int
 	PayStatus int
 	Items []*OrderItemDetail

@@ -240,7 +240,7 @@ func OrderAutoCancel(orderNo string,appId string)error  {
 }
 
 //商户同意取消订单
-func OrderAgreeCancel(orderNo string,reason string,appId string) error {
+func OrderAgreeCancel(orderNo string,appId string) error {
 	order := dao.NewOrder()
 	order, err := order.OrderWithNo(orderNo, appId)
 	if err != nil {
@@ -277,12 +277,7 @@ func OrderAgreeCancel(orderNo string,reason string,appId string) error {
 			log.Error("更新订单状态失败! 订单号:",orderNo)
 			return err
 		}
-		err :=order.UpdateWithCancelReasonTx(reason,orderNo,tx)
-		if err!=nil{
-			log.Error(err)
-			tx.Rollback()
-			return err
-		}
+
 		tx.Commit()
 	}else {
 		err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED,orderNo)
@@ -335,7 +330,7 @@ func OrderRefuseCancel(orderNo string,reason string,appId string) error {
 	return nil
 }
 
-func OrderCancel(orderNo string,appId string) error {
+func OrderCancel(orderNo string,reason string,appId string) error {
 
 	order :=dao.NewOrder()
 	order,err :=order.OrderWithNo(orderNo,appId)
@@ -358,12 +353,22 @@ func OrderCancel(orderNo string,appId string) error {
 		if err!=nil{
 			return err
 		}
-		err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED_WAIT_SURE,orderNo)
+
+		tx,_ :=db.NewSession().Begin()
+		err = order.UpdateWithOrderStatusTx(comm.ORDER_STATUS_CANCELED_WAIT_SURE,orderNo,tx)
 		if err!=nil{
 			log.Error("更新订单状态失败! 订单号:",orderNo)
+			tx.Rollback()
 			return err
 		}
 
+		err :=order.UpdateWithCancelReasonTx(reason,orderNo,tx)
+		if err!=nil{
+			log.Error(err)
+			tx.Rollback()
+			return err
+		}
+		tx.Commit()
 	} else {
 		err = order.UpdateWithOrderStatus(comm.ORDER_STATUS_CANCELED,orderNo)
 		if err!=nil{

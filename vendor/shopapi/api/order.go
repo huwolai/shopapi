@@ -26,6 +26,8 @@ type OrderDto struct  {
 	AddressId int64 `json:"address_id"`
 	Title string `json:"title"`
 	OrderNo string `json:"order_no"`
+	RejectCancelReason string `json:"reject_cancel_reason"`
+	CancelReason string `json:"cancel_reason"`
 	OrderStatus int `json:"order_status"`
 	PayStatus int `json:"pay_status"`
 }
@@ -44,6 +46,8 @@ type OrderDetailDto struct  {
 	ActPrice float64 `json:"act_price"`
 	OmitMoney float64 `json:"omit_money"`
 	Price float64 `json:"price"`
+	RejectCancelReason string `json:"reject_cancel_reason"`
+	CancelReason string `json:"cancel_reason"`
 	OrderStatus int `json:"order_status"`
 	PayStatus int `json:"pay_status"`
 	Items []*OrderItemDetailDto `json:"items"`
@@ -231,8 +235,14 @@ func OrderCancel(c *gin.Context)  {
 	}
 	orderNo :=c.Param("order_no")
 	appId := security.GetAppId2(c.Request)
+	var paramMap map[string]interface{}
+	err = c.BindJSON(&paramMap)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"参数有误!")
+		return
+	}
 
-	err =service.OrderCancel(orderNo,appId)
+	err =service.OrderCancel(orderNo,paramMap["reason"].(string),appId)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return
@@ -271,14 +281,8 @@ func OrderAgreeCancel(c *gin.Context)  {
 		return
 	}
 	orderNo :=c.Param("order_no")
-	var params map[string]interface{}
-	err =c.BindJSON(params)
-	if err!=nil{
-		util.ResponseError400(c.Writer,"参数有误!")
-		return
-	}
 	appId := security.GetAppId2(c.Request)
-	err = service.OrderAgreeCancel(orderNo,params["reason"].(string),appId)
+	err = service.OrderAgreeCancel(orderNo,appId)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return
@@ -480,6 +484,8 @@ func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
 	dto.AddressId = model.AddressId
 	dto.Address = model.Address
 	dto.Price = model.Price
+	dto.RejectCancelReason = model.RejectCancelReason
+	dto.CancelReason = model.CancelReason
 	if model.Name!=nil{
 		dto.Name = *model.Name
 	}
@@ -540,6 +546,7 @@ func orderDtoToModel(dto OrderDto) *service.OrderModel  {
 	model.PayStatus = dto.PayStatus
 	model.Title = dto.Title
 	model.AddressId = dto.AddressId
+
 
 
 
