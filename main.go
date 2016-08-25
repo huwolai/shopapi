@@ -7,6 +7,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/config"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"shopapi/api"
+	"shopapi/task"
 )
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -43,6 +44,9 @@ func main() {
 	}else if env == "preproduction" {
 		gin.SetMode(gin.TestMode)
 	}
+
+	//开启定时器
+	task.StartCron()
 
 	router := gin.Default()
 

@@ -3,6 +3,7 @@ package dao
 import (
 	"github.com/gocraft/dbr"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
+	"shopapi/comm"
 )
 
 type Order struct  {
@@ -62,8 +63,24 @@ func NewOrderDetail() *OrderDetail  {
 	return &OrderDetail{}
 }
 
+func (self *Order) OrderWithStatusLTTime(payStatus int,orderStatus int,time string) ([]*Order,error)  {
+	var orders []*Order
+	_,err :=db.NewSession().Select("*").From("`order`").Where("pay_status=?",payStatus).Where("order_status=?",orderStatus).Where("update_time<=Date(?)",time).LoadStructs(&orders)
+
+	return orders,err
+
+}
+
+//查询没有付款的订单 并且时间小于某个时间的
+func (self *Order) OrderWithNoPayAndLTTime(time string) ([]*Order,error) {
+	var orders []*Order
+	_,err :=db.NewSession().Select("*").From("`order`").Where("pay_status=? or pay_status=?",comm.ORDER_PAY_STATUS_NOPAY,comm.ORDER_PAY_STATUS_PAYING).Where("update_time<=Date(?)",time).LoadStructs(&orders)
+
+	return orders,err
+}
+
 func (self *Order) InsertTx(tx *dbr.Tx) (int64,error)  {
-	result,err :=tx.InsertInto("order").Columns("no","address_id","address","merchant_id","m_open_id","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
+	result,err :=tx.InsertInto("`order`").Columns("no","address_id","address","merchant_id","m_open_id","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
