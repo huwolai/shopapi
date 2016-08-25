@@ -32,6 +32,8 @@ type OrderDetail struct  {
 	PayapiNo string
 	OpenId string
 	AppId string
+	Name string
+	Mobile string
 	AddressId int64
 	Address string
 	Title string

@@ -35,6 +35,8 @@ type OrderDetailDto struct  {
 	No string `json:"no"`
 	PayapiNo string `json:"payapi_no"`
 	OpenId string `json:"open_id"`
+	Name string `json:"name,omitempty"`
+	Mobile string `json:"mobile,omitempty"`
 	AddressId int64 `json:"address_id"`
 	Address string `json:"address"`
 	AppId string `json:"app_id"`
@@ -433,6 +435,8 @@ func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
 	dto.AddressId = model.AddressId
 	dto.Address = model.Address
 	dto.Price = model.Price
+	dto.Name = model.Name
+	dto.Mobile = model.Mobile
 	dto.OrderStatus = model.OrderStatus
 	dto.PayStatus = model.PayStatus
 	dto.Title = model.Title
