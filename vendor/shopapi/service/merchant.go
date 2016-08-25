@@ -256,8 +256,8 @@ func ProdDefaultAddForMerchant(merchant *dao.Merchant) error {
 
 
 	prodbll :=&ProdBLL{}
-	prodbll.Title = "默认商品"
-	prodbll.Description="默认商品描述"
+	prodbll.Title = "四菜一汤"
+	prodbll.Description="四菜一汤"
 	prodbll.AppId = merchant.AppId
 	prodbll.DisPrice = 158.0
 	prodbll.Price = 158.0
