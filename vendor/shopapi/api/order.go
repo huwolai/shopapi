@@ -514,6 +514,7 @@ func orderItemDetailToDto(model *dao.OrderItemDetail) *OrderItemDetailDto  {
 
 	dto :=&OrderItemDetailDto{}
 	dto.AppId = model.AppId
+	dto.OpenId = model.OpenId
 	dto.BuyTotalPrice = model.BuyTotalPrice
 	dto.BuyUnitPrice = model.BuyUnitPrice
 	dto.Id = model.Id
