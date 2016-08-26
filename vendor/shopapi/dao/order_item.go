@@ -75,7 +75,6 @@ func (self *OrderItemDetail) OrderItemWithOrderNo(orderNo []string) ([]*OrderIte
 	if orderItems!=nil{
 		err :=fillOrderItemImg(orderItems)
 		if err!=nil{
-
 			return nil,err
 		}
 	}
