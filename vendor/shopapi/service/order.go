@@ -405,6 +405,10 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 		if prodSku==nil{
 			return nil,errors.New("没有找到此商品")
 		}
+
+		if prodSku.Stock<=0 {
+			return nil,errors.New("此商品已没有库存!")
+		}
 		totalActPrice+=prodSku.DisPrice*float64(item.Num)
 		totalPrice += prodSku.Price*float64(item.Num)
 		err =orderItemSave(prodSku,item,order.No,tx)
