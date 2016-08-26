@@ -59,13 +59,20 @@ func NewOrderItemDetail() *OrderItemDetail {
 	return &OrderItemDetail{}
 }
 func (self* OrderItem) InsertTx(tx *dbr.Tx) error {
-	log.Error("-----OrderItem=",self.SkuNo)
 	_,err :=tx.InsertInto("order_item").Columns("no","app_id","prod_id","sku_no","num","offer_unit_price","offer_total_price","buy_unit_price","buy_total_price","json").Record(self).Exec()
 
 	return err
 }
 
-func (self *OrderItemDetail) OrderItemWithOrderNo(orderNo []string) ([]*OrderItemDetail,error)  {
+func (self *OrderItem) OrderItemWithOrderNo(orderNo string) ([]*OrderItem,error)  {
+
+	var items []*OrderItem
+	_,err :=db.NewSession().Select("*").From("order_item").Where("no=?",orderNo).LoadStructs(&items)
+
+	return items,err
+}
+
+func (self *OrderItemDetail) OrderItemDetailWithOrderNo(orderNo []string) ([]*OrderItemDetail,error)  {
 	sess := db.NewSession()
 	var orderItems []*OrderItemDetail
 	_,err :=sess.SelectBySql("select od.*,pt.title prod_title,mt.id merchant_id,mt.`name` merchant_name,mt.open_id from order_item od,product pt,merchant_prod mpd,merchant mt where od.prod_id=pt.id and mpd.prod_id=pt.id and mpd.merchant_id=mt.id and  `no` in ?",orderNo).LoadStructs(&orderItems)

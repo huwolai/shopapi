@@ -215,6 +215,7 @@ CREATE TABLE IF NOT EXISTS prod_category (
 CREATE TABLE IF NOT EXISTS `order` (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   no VARCHAR(30)  DEFAULT '' COMMENT '订单编号',
+  prepay_no VARCHAR(30) DEFAULT '' COMMENT '预付款编号(主要针对第三方支付的)',
   code VARCHAR(255) DEFAULT '' COMMENT '预付款编号',
   address_id VARCHAR(255) DEFAULT '' COMMENT '地址ID',
   address VARCHAR(255) DEFAULT '' COMMENT '配送地址',

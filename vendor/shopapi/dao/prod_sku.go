@@ -48,3 +48,16 @@ func (self *ProdSku) WithProdIdAndSymbolPath(attrSymbolPath string,prodId int64)
 	return prodSku,err
 
 }
+
+//修改SKU 库存
+func (self *ProdSku) UpdateStockWithSkuNo(stock int ,skuNo string) error {
+	_,err :=db.NewSession().Update("prod_sku").Set("stock",stock).Where("sku_no=?",skuNo).Exec()
+
+	return err
+}
+//修改SKU 库存
+func (self *ProdSku) UpdateStockWithSkuNoTx(stock int ,skuNo string,tx *dbr.Tx) error {
+	_,err :=tx.Update("prod_sku").Set("stock",stock).Where("sku_no=?",skuNo).Exec()
+
+	return err
+}

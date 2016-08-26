@@ -99,11 +99,8 @@ func (self *Merchant) MerchantUpdateTx(merchant *Merchant,tx *dbr.Tx) error  {
 }
 
 func (self *Merchant) UpdateStatus(status int,merchantId int64) error  {
-
 	_,err :=db.NewSession().Update("merchant").Set("status",status).Where("id=?",merchantId).Exec()
-
 	return err
-
 }
 
 func (self *Merchant) UpdateStatusTx(status int,merchantId int64,tx *dbr.Tx) error  {
@@ -114,10 +111,16 @@ func (self *Merchant) UpdateStatusTx(status int,merchantId int64,tx *dbr.Tx) err
 
 }
 
+//权重递增 num 递增子数
+func (self *Merchant) IncrWeightWithIdTx(num int,id int64,tx *dbr.Tx) error {
+	_,err :=tx.UpdateBySql("update merchant set weight=weight + ? where id=?",num,id).Exec()
+
+	return err
+}
+
 func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,appId string) ([]*MerchantDetail,error)  {
 	var mdetails []*MerchantDetail
 	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance  from merchant mt where app_id = ? and mt.status = 1 order by distance",longitude,latitude,appId).LoadStructs(&mdetails)
-
 	return mdetails,err
 }
 

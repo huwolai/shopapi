@@ -204,16 +204,81 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		"pay_token": payToken,
 		"open_id": order.OpenId,
 		"code": order.Code,
+		"out_trade_pay":order.No,
 	}
 	_,err = RequestPayApi("/pay/payimprest",params)
 	if err!=nil{
 		return err
 	}
 
-	err =order.UpdateWithStatus(comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_SUCCESS,orderNo)
+	tx,_ :=db.NewSession().Begin()
+
+	defer func() {
+		if err :=recover();err!=nil{
+			tx.Rollback()
+		}
+	}()
+
+	//调整商品库存
+	err = ProdSKUStockSubWithOrder(orderNo,tx)
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+	//商户权重加1
+	err =MerchantWeightAdd(1,order.MerchantId,tx)
+	if err!=nil{
+		tx.Rollback()
+		return errors.New("商户权重添加失败!")
+	}
+	//修改订单状态
+	err =order.UpdateWithStatusTx(comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_SUCCESS,orderNo,tx)
 	if err!=nil{
 		log.Error("订单号:",orderNo,"状态更新为支付成功的时候失败!")
+		tx.Rollback()
 		return errors.New("订单更新错误!")
+	}
+
+	tx.Commit()
+
+	return nil
+}
+
+//商户权重增加
+func MerchantWeightAdd(num int,merchantId int64,tx *dbr.Tx) error {
+	merchant :=dao.NewMerchant()
+	return merchant.IncrWeightWithIdTx(num,merchantId,tx)
+}
+
+//减商品sku的库存
+func ProdSKUStockSubWithOrder(orderNo string,tx *dbr.Tx) error  {
+	orderItem := dao.NewOrderItem()
+	orderItems,err :=orderItem.OrderItemWithOrderNo(orderNo)
+	if err!=nil{
+		return  errors.New("查询订单明细失败!")
+	}
+	if orderItems!=nil&&len(orderItems)>0{
+		for _,oItem :=range orderItems {
+			prodSku := dao.NewProdSku()
+			prodSku,err :=prodSku.WithSkuNo(oItem.SkuNo)
+			if err!=nil{
+				log.Error(err)
+				return  errors.New("查询订单SKU失败!")
+			}
+			if prodSku==nil{
+				return  errors.New("没有找到对应的商品信息!")
+			}
+
+			if  prodSku.Stock < oItem.Num {
+				return  errors.New("库存数量不足!")
+			}
+			err =prodSku.UpdateStockWithSkuNoTx(prodSku.Stock-oItem.Num,oItem.SkuNo,tx)
+			if err!=nil{
+				log.Error(err)
+				return  errors.New("修改库存失败!")
+			}
+		}
+
 	}
 
 	return nil

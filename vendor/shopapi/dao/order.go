@@ -10,6 +10,8 @@ type Order struct  {
 	Id int64
 	No string
 	Code  string
+	//预付款编号(主要针对第三方支付的)
+	PrepayNo string
 	PayapiNo string
 	OpenId string
 	MerchantId int64
@@ -80,7 +82,7 @@ func (self *Order) OrderWithNoPayAndLTTime(time string) ([]*Order,error) {
 }
 
 func (self *Order) InsertTx(tx *dbr.Tx) (int64,error)  {
-	result,err :=tx.InsertInto("order").Columns("no","address_id","address","merchant_id","m_open_id","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
+	result,err :=tx.InsertInto("order").Columns("no","prepay_no","address_id","address","merchant_id","m_open_id","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
@@ -189,7 +191,7 @@ func fillOrderItemDetail(orders []*OrderDetail)  error {
 
 	if len(ordernos)>0 {
 		orderItemDetail := NewOrderItemDetail()
-		orderItemDetails,err :=orderItemDetail.OrderItemWithOrderNo(ordernos)
+		orderItemDetails,err :=orderItemDetail.OrderItemDetailWithOrderNo(ordernos)
 		if err!=nil{
 			return err
 		}
@@ -224,6 +226,13 @@ func (self *Order) OrderPayapiUpdateWithNoAndCode(payapiNo string,addressId int6
 func (self *Order) UpdateWithStatus(orderStatus int,payStatus int,orderNo string) error {
 
 	_,err :=db.NewSession().Update("order").Set("order_status",orderStatus).Set("pay_status",payStatus).Where("no=?",orderNo).Exec()
+
+	return err
+}
+
+func (self *Order) UpdateWithStatusTx(orderStatus int,payStatus int,orderNo string,tx *dbr.Tx) error {
+
+	_,err :=tx.Update("order").Set("order_status",orderStatus).Set("pay_status",payStatus).Where("no=?",orderNo).Exec()
 
 	return err
 }
