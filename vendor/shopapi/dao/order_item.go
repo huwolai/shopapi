@@ -60,7 +60,7 @@ func NewOrderItemDetail() *OrderItemDetail {
 }
 func (self* OrderItem) InsertTx(tx *dbr.Tx) error {
 	log.Error("-----OrderItem=",self.SkuNo)
-	_,err :=tx.InsertInto("order_item").Columns("no","app_id","open_id","prod_id","sku_no","num","offer_unit_price","offer_total_price","buy_unit_price","buy_total_price","json").Record(self).Exec()
+	_,err :=tx.InsertInto("order_item").Columns("no","app_id","prod_id","sku_no","num","offer_unit_price","offer_total_price","buy_unit_price","buy_total_price","json").Record(self).Exec()
 
 	return err
 }
