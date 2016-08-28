@@ -55,7 +55,7 @@ func FetchImprests(model *ImprestsModel) (string,error)  {
 	if response.StatusCode==http.StatusOK {
 		var resultMap map[string]interface{}
 		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
-		return resultMap["sub_trade_no"],err
+		return resultMap["sub_trade_no"].(string),err
 	}else if response.StatusCode==http.StatusBadRequest {
 		var resultMap map[string]interface{}
 		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
