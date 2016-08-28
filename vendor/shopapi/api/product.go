@@ -182,7 +182,6 @@ func ProductAdd(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-
 	var param *ProductParam
 	err = c.BindJSON(&param)
 	if err!=nil {
@@ -190,11 +189,7 @@ func ProductAdd(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"参数有误!")
 		return
 	}
-
-	log.Debug(*param)
-
 	midstr := c.Param("merchant_id")
-
 	if midstr==""{
 		util.ResponseError400(c.Writer,"商户ID不能为空!")
 		return
@@ -215,7 +210,6 @@ func ProductAdd(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"请上传商品图片")
 		return
 	}
-
 	if param.Description==""{
 		util.ResponseError400(c.Writer,"请输入商品描述")
 		return
@@ -237,11 +231,7 @@ func ProductAdd(c *gin.Context)  {
 
 //商品推荐列表
 func ProductListWithRecomm(c *gin.Context)  {
-	appId,err :=CheckAppAuth(c)
-	if err!=nil {
-		util.ResponseError400(c.Writer,"校验失败!")
-		return
-	}
+	appId := security.GetAppId2(c.Request)
 	prodList,err := service.ProductListWithRecomm(appId)
 	if err!=nil {
 		log.Error(err)
@@ -255,7 +245,6 @@ func ProductListWithRecomm(c *gin.Context)  {
 			prodListDtos = append(prodListDtos,productDetailToDto(prodDetail))
 		}
 	}
-
 	c.JSON(http.StatusOK,prodListDtos)
 }
 
@@ -263,16 +252,10 @@ func ProductListWithRecomm(c *gin.Context)  {
 商品列表(根据分类查询)
  */
 func ProductListWithCategory(c *gin.Context)  {
-
-	appId,err :=CheckAppAuth(c)
-	if err!=nil {
-		util.ResponseError400(c.Writer,"校验失败!")
-		return
-	}
 	categoryId :=c.Param("category_id")
 
 	icategoryId,_ := strconv.Atoi(categoryId)
-
+	appId := security.GetAppId2(c.Request)
 	prodList,err := service.ProductListWithCategory(appId,int64(icategoryId))
 	if err!=nil {
 		log.Error(err)
@@ -292,16 +275,15 @@ func ProductListWithCategory(c *gin.Context)  {
 
 //商品详情
 func ProdDetailWithProdId(c *gin.Context)  {
-	_,err := security.CheckUserAuth(c.Request)
-	if err!=nil {
-		util.ResponseError(c.Writer,http.StatusUnauthorized,"校验失败!")
-		return
-	}
 
 	prodId := c.Param("prod_id")
 	iprodId,_ := strconv.ParseInt(prodId,10,64)
 	appId := security.GetAppId2(c.Request)
 	product,err := service.ProdDetailWithProdId(iprodId,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"查询商品失败!")
+		return
+	}
 
 	if product==nil {
 		util.ResponseError400(c.Writer,"商品没找到!")
@@ -312,13 +294,10 @@ func ProdDetailWithProdId(c *gin.Context)  {
 
 //商品图片
 func ProdImgsWithProdId(c *gin.Context)  {
-	appId,err :=CheckAppAuth(c)
-	if err!=nil {
-		util.ResponseError400(c.Writer,"校验失败!")
-		return
-	}
+
 	prodId := c.Param("prod_id")
 	iprodId,_ := strconv.Atoi(prodId)
+	appId := c.Param("app_id")
 
 	dlls,err := service.ProdImgsWithProdId(int64(iprodId),appId)
 	if err!=nil{
@@ -339,13 +318,9 @@ func ProdImgsWithProdId(c *gin.Context)  {
 
 
 func ProductAndAttrAdd(c *gin.Context) {
-	_,err := security.CheckUserAuth(c.Request)
-	if err!=nil {
-		util.ResponseError(c.Writer,http.StatusUnauthorized,"校验失败!")
-		return
-	}
+
 	param := &service.ProdAndAttrDto{}
-	err =c.BindJSON(&param)
+	err :=c.BindJSON(&param)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
@@ -385,11 +360,6 @@ func ProductAndAttrAdd(c *gin.Context) {
 
 
 func ProductAttrValues(c *gin.Context)  {
-	_,err := security.CheckUserAuth(c.Request)
-	if err!=nil {
-		util.ResponseError(c.Writer,http.StatusUnauthorized,"校验失败!")
-		return
-	}
 
 	attrKey :=c.Param("attr_key")
 	vsearch  :=c.Query("vsearch")

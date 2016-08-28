@@ -161,12 +161,13 @@ func AccountPreRecharge(c *gin.Context)  {
 		return
 	}
 	param.OpenId = c.Param("open_id")
-
+	appId := security.GetAppId2(c.Request)
 
 	model :=&service.AccountRechargeModel{}
 	model.Money = param.Money
 	model.OpenId = param.OpenId
 	model.PayType = param.PayType
+	model.AppId = appId
 	resultMap,err := service.AccountPreRecharge(model)
 	if err!=nil {
 		log.Error(err)

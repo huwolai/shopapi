@@ -20,9 +20,10 @@ type Order struct  {
 	AddressId int64
 	Address string
 	Title string
-	ActPrice float64
-	OmitMoney float64
 	Price float64
+	RealPrice float64
+	PayPrice float64
+	OmitMoney float64
 	Flag string
 	RejectCancelReason string
 	CancelReason string
@@ -42,9 +43,12 @@ type OrderDetail struct  {
 	AddressId int64
 	Address string
 	Title string
-	ActPrice float64
-	OmitMoney float64
+	CouponToken string
+	CouponAmount float64
 	Price float64
+	RealPrice float64
+	PayPrice float64
+	OmitMoney float64
 	RejectCancelReason string
 	CancelReason string
 	OrderStatus int
@@ -82,7 +86,7 @@ func (self *Order) OrderWithNoPayAndLTTime(time string) ([]*Order,error) {
 }
 
 func (self *Order) InsertTx(tx *dbr.Tx) (int64,error)  {
-	result,err :=tx.InsertInto("order").Columns("no","prepay_no","address_id","address","merchant_id","m_open_id","payapi_no","code","open_id","app_id","title","act_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
+	result,err :=tx.InsertInto("order").Columns("no","prepay_no","address_id","address","merchant_id","m_open_id","payapi_no","code","open_id","app_id","title","coupon_amount","real_price","pay_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}

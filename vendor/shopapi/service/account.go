@@ -15,6 +15,7 @@ import (
 )
 
 type AccountRechargeModel struct  {
+	AppId string
 	//充值账户
 	OpenId string
 	//充值金额
@@ -37,52 +38,37 @@ type AccountDetailModel struct  {
 
 //账户预充值
 func AccountPreRecharge(model *AccountRechargeModel) (map[string]interface{},error) {
+
+	accountRecharge :=dao.NewAccountRecharge()
+	accountRecharge.Amount = model.Money
+	accountRecharge.No = util.GenerUUId()
+	accountRecharge.AppId = model.AppId
+	accountRecharge.Status = comm.ACCOUNT_RECHARGE_STATUS_WAIT
+	err :=accountRecharge.Insert()
+	if err!=nil{
+		log.Error(err)
+		return nil,errors.New("充值记录插入失败!")
+	}
+
 	//参数
 	params := map[string]interface{}{
+		"out_trade_no": accountRecharge.No,
+		"out_trade_type": comm.Trade_Type_Recharge,
 		"open_id": model.OpenId,
 		"amount": int64(model.Money*100),
-		"trade_type": 1,
+		"trade_type": comm.Trade_Type_Recharge,
 		"pay_type": model.PayType,
 		"title": "充值",
 		"client_ip": "127.0.0.1",
 		"notify_url": config.GetValue("notify_url").ToString(),
 		"remark": "充值",
 	}
-	log.Info(params)
+	resultMap,err :=RequestPayApi("/pay/makeprepay",params)
 
-	//获取接口签名信息
-	noncestr,timestamp,appid,basesign,sign  :=GetPayapiSign(params)
-	log.Info(fmt.Sprintf("%s.%s",basesign,sign))
-	//header参数
-	headers := map[string]string{
-		"app_id": appid,
-		"sign": fmt.Sprintf("%s.%s",basesign,sign),
-		"noncestr": noncestr,
-		"timestamp": timestamp,
-	}
-	paramData,_:= json.Marshal(params);
-
-	response,err := network.Post(config.GetValue("payapi_url").ToString()+"/pay/makeprepay",paramData,headers)
-	if err!=nil{
-		return nil,err
-	}
-	if response.StatusCode==http.StatusOK {
-		var resultMap map[string]interface{}
-		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
-		if err!=nil{
-			return nil,err
-		}
-
-		return resultMap,nil
-	}else if response.StatusCode==http.StatusBadRequest {
-		var resultMap map[string]interface{}
-		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
-
-		return nil,errors.New(resultMap["err_msg"].(string))
-	}
-
-	return nil,errors.New("充值失败")
+	return resultMap,err
 }
+
+
 
 func AccountDetail(openId string) (*AccountDetailModel,error)  {
 	//参数

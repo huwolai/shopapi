@@ -8,6 +8,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/config"
 	"shopapi/comm"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
+	"strconv"
 )
 
 type OrderModel struct  {
@@ -34,6 +35,7 @@ type OrderItemModel struct  {
 
 type OrderPrePayModel struct  {
 	OrderNo string
+	CouponTokens []string
 	AddressId int64
 	PayType int
 	AppId string
@@ -41,6 +43,8 @@ type OrderPrePayModel struct  {
 }
 
 type OrderPrePayDto struct  {
+	//优惠token
+	CouponTokens []string `json:"coupon_tokens"`
 	OrderNo string `json:"order_no"`
 	AddressId int64 `json:"address_id"`
 	//付款类型(1.支付宝 2.微信 3.现金支付 4.账户)
@@ -74,7 +78,6 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 
 		return nil,errors.New("暂不支持此支付方式!")
 	}
-
 	order := dao.NewOrder()
 	order,err :=order.OrderWithNo(model.OrderNo,model.AppId)
 	if err!=nil {
@@ -83,11 +86,24 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 	if order==nil{
 		return nil,errors.New("没有找到对应的订单信息!")
 	}
-
 	address := dao.NewAddress()
 	address,err = address.WithId(model.AddressId)
 	if address==nil{
 		return nil,errors.New("没有找到对应的地址信息!")
+	}
+
+	var couponTotalAmount float64
+	//存在优惠信息
+	if model.CouponTokens!=nil&&len(model.CouponTokens) >0 {
+		couponTotalAmount,err =HandleCoupon(order,model.CouponTokens)
+		if err!=nil{
+			log.Error(err)
+			return nil,errors.New("优惠信息处理错误!")
+		}
+	}
+	payPrice :=order.RealPrice - couponTotalAmount
+	if payPrice<0 {
+		return nil,errors.New("付款金额不能为负数!")
 	}
 
 	if model.PayType == comm.Pay_Type_Account {//账户支付
@@ -96,7 +112,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 			params := map[string]interface{}{
 				"open_id":order.OpenId,
 				"type": 1,
-				"amount": int64(order.ActPrice*100),
+				"amount": int64(payPrice*100),
 				"title": order.Title,
 				"remark": order.Title,
 			}
@@ -128,7 +144,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 	params := map[string]interface{}{
 		"open_id": order.OpenId,
 		"out_trade_no": order.No,
-		"amount": int64(order.ActPrice*100),
+		"amount": int64(payPrice*100),
 		"trade_type": 2,  //交易类型(1.充值 2.购买)
 		"pay_type": model.PayType,
 		"title": order.Title,
@@ -158,7 +174,80 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 	}
 
 	return resultPrepayMap,nil
+}
 
+//处理优惠信息
+func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
+	tx,_ :=db.NewSession().Begin()
+	orderCoupon := dao.NewOrderCoupon()
+	err :=orderCoupon.DeleteWithOrderNoTx(comm.ORDER_COUPON_STATUS_UNACTIVATE,order.No,tx)
+	if err!=nil{
+		log.Error(err)
+		tx.Rollback()
+		return 0.0,errors.New("删除原有优惠记录失败!")
+	}
+	//去重
+	ncoupontokens := comm.RemoveDuplicatesAndEmpty(coupotokens)
+	//凭证校验
+	var couponTotalAmount float64
+	for _,couponToken :=range ncoupontokens {
+		jwtAuth := comm.InitJWTAuthenticationBackend()
+		cpToken,err :=jwtAuth.FetchToken(couponToken)
+		if err!=nil{
+			tx.Rollback()
+			return 0.0,err
+		}
+		if !cpToken.Valid {
+			tx.Rollback()
+			return 0.0,errors.New("优惠凭证无效!")
+		}
+		orderNo,isok :=cpToken.Claims["order_no"].(string)
+		if !isok {
+			tx.Rollback()
+			return 0.0,errors.New("优惠券有误[获取order_no失败]!")
+		}
+		if orderNo!=order.No {
+			return 0.0,errors.New("优惠凭证不是当前订单的!")
+		}
+
+		couponNo,isok :=cpToken.Claims["coupon_no"].(string)
+		if !isok{
+			tx.Rollback()
+			return 0.0,errors.New("优惠券有误[获取coupon_no失败]!")
+		}
+		couponAmount,isok :=cpToken.Claims["coupon_amount"].(string)
+		if !isok {
+			tx.Rollback()
+			return 0.0,errors.New("优惠券有误[获取coupon_amount失败]!")
+		}
+		notifyUrl,isok :=cpToken.Claims["notify_url"].(string)
+		if !isok {
+			tx.Rollback()
+			return 0.0,errors.New("优惠券有误[获取notify_url失败]!")
+		}
+		fcouponAmount,err :=strconv.ParseFloat(couponAmount,10)
+		if err!=nil{
+			log.Error(err)
+			tx.Rollback()
+			return 0.0,errors.New("优惠券金额有误!")
+		}
+
+		orderCoupon := dao.NewOrderCoupon()
+		orderCoupon.CouponAmount = fcouponAmount
+		orderCoupon.CouponNo = couponNo
+		orderCoupon.CouponToken = couponToken
+		orderCoupon.OrderNo = orderNo
+		orderCoupon.AppId = order.AppId
+		orderCoupon.NotifyUrl = notifyUrl
+		err =orderCoupon.InsertTx(tx)
+		if err!=nil{
+			tx.Rollback()
+			return 0.0,errors.New("插入优惠信息失败!")
+		}
+		couponTotalAmount += orderCoupon.CouponAmount
+	}
+
+	return couponTotalAmount,nil
 }
 
 func OrderByUser(openId string,orderStatus []int,payStatus []int,appId string)  ([]*dao.OrderDetail,error)  {
@@ -183,6 +272,40 @@ func OrderDetailWithNo(orderNo string,appId string) (*dao.OrderDetail,error)  {
 	return orderDetail,err
 }
 
+type OrderCouponDto struct  {
+	AppId string `json:"app_id"`
+	//订单号
+	OrderNo string `json:"order_no"`
+	//商户ID
+	MerchantId int64 `json:"merchant_id"`
+	//商户open_id
+	MOpenId string `json:"m_open_id"`
+	//下单用户
+	OpenId string `json:"open_id"`
+	//订单标题
+	Title string `json:"title"`
+	//付款方式
+	PayMethod int `json:"pay_method"`
+	Flag string `json:"flag"`
+	Json string `json:"json"`
+	//订单实际金额(此金额为实际付款金额)
+	ActPrice float64 `json:"act_price"`
+	//订单价格
+	Price float64 `json:"price"`
+}
+
+type OrderItemCouponDto struct {
+	//订单号
+	OrderNo string `json:"order_no"`
+	ProdId int64 `json:"prod_id"`
+	SkuNo string `json:"sku_no"`
+	Num int `json:"num"`
+	Flag string `json:"flag"`
+	Json string `json:"json"`
+	BuyTotalPrice float64 `json:"buy_total_price"`
+
+}
+
 func OrderPayForAccount(openId string,orderNo string,payToken string,appId string) error  {
 
 	order :=dao.NewOrder()
@@ -198,7 +321,6 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	if order.PayStatus!=comm.ORDER_PAY_STATUS_PAYING {
 		return  errors.New("订单不是待付款状态!")
 	}
-
 	//支付预付款
 	params := map[string]interface{}{
 		"pay_token": payToken,
@@ -278,9 +400,7 @@ func ProdSKUStockSubWithOrder(orderNo string,tx *dbr.Tx) error  {
 				return  errors.New("修改库存失败!")
 			}
 		}
-
 	}
-
 	return nil
 }
 
@@ -434,7 +554,6 @@ func OrderCancel(orderNo string,reason string,appId string) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -482,7 +601,7 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 		}
 
 	}
-	order.ActPrice = totalActPrice
+	order.RealPrice = totalActPrice
 	order.Price = totalPrice
 
 	orderId,err := order.InsertTx(tx)
@@ -516,6 +635,7 @@ func OrderPrePayDtoToModel(dto OrderPrePayDto ) *OrderPrePayModel  {
 	model.OrderNo = dto.OrderNo
 	model.PayType = dto.PayType
 	model.AddressId = dto.AddressId
+	model.CouponTokens = dto.CouponTokens
 	model.NotifyUrl = config.GetValue("notify_url").ToString()
 	return model
 }

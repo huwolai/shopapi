@@ -43,9 +43,10 @@ type OrderDetailDto struct  {
 	Address string `json:"address"`
 	AppId string `json:"app_id"`
 	Title string `json:"title"`
-	ActPrice float64 `json:"act_price"`
-	OmitMoney float64 `json:"omit_money"`
 	Price float64 `json:"price"`
+	RealPrice float64 `json:"real_price"`
+	PayPrice float64 `json:"pay_price"`
+	OmitMoney float64 `json:"omit_money"`
 	RejectCancelReason string `json:"reject_cancel_reason"`
 	CancelReason string `json:"cancel_reason"`
 	OrderStatus int `json:"order_status"`
@@ -216,7 +217,6 @@ func OrderPayForAccount(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"支付token不能为空!")
 		return
 	}
-
 	appId :=security.GetAppId2(c.Request)
 	err =service.OrderPayForAccount(openId,orderNo,payToken.(string),appId)
 	if err!=nil{
@@ -474,7 +474,8 @@ func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
 
 	dto :=&OrderDetailDto{}
 	dto.No = model.No
-	dto.ActPrice = model.ActPrice
+	dto.RealPrice = model.RealPrice
+	dto.PayPrice = model.PayPrice
 	dto.AppId = model.AppId
 	dto.Id = model.Id
 	dto.Json = model.Json

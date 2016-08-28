@@ -38,7 +38,7 @@ func OrderFetchMoney()  {
 			 params :=map[string]interface{}{
 				"open_id":order.OpenId,
 				 "code": order.Code,
-				 "amount": int64(order.ActPrice*100),
+				 "amount": int64(order.PayPrice*100),
 				 "title": order.Title,
 				 "remark": order.Title,
 			}

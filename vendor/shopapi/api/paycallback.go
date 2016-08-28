@@ -6,6 +6,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"shopapi/comm"
 	"shopapi/service"
+	"gitlab.qiyunxin.com/tangtao/utils/queue"
 )
 
 type CallbackDto struct  {
@@ -53,22 +54,46 @@ func CallbackForPayapi(c *gin.Context)  {
 
 	if params.TradeType == comm.Trade_Type_Recharge {
 		log.Debug("交易充值")
+		//#bug 提取预付款接口需要做暝等
 		model := &service.ImprestsModel{}
 		model.Amount = params.Amount
 		model.OpenId = params.OpenId
 		model.Code = params.Code
 		model.Remark = params.Remark
 		model.Title = params.Title
-		err :=service.FetchImprests(model)
+		subTradeNo,err :=service.FetchImprests(model)
 		if err!=nil{
 			log.Error(err)
 			util.ResponseError400(c.Writer,"领取失败!")
 			return
 		}else{
 			log.Debug("预付款领取成功")
+			err :=PublishAccountRechargeEvent(subTradeNo,model.OpenId,params.AppId,params.Amount)
+			if err!=nil{
+				log.Error(err)
+			}
 			util.ResponseSuccess(c.Writer)
+			return
 		}
 	}else if params.TradeType == comm.Trade_Type_Buy { //购买交易
 		log.Debug("购买交易")
 	}
+}
+
+//发布账户充值事件
+func PublishAccountRechargeEvent(subTradeNo string,openId string,appId string,changeAmount int64) error  {
+
+	accountEvent :=queue.NewAccountEvent()
+	accountEvent.EventName="账户金额发送变化"
+	accountEvent.EventKey = queue.ACCOUNT_AMOUNT_EVENT_CHANGE
+	eventContent :=queue.NewAccountEventContent()
+	eventContent.Action = "ACCOUNT_RECHARGE"
+	eventContent.SubTradeNo = subTradeNo
+	eventContent.AppId = appId
+	eventContent.OpenId =openId
+	eventContent.ChangeAmount = changeAmount
+	accountEvent.Content = eventContent
+	err :=queue.PublishAccountEvent(accountEvent)
+
+	return err
 }

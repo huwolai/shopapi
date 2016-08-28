@@ -31,7 +31,21 @@ CREATE TABLE IF NOT EXISTS account(
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
   KEY open_id (open_id)
-);
+)CHARACTER SET utf8mb4;
+
+-- 账户充值记录
+CREATE TABLE IF NOT EXISTS account_recharge(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  no VARCHAR(255) NOT NULL unique COMMENT '唯一编码',
+  app_id VARCHAR(255) DEFAULT '' COMMENT 'appID',
+  open_id VARCHAR(255) NOT NULL COMMENT '用户ID',
+  amount NUMERIC(12,2) COMMENT '充值金额',
+  status int COMMENT '1.完成 0.等待完成',
+  flag VARCHAR(100) DEFAULT '' COMMENT '标记',
+  json VARCHAR(1000) DEFAULT '' COMMENT '附加数据',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+)CHARACTER SET utf8mb4;
 
 
 -- 商户
@@ -166,14 +180,17 @@ CREATE TABLE IF NOT EXISTS prod_attr_val(
 
 ) CHARACTER SET utf8mb4;
 
--- 订单折扣
-CREATE TABLE IF NOT EXISTS order_discount(
+-- 优惠记录
+CREATE TABLE IF NOT EXISTS coupon_record(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  t_coupon_code VARCHAR(100) DEFAULT ''COMMENT '第三方券代号',
-  order_no VARCHAR(100) DEFAULT '' COMMENT '订单号',
-  act_price NUMERIC(14,2)  COMMENT '实际价格',
-  dis_price NUMERIC(14,2) COMMENT '折扣价格',
-  dis_money NUMERIC(10,2) COMMENT '折掉的金额',
+  trade_no VARCHAR(100) COMMENT '交易号',
+  trade_type int COMMENT '交易类型',
+  title VARCHAR(100) COMMENT '标题',
+  remark VARCHAR(255) COMMENT '备注',
+  t_coupon_code VARCHAR(100) DEFAULT '' COMMENT '第三方券代号',
+  amount NUMERIC(14,2)  COMMENT '实际价格',
+  coupon_amount NUMERIC(10,2) COMMENT '优惠掉的金额',
+  status int COMMENT '1.已使用 0.未使用',
   flag VARCHAR(100) DEFAULT '' COMMENT '标记',
   json VARCHAR(1000)  DEFAULT '' COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -220,14 +237,16 @@ CREATE TABLE IF NOT EXISTS `order` (
   address_id VARCHAR(255) DEFAULT '' COMMENT '地址ID',
   address VARCHAR(255) DEFAULT '' COMMENT '配送地址',
   payapi_no VARCHAR(255) DEFAULT '' COMMENT '支付中心的订单号',
+  coupon_amount NUMERIC(10,2) COMMENT '优惠掉的金额',
+  price NUMERIC(14,2) COMMENT '订单金额',
+  real_price NUMERIC(14,2) COMMENT '真实价格',
+  pay_price NUMERIC(14,2) COMMENT '实际支付金额',
   merchant_id VARCHAR(255) DEFAULT '' COMMENT '商户ID',
   m_open_id VARCHAR(255) DEFAULT '' COMMENT '商户OpenId',
   open_id VARCHAR(255) DEFAULT '' COMMENT '用户ID',
   app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
   title VARCHAR(255) DEFAULT '' COMMENT '订单标题',
-  act_price NUMERIC(14,2)  COMMENT '订单实际金额(此金额为实际付款金额)',
   omit_money NUMERIC(10,4) COMMENT '省略金额',
-  price NUMERIC(14,2) COMMENT '订单金额',
   order_status int COMMENT '订单状态 0，未确认；1，已确认；2，已取消；3，无效；4，退货',
   pay_status int COMMENT '付款状态 支付状态；0，未付款；2，付款中；1，已付款',
   shipping_fee  decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '配送费用',
@@ -240,6 +259,19 @@ CREATE TABLE IF NOT EXISTS `order` (
   UNIQUE (`no`),
   KEY `order_status` (`order_status`),
   KEY `pay_status` (`pay_status`)
+) CHARACTER SET utf8mb4;
+
+-- 订单优惠
+CREATE TABLE IF NOT EXISTS order_coupon(
+  id mediumint(8) unsigned  PRIMARY KEY AUTO_INCREMENT,
+  order_no VARCHAR(100) COMMENT '订单号',
+  notify_url VARCHAR(100) COMMENT '通知URL',
+  coupon_no VARCHAR(100) COMMENT '优惠编号',
+  coupon_amount NUMERIC(10,2) COMMENT '优惠金额',
+  coupon_token VARCHAR(255) COMMENT '优惠凭证',
+  status int COMMENT '0.已使用 1.未使用',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
 
 -- 对订单操作日志表

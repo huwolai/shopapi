@@ -78,5 +78,28 @@ const (
 	CODE_PAYPWD_EXPIRE  = 60*5
 )
 
+const (
+	//账户充值等待完成
+	ACCOUNT_RECHARGE_STATUS_WAIT = 0
+	//账户充值正常状态
+	ACCOUNT_RECHARGE_STATUS_NORMAL = 1
+
+)
+
+const (
+	//优惠券未使用
+	COUNPON_STATUS_NOUSE = 0
+	//优惠券已使用
+	COUNPON_STATUS_USED = 1
+)
+
+const (
+	//未激活
+	ORDER_COUPON_STATUS_UNACTIVATE = 0
+
+	//已激活
+	ORDER_COUPON_STATUS_ACTIVATED = 1
+)
+
 //商户默认商品标记
 const MERCHANT_DEFAULT_PRODUCT_FLAG  = "merchant_default"

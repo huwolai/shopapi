@@ -26,7 +26,7 @@ type ImprestsModel struct  {
 
 
 //领取预付款
-func FetchImprests(model *ImprestsModel) error  {
+func FetchImprests(model *ImprestsModel) (string,error)  {
 
 	payparams :=map[string]interface{}{
 		"open_id": model.OpenId,
@@ -49,19 +49,20 @@ func FetchImprests(model *ImprestsModel) error  {
 	response,err := network.Post(config.GetValue("payapi_url").ToString()+"/imprests/fetch",paramData,headers)
 	if err!=nil{
 		log.Error(err)
-		return err
+		return "",err
 	}
 
 	if response.StatusCode==http.StatusOK {
-
-		return nil
+		var resultMap map[string]interface{}
+		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
+		return resultMap["sub_trade_no"],err
 	}else if response.StatusCode==http.StatusBadRequest {
 		var resultMap map[string]interface{}
 		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
 
-		return errors.New(resultMap["err_msg"].(string))
+		return "",errors.New(resultMap["err_msg"].(string))
 	}else{
-		return errors.New("请求支付中心失败!")
+		return "",errors.New("请求支付中心失败!")
 	}
 
 }
