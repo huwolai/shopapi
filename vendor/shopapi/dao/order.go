@@ -13,6 +13,7 @@ type Order struct  {
 	//预付款编号(主要针对第三方支付的)
 	PrepayNo string
 	PayapiNo string
+	CouponAmount float64
 	OpenId string
 	MerchantId int64
 	MOpenId string
@@ -43,7 +44,6 @@ type OrderDetail struct  {
 	AddressId int64
 	Address string
 	Title string
-	CouponToken string
 	CouponAmount float64
 	Price float64
 	RealPrice float64
