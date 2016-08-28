@@ -6,6 +6,8 @@ coupontoken 需要包含
 
 coupon_no 优惠唯一编号
 coupon_amount 优惠金额
+open_id
+app_id
 order_no 订单系统中的订单编号
 
 失效时间
