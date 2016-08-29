@@ -8,7 +8,6 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/config"
 	"shopapi/comm"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
-	"strconv"
 	"gitlab.qiyunxin.com/tangtao/utils/queue"
 )
 
@@ -216,7 +215,7 @@ func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
 			tx.Rollback()
 			return 0.0,errors.New("优惠券有误[获取coupon_code失败]!")
 		}
-		couponAmount,isok :=cpToken.Claims["coupon_amount"].(string)
+		couponAmount,isok :=cpToken.Claims["coupon_amount"].(float64)
 		if !isok {
 			tx.Rollback()
 			return 0.0,errors.New("优惠券有误[获取coupon_amount失败]!")
@@ -231,7 +230,6 @@ func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
 			tx.Rollback()
 			return 0.0,errors.New("优惠券有误[获取track_code失败]!")
 		}
-		fcouponAmount,err :=strconv.ParseFloat(couponAmount,10)
 		if err!=nil{
 			log.Error(err)
 			tx.Rollback()
@@ -239,7 +237,7 @@ func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
 		}
 
 		orderCoupon := dao.NewOrderCoupon()
-		orderCoupon.CouponAmount = fcouponAmount
+		orderCoupon.CouponAmount = couponAmount
 		orderCoupon.CouponCode = couponCode
 		orderCoupon.OpenId = order.OpenId
 		orderCoupon.TrackCode = trackCode
