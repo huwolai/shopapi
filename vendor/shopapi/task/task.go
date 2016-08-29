@@ -26,7 +26,7 @@ func OrderFetchMoney()  {
 	order :=dao.NewOrder()
 	tm :=time.Now().Add(-time.Minute*30)
 	stm :=qtime.ToyyyyMMddHHmm(tm)
-	log.Error(stm)
+	log.Error("-----------时间--------",stm)
 	orders,err :=order.OrderWithStatusLTTime(comm.ORDER_PAY_STATUS_SUCCESS,comm.ORDER_STATUS_WAIT_SURE,stm)
 	if err!=nil{
 		log.Error(err)
