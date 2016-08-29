@@ -25,7 +25,7 @@ func NewOrderCoupon() *OrderCoupon  {
 
 func (self *OrderCoupon) InsertTx(tx *dbr.Tx) error {
 
-	_,err :=tx.InsertInto("order_coupon").Columns("app_id","open_id","notify_url","order_no","coupon_code","track_code","coupon_amount","coupon_token","status").Exec()
+	_,err :=tx.InsertInto("order_coupon").Columns("app_id","open_id","notify_url","order_no","coupon_code","track_code","coupon_amount","coupon_token","status").Record(self).Exec()
 
 	return err
 }
