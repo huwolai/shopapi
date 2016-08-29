@@ -31,6 +31,7 @@ type Order struct  {
 	OrderStatus int
 	PayStatus int
 	Json string
+	BaseDModel
 }
 
 type OrderDetail struct  {
@@ -71,7 +72,7 @@ func NewOrderDetail() *OrderDetail  {
 
 func (self *Order) OrderWithStatusLTTime(payStatus int,orderStatus int,time string) ([]*Order,error)  {
 	var orders []*Order
-	_,err :=db.NewSession().Select("*").From("`order`").Where("pay_status=?",payStatus).Where("order_status=?",orderStatus).Where("update_time<=Date(?)",time).LoadStructs(&orders)
+	_,err :=db.NewSession().Select("*").From("`order`").Where("pay_status=?",payStatus).Where("order_status=?",orderStatus).Where("update_time<=?",time).LoadStructs(&orders)
 
 	return orders,err
 
@@ -80,7 +81,7 @@ func (self *Order) OrderWithStatusLTTime(payStatus int,orderStatus int,time stri
 //查询没有付款的订单 并且时间小于某个时间的
 func (self *Order) OrderWithNoPayAndLTTime(time string) ([]*Order,error) {
 	var orders []*Order
-	_,err :=db.NewSession().Select("*").From("`order`").Where("pay_status=? or pay_status=?",comm.ORDER_PAY_STATUS_NOPAY,comm.ORDER_PAY_STATUS_PAYING).Where("update_time<=Date(?)",time).LoadStructs(&orders)
+	_,err :=db.NewSession().Select("*").From("`order`").Where("pay_status=? or pay_status=?",comm.ORDER_PAY_STATUS_NOPAY,comm.ORDER_PAY_STATUS_PAYING).Where("update_time<=?",time).LoadStructs(&orders)
 
 	return orders,err
 }

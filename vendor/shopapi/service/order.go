@@ -9,6 +9,7 @@ import (
 	"shopapi/comm"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"gitlab.qiyunxin.com/tangtao/utils/queue"
+	"time"
 )
 
 type OrderModel struct  {
@@ -591,6 +592,12 @@ func OrderCancel(orderNo string,reason string,appId string) error {
 
 
 	if order.PayStatus==comm.ORDER_PAY_STATUS_SUCCESS { //付款了的订单需要退款
+
+		if time.Now().Unix() > order.UpdateTime.Unix() + 60*10 {
+
+			return errors.New("订单已超过10分钟.不能取消!")
+		}
+
 		if order.Code=="" {
 			return errors.New("订单不存在预付款code!")
 		}
