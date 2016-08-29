@@ -179,6 +179,11 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 //处理优惠信息
 func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
 	tx,_ :=db.NewSession().Begin()
+	defer func() {
+		if err :=recover();err!=nil{
+			tx.Rollback()
+		}
+	}()
 	orderCoupon := dao.NewOrderCoupon()
 	err :=orderCoupon.DeleteWithOrderNoTx(comm.ORDER_COUPON_STATUS_UNACTIVATE,order.No,tx)
 	if err!=nil{
@@ -253,6 +258,8 @@ func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
 		}
 		couponTotalAmount += orderCoupon.CouponAmount
 	}
+
+	tx.Commit()
 
 	return couponTotalAmount,nil
 }
