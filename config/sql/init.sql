@@ -272,7 +272,7 @@ CREATE TABLE IF NOT EXISTS order_coupon(
   track_code VARCHAR(100) COMMENT '追踪码',
   coupon_amount NUMERIC(10,2) COMMENT '优惠金额',
   coupon_token VARCHAR(255) COMMENT '优惠凭证',
-  status int COMMENT '0.已使用 1.未使用',
+  status int COMMENT '0.未激活 1.已激活',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;

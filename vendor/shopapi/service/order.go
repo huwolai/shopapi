@@ -402,12 +402,16 @@ func NotifyCouponServer(orderNo string,appId string,subTradeNo string) error {
 	}
 
 	for _,ordercn :=range orderCoupons {
-		if orderCoupon.NotifyUrl=="" {
+		if ordercn.NotifyUrl=="" {
 			log.Warn("优惠券没有通知地址!")
 			continue
 		}
+		if ordercn.Status == comm.ORDER_COUPON_STATUS_ACTIVATED {
+			log.Warn("优惠券",ordercn.CouponCode,"已使用")
+			continue
+		}
 		requestModel :=queue.NewRequestModel()
-		requestModel.NotifyUrl = orderCoupon.NotifyUrl
+		requestModel.NotifyUrl = ordercn.NotifyUrl
 		requestModel.Data = map[string]interface{}{
 			"coupon_code": ordercn.CouponCode,
 			"track_code": ordercn.TrackCode,
