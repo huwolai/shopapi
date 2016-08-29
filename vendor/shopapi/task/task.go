@@ -14,9 +14,9 @@ func StartCron()  {
 
 	c :=cron.New()
 	//没半个小时执行一次
-	c.AddFunc("* 0/6 * * * ?", OrderFetchMoney)
+	c.AddFunc("0 0/6 * * * ?", OrderFetchMoney)
 
-	c.AddFunc("* 0/5 * * * ?", OrderAutoCancel)
+	c.AddFunc("0 0/5 * * * ?", OrderAutoCancel)
 
 	c.Start()
 }
@@ -26,6 +26,7 @@ func OrderFetchMoney()  {
 	order :=dao.NewOrder()
 	tm :=time.Now().Add(-time.Minute*30)
 	stm :=qtime.ToyyyyMMddHHmm(tm)
+	log.Error(stm)
 	orders,err :=order.OrderWithStatusLTTime(comm.ORDER_PAY_STATUS_SUCCESS,comm.ORDER_STATUS_WAIT_SURE,stm)
 	if err!=nil{
 		log.Error(err)
@@ -55,11 +56,12 @@ func OrderFetchMoney()  {
 
 		}
 	}else{
-		log.Error("木有获取到订单")
+		log.Warn("木有获取到订单")
 	}
 }
 
 func OrderAutoCancel()  {
+
 	order :=dao.NewOrder()
 	tm :=time.Now().Add(-time.Minute*30)
 	stm :=qtime.ToyyyyMMddHHmm(tm)
@@ -77,6 +79,8 @@ func OrderAutoCancel()  {
 				continue
 			}
 		}
+	}else{
+		log.Warn("OrderAutoCancel","木有获取到订单")
 	}
 
 }
