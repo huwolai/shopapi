@@ -211,10 +211,10 @@ func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
 			return 0.0,errors.New("优惠凭证不是当前订单的!")
 		}
 
-		couponNo,isok :=cpToken.Claims["coupon_no"].(string)
+		couponCode,isok :=cpToken.Claims["coupon_code"].(string)
 		if !isok{
 			tx.Rollback()
-			return 0.0,errors.New("优惠券有误[获取coupon_no失败]!")
+			return 0.0,errors.New("优惠券有误[获取coupon_code失败]!")
 		}
 		couponAmount,isok :=cpToken.Claims["coupon_amount"].(string)
 		if !isok {
@@ -240,7 +240,7 @@ func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
 
 		orderCoupon := dao.NewOrderCoupon()
 		orderCoupon.CouponAmount = fcouponAmount
-		orderCoupon.CouponCode = couponNo
+		orderCoupon.CouponCode = couponCode
 		orderCoupon.OpenId = order.OpenId
 		orderCoupon.TrackCode = trackCode
 		orderCoupon.CouponToken = couponToken
