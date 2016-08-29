@@ -264,9 +264,12 @@ CREATE TABLE IF NOT EXISTS `order` (
 -- 订单优惠
 CREATE TABLE IF NOT EXISTS order_coupon(
   id mediumint(8) unsigned  PRIMARY KEY AUTO_INCREMENT,
+  app_id VARCHAR(255) COMMENT '',
+  open_id VARCHAR(100) COMMENT '用户ID',
   order_no VARCHAR(100) COMMENT '订单号',
   notify_url VARCHAR(100) COMMENT '通知URL',
-  coupon_no VARCHAR(100) COMMENT '优惠编号',
+  coupon_code VARCHAR(100) COMMENT '优惠券代号',
+  track_code VARCHAR(100) COMMENT '追踪码',
   coupon_amount NUMERIC(10,2) COMMENT '优惠金额',
   coupon_token VARCHAR(255) COMMENT '优惠凭证',
   status int COMMENT '0.已使用 1.未使用',

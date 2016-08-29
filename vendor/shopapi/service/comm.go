@@ -78,6 +78,9 @@ type CouponResultDto struct  {
 	Json string `json:"json"`
 
 }
+
+
+
 //请求优惠API
 func RequestCouponApi(url string,params map[string]interface{}) ([]*CouponResultDto,error) {
 	//获取接口签名信息

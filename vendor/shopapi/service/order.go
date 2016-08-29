@@ -9,6 +9,7 @@ import (
 	"shopapi/comm"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"strconv"
+	"gitlab.qiyunxin.com/tangtao/utils/queue"
 )
 
 type OrderModel struct  {
@@ -225,6 +226,11 @@ func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
 			tx.Rollback()
 			return 0.0,errors.New("优惠券有误[获取notify_url失败]!")
 		}
+		trackCode,isok :=cpToken.Claims["track_code"].(string)
+		if !isok {
+			tx.Rollback()
+			return 0.0,errors.New("优惠券有误[获取track_code失败]!")
+		}
 		fcouponAmount,err :=strconv.ParseFloat(couponAmount,10)
 		if err!=nil{
 			log.Error(err)
@@ -234,7 +240,9 @@ func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
 
 		orderCoupon := dao.NewOrderCoupon()
 		orderCoupon.CouponAmount = fcouponAmount
-		orderCoupon.CouponNo = couponNo
+		orderCoupon.CouponCode = couponNo
+		orderCoupon.OpenId = order.OpenId
+		orderCoupon.TrackCode = trackCode
 		orderCoupon.CouponToken = couponToken
 		orderCoupon.OrderNo = orderNo
 		orderCoupon.AppId = order.AppId
@@ -328,10 +336,12 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		"code": order.Code,
 		"out_trade_pay":order.No,
 	}
-	_,err = RequestPayApi("/pay/payimprest",params)
+	resultMap,err := RequestPayApi("/pay/payimprest",params)
 	if err!=nil{
 		return err
 	}
+
+	subTradeNo :=resultMap["sub_trade_no"].(string)
 
 	tx,_ :=db.NewSession().Begin()
 
@@ -361,7 +371,46 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		return errors.New("订单更新错误!")
 	}
 
+	err =NotifyCouponServer(orderNo,appId,subTradeNo)
+	if err!=nil{
+		tx.Rollback()
+		return errors.New("通知第三方优惠服务失败!")
+	}
+
 	tx.Commit()
+
+	return nil
+}
+
+//通知优惠服务
+func NotifyCouponServer(orderNo string,appId string,subTradeNo string) error {
+
+	orderCoupon :=dao.NewOrderCoupon()
+	orderCoupons,err := orderCoupon.WithOrderNo(orderNo,appId)
+	if err!=nil{
+		return err
+	}
+	if orderCoupons==nil{
+		return nil
+	}
+
+	for _,ordercn :=range orderCoupons {
+		if orderCoupon.NotifyUrl=="" {
+			continue
+		}
+		requestModel :=queue.NewRequestModel()
+		requestModel.NotifyUrl = orderCoupon.NotifyUrl
+		requestModel.Data = map[string]interface{}{
+			"coupon_code": ordercn.CouponCode,
+			"track_code": ordercn.TrackCode,
+			"open_id": ordercn.OpenId,
+			"sub_trade_no": subTradeNo,
+		}
+		err = queue.PublishRequestMsg(requestModel)
+		if err!=nil{
+			return err
+		}
+	}
 
 	return nil
 }
