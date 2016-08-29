@@ -248,6 +248,7 @@ func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
 		err =orderCoupon.InsertTx(tx)
 		if err!=nil{
 			tx.Rollback()
+			log.Error(err)
 			return 0.0,errors.New("插入优惠信息失败!")
 		}
 		couponTotalAmount += orderCoupon.CouponAmount
