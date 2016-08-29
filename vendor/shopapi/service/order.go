@@ -397,11 +397,13 @@ func NotifyCouponServer(orderNo string,appId string,subTradeNo string) error {
 		return err
 	}
 	if orderCoupons==nil{
+		log.Warn("没有优惠券信息!")
 		return nil
 	}
 
 	for _,ordercn :=range orderCoupons {
 		if orderCoupon.NotifyUrl=="" {
+			log.Warn("优惠券没有通知地址!")
 			continue
 		}
 		requestModel :=queue.NewRequestModel()
@@ -412,8 +414,10 @@ func NotifyCouponServer(orderNo string,appId string,subTradeNo string) error {
 			"open_id": ordercn.OpenId,
 			"sub_trade_no": subTradeNo,
 		}
+		log.Warn("优惠券放入队列")
 		err = queue.PublishRequestMsg(requestModel)
 		if err!=nil{
+			log.Error(err)
 			return err
 		}
 	}
