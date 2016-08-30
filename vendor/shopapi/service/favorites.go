@@ -23,7 +23,7 @@ func FavoritesAdd(favorites *Favorites) error  {
 
 	dfavorites :=dao.NewFavorites()
 
-	exist,err :=dfavorites.WithTypeAndObjId(favorites.ObjId,favorites.Title,favorites.OpenId,favorites.AppId)
+	exist,err :=dfavorites.WithTypeAndObjId(favorites.ObjId,favorites.Type,favorites.OpenId,favorites.AppId)
 	if err!=nil{
 		return errors.New("查询收藏信息失败!")
 	}
