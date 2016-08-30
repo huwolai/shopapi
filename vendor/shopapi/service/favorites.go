@@ -60,7 +60,7 @@ func FavoritesDelete(id int64) error {
 	return dao.NewFavorites().DeleteWithId(id)
 }
 
-func FavoritesIsExist(objId int64,typ int,appId string,openId string) (bool,error)  {
+func FavoritesIsExist(objId int64,typ int,appId string,openId string) (*dao.Favorites,error)  {
 
 	return dao.NewFavorites().WithTypeAndObjId(objId,typ,openId,appId)
 }

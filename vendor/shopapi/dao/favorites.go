@@ -33,16 +33,11 @@ func (self *Favorites) WithOpenId(openId,appId string) ([]*Favorites,error)   {
 	return list,err
 }
 
-func (self *Favorites) WithTypeAndObjId(objId int64,typ int,openId string,appId string) (bool,error)   {
-	var count int64
-	err :=db.NewSession().Select("count(*)").From("favorites").Where("open_id=?",openId).Where("obj_id=?",objId).Where("type=?",typ).Where("app_id=?",appId).LoadValue(&count)
-	if err!=nil{
-		return false,err
-	}
-	if count<=0 {
-		return false,nil
-	}
-	return true,nil
+func (self *Favorites) WithTypeAndObjId(objId int64,typ int,openId string,appId string) (*Favorites,error)   {
+	var model *Favorites
+	_,err :=db.NewSession().Select("*").From("favorites").Where("open_id=?",openId).Where("obj_id=?",objId).Where("type=?",typ).Where("app_id=?",appId).LoadStructs(&model)
+
+	return model,err
 }
 
 func (self *Favorites) DeleteWithId(id int64) error  {

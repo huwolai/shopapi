@@ -77,19 +77,22 @@ func FavoritesIsExist(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"type格式有误!")
 		return
 	}
-	isExit,err :=service.FavoritesIsExist(iobjId,itype,appId,openId)
+	favor,err :=service.FavoritesIsExist(iobjId,itype,appId,openId)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询收藏失败!")
 		return
 	}
 
-	isf :=0
-	if isExit {
+	isf :=0 //是否收藏
+	fid :=0 //收藏ID
+	if favor!=nil {
 		isf=1
+		fid = favor.Id
 	}
 	c.JSON(http.StatusOK,gin.H{
 		"is_favorited":isf,
+		"id": fid,
 	})
 }
 
