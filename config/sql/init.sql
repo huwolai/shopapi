@@ -343,7 +343,9 @@ CREATE TABLE IF NOT EXISTS distribution (
   open_id VARCHAR(40) COMMENT '用户ID',
   code VARCHAR(40) COMMENT '分销码',
   prod_id BIGINT COMMENT '分销的商品ID',
-  csn_rate NUMERIC(1,2) COMMENT '佣金比例'
+  csn_rate NUMERIC(1,2) COMMENT '佣金比例',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
 
 # INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','家常用餐','家常菜','../static/area_1.png','home');

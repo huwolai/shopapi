@@ -1,6 +1,9 @@
 package dao
 
-import "gitlab.qiyunxin.com/tangtao/utils/db"
+import (
+	"gitlab.qiyunxin.com/tangtao/utils/db"
+	"github.com/gocraft/dbr"
+)
 
 type Favorites struct  {
 	OpenId string
@@ -33,7 +36,7 @@ func (self *Favorites) WithOpenId(openId,appId string) ([]*Favorites,error)   {
 
 func (self *Favorites) WithTypeAndObjId(objId int64,typ int,openId string,appId string) (bool,error)   {
 	var count int64
-	err :=db.NewSession().Select("count(*)").From("favorites").Where("open_id=?").Where("obj_id=?",objId).Where("type=?",typ).Where("app_id=?",appId).LoadValue(&count)
+	err :=db.NewSession().Select("count(*)").From("favorites").Where("open_id=?",openId).Where("obj_id=?",objId).Where("type=?",typ).Where("app_id=?",appId).LoadValue(&count)
 	if err!=nil{
 		return false,err
 	}
