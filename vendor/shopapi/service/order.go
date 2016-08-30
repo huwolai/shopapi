@@ -93,12 +93,20 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		return nil,errors.New("没有找到对应的地址信息!")
 	}
 
+	tx,_ :=db.NewSession().Begin()
+	defer func() {
+		if err :=recover();err!=nil{
+			tx.Rollback()
+		}
+	}()
+
 	var couponTotalAmount float64
 	//存在优惠信息
 	if model.CouponTokens!=nil&&len(model.CouponTokens) >0 {
-		couponTotalAmount,err =HandleCoupon(order,model.CouponTokens)
+		couponTotalAmount,err =HandleCoupon(order,model.CouponTokens,tx)
 		if err!=nil{
 			log.Error(err)
+			tx.Rollback()
 			return nil,errors.New("优惠信息处理错误!")
 		}
 	}
@@ -107,6 +115,11 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		return nil,errors.New("付款金额不能为负数!")
 	}
 
+	err =order.UpdateOrderPayInfoWithOrderNoTX(couponTotalAmount,payPrice,order.No,order.AppId,tx)
+	if err!=nil{
+		log.Error(err)
+		return nil,errors.New("更新订单支付信息失败!")
+	}
 	if model.PayType == comm.Pay_Type_Account {//账户支付
 
 		if order.PayStatus==comm.ORDER_PAY_STATUS_NOPAY{
@@ -122,9 +135,10 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 				return nil,err
 			}
 			code :=resultImprestMap["code"].(string)
-			err =order.OrderPayapiUpdateWithNoAndCode("",address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
+			err =order.OrderPayapiUpdateWithNoAndCodeTx("",address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId,tx)
 			if err!=nil{
 				log.Error(err)
+				tx.Rollback()
 				return nil,err
 			}
 
@@ -156,40 +170,39 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 
 
 	if err!=nil{
+		tx.Rollback()
 		return nil,err
 	}
 
 	resultPrepayMap,err :=RequestPayApi("/pay/makeprepay",params)
 	if err!=nil{
+		tx.Rollback()
 		return nil,err
 	}
 	if resultPrepayMap!=nil{
 		payapiNo :=resultPrepayMap["pay_no"].(string)
 		code :=resultPrepayMap["code"].(string)
 		//将payapi的订单号更新到订单数据里
-		err :=order.OrderPayapiUpdateWithNoAndCode(payapiNo,address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId)
+		err :=order.OrderPayapiUpdateWithNoAndCodeTx(payapiNo,address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId,tx)
 		if err!=nil{
 			log.Error(err)
+			tx.Rollback()
 			return nil,err
 		}
 	}
+
+	tx.Commit()
 
 	return resultPrepayMap,nil
 }
 
 //处理优惠信息
-func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
-	tx,_ :=db.NewSession().Begin()
-	defer func() {
-		if err :=recover();err!=nil{
-			tx.Rollback()
-		}
-	}()
+func HandleCoupon(order *dao.Order,coupotokens []string,tx *dbr.Tx) (float64,error)  {
+
 	orderCoupon := dao.NewOrderCoupon()
 	err :=orderCoupon.DeleteWithOrderNoTx(comm.ORDER_COUPON_STATUS_UNACTIVATE,order.No,tx)
 	if err!=nil{
 		log.Error(err)
-		tx.Rollback()
 		return 0.0,errors.New("删除原有优惠记录失败!")
 	}
 	//去重
@@ -200,16 +213,13 @@ func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
 		jwtAuth := comm.InitJWTAuthenticationBackend()
 		cpToken,err :=jwtAuth.FetchToken(couponToken)
 		if err!=nil{
-			tx.Rollback()
 			return 0.0,err
 		}
 		if !cpToken.Valid {
-			tx.Rollback()
 			return 0.0,errors.New("优惠凭证无效!")
 		}
 		orderNo,isok :=cpToken.Claims["order_no"].(string)
 		if !isok {
-			tx.Rollback()
 			return 0.0,errors.New("优惠券有误[获取order_no失败]!")
 		}
 		if orderNo!=order.No {
@@ -218,27 +228,22 @@ func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
 
 		couponCode,isok :=cpToken.Claims["coupon_code"].(string)
 		if !isok{
-			tx.Rollback()
 			return 0.0,errors.New("优惠券有误[获取coupon_code失败]!")
 		}
 		couponAmount,isok :=cpToken.Claims["coupon_amount"].(float64)
 		if !isok {
-			tx.Rollback()
 			return 0.0,errors.New("优惠券有误[获取coupon_amount失败]!")
 		}
 		notifyUrl,isok :=cpToken.Claims["notify_url"].(string)
 		if !isok {
-			tx.Rollback()
 			return 0.0,errors.New("优惠券有误[获取notify_url失败]!")
 		}
 		trackCode,isok :=cpToken.Claims["track_code"].(string)
 		if !isok {
-			tx.Rollback()
 			return 0.0,errors.New("优惠券有误[获取track_code失败]!")
 		}
 		if err!=nil{
 			log.Error(err)
-			tx.Rollback()
 			return 0.0,errors.New("优惠券金额有误!")
 		}
 
@@ -253,14 +258,11 @@ func HandleCoupon(order *dao.Order,coupotokens []string) (float64,error)  {
 		orderCoupon.NotifyUrl = notifyUrl
 		err =orderCoupon.InsertTx(tx)
 		if err!=nil{
-			tx.Rollback()
 			log.Error(err)
 			return 0.0,errors.New("插入优惠信息失败!")
 		}
 		couponTotalAmount += orderCoupon.CouponAmount
 	}
-
-	tx.Commit()
 
 	return couponTotalAmount,nil
 }

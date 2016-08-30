@@ -61,8 +61,6 @@ func main() {
 		{
 			comm.POST("/images/upload",api.ImageUpload)
 		}
-
-
 		//用户
 		users :=v1.Group("/users")
 		{

@@ -222,9 +222,8 @@ func fillOrderItemDetail(orders []*OrderDetail)  error {
 	return nil
 }
 
-func (self *Order) OrderPayapiUpdateWithNoAndCode(payapiNo string,addressId int64,address string,code string,orderStatus int,payStatus int,no string,appId string) error  {
-	sess := db.NewSession()
-	_,err :=sess.Update("order").Set("payapi_no",payapiNo).Set("address_id",addressId).Set("address",address).Set("code",code).Set("order_status",orderStatus).Set("pay_status",payStatus).Where("app_id=?",appId).Where("`no`=?",no).Exec()
+func (self *Order) OrderPayapiUpdateWithNoAndCodeTx(payapiNo string,addressId int64,address string,code string,orderStatus int,payStatus int,no string,appId string,tx *dbr.Tx) error  {
+	_,err :=tx.Update("order").Set("payapi_no",payapiNo).Set("address_id",addressId).Set("address",address).Set("code",code).Set("order_status",orderStatus).Set("pay_status",payStatus).Where("app_id=?",appId).Where("`no`=?",no).Exec()
 	return err
 }
 
@@ -252,6 +251,12 @@ func (self *Order) UpdateWithOrderStatus(orderStatus int,orderNo string) error  
 func (self *Order) UpdateWithOrderStatusTx(orderStatus int,orderNo string,tx *dbr.Tx) error  {
 
 	_,err :=tx.Update("order").Set("order_status",orderStatus).Where("no=?",orderNo).Exec()
+
+	return err
+}
+
+func (self *Order) UpdateOrderPayInfoWithOrderNoTX(couponAmount float64,payPrice float64,orderNo string,appId string,tx *dbr.Tx) error  {
+	_,err :=tx.Update("`order`").Set("coupon_amount",couponAmount).Set("pay_price",payPrice).Where("app_id=?",appId).Where("no=?",orderNo).Exec()
 
 	return err
 }
