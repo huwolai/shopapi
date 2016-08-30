@@ -1,5 +1,7 @@
 package comm
 
+import "math"
+
 //数组去重
 func RemoveDuplicatesAndEmpty(a []string) (ret []string){
 	a_len := len(a)
@@ -10,4 +12,9 @@ func RemoveDuplicatesAndEmpty(a []string) (ret []string){
 		ret = append(ret, a[i])
 	}
 	return
+}
+
+func Round(f float64, n int) float64 {
+	pow10_n := math.Pow10(n)
+	return math.Trunc((f+0.5/pow10_n)*pow10_n) / pow10_n
 }

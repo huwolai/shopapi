@@ -27,6 +27,8 @@ type OrderModel struct  {
 }
 
 type OrderItemModel struct  {
+	//分销编号
+	DbnNo string
 	//商品sku
 	SkuNo string
 	//商品数量
@@ -110,28 +112,29 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 			return nil,errors.New("优惠信息处理错误!")
 		}
 	}
+	//实际付款金额
 	payPrice :=order.RealPrice - couponTotalAmount
 	if payPrice<0 {
+		tx.Rollback()
 		return nil,errors.New("付款金额不能为负数!")
 	}
 
-	err =order.UpdateOrderPayInfoWithOrderNoTX(couponTotalAmount,payPrice,order.No,order.AppId,tx)
+	err =calOrderAmount(order,payPrice,couponTotalAmount,tx)
 	if err!=nil{
+		tx.Rollback()
 		log.Error(err)
-		return nil,errors.New("更新订单支付信息失败!")
+		return nil,errors.New("计算订单金额失败!")
 	}
+
+
 	if model.PayType == comm.Pay_Type_Account {//账户支付
 
-		if order.PayStatus==comm.ORDER_PAY_STATUS_NOPAY{
-			params := map[string]interface{}{
-				"open_id":order.OpenId,
-				"type": 1,
-				"amount": int64(payPrice*100),
-				"title": order.Title,
-				"remark": order.Title,
-			}
-			resultImprestMap,err := RequestPayApi("/pay/makeimprest",params)
+		code :=order.Code
+		if order.PayStatus==comm.ORDER_PAY_STATUS_NOPAY {
+			//请求预付款
+			resultImprestMap,err := makeImprest(order,address,payPrice)
 			if err!=nil{
+				tx.Rollback()
 				return nil,err
 			}
 			code :=resultImprestMap["code"].(string)
@@ -142,19 +145,86 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 				return nil,err
 			}
 
-			resultMap := map[string]interface{}{
-				"open_id": resultImprestMap["open_id"],
-				"code": resultImprestMap["code"],
+		}
+		resultMap := map[string]interface{}{
+			"open_id": order.OpenId,
+			"code": code,
+		}
+		tx.Commit()
+		return resultMap,nil
+	}else{
+		resultPrepayMap,err := makePrepay(order,address,payPrice,model)
+		if err!=nil{
+			tx.Rollback()
+			log.Error(err)
+			return nil,err
+		}
+		if resultPrepayMap!=nil{
+			payapiNo :=resultPrepayMap["pay_no"].(string)
+			code :=resultPrepayMap["code"].(string)
+			//将payapi的订单号更新到订单数据里
+			err :=order.OrderPayapiUpdateWithNoAndCodeTx(payapiNo,address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId,tx)
+			if err!=nil{
+				log.Error(err)
+				tx.Rollback()
+				return nil,err
 			}
-			return resultMap,nil
-		}else {
-			resultMap := map[string]interface{}{
-				"open_id": order.OpenId,
-				"code": order.Code,
+		}
+		tx.Commit()
+		return resultPrepayMap,nil
+
+	}
+
+}
+
+//计算分销金额
+func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,tx *dbr.Tx)  error {
+	orderItem := dao.NewOrderItem()
+	orderitems,err :=orderItem.OrderItemWithOrderNo(order.No)
+	if err!=nil{
+		log.Error(err)
+		return errors.New("查询订单明细失败!")
+	}
+	var totaldbnAmount float64 //总佣金
+	var totalOmitMoney float64 //省略的金额
+	var totalMerchantAmount float64 //商户应得的金额
+	if  orderitems!=nil{
+		for _,oItem :=range orderitems {
+			if oItem.DbnNo != "" {
+				distribution := dao.NewUserDistributionDetail()
+				distribution, err := distribution.WithCode(oItem.DbnNo)
+				if err != nil {
+					log.Error(err)
+					return errors.New("查询分销信息失败!")
+				}
+				couponAmount := (oItem.BuyTotalPrice / order.RealPrice) * couponTotalAmount
+				dbnAmount := payPrice * distribution.CsnRate
+				oItem.CouponAmount = comm.Round(couponAmount, 2)
+				oItem.DbnAmount = comm.Round(dbnAmount, 2)
+				oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
+				oItem.OmitMoney = (couponAmount - oItem.CouponAmount) + (dbnAmount - oItem.DbnAmount)
+				err = oItem.UpdateAmountWithIdTx(oItem.DbnAmount, oItem.OmitMoney, oItem.CouponAmount, oItem.MerchantAmount, oItem.Id, tx)
+				if err != nil {
+					log.Error(err)
+					return errors.New("更新订单详情失败!")
+				}
 			}
-			return resultMap,nil
+			totaldbnAmount += oItem.DbnAmount
+			totalOmitMoney += oItem.OmitMoney
+			totalMerchantAmount += oItem.MerchantAmount
 		}
 	}
+	err =order.UpdateAmountTx(couponTotalAmount,payPrice,totalMerchantAmount,totalOmitMoney,totaldbnAmount,order.No,tx)
+	if err!=nil{
+		log.Error(err)
+		return errors.New("更新订单信息失败!")
+	}
+
+	return nil
+}
+
+//制作预支付
+func makePrepay(order *dao.Order,address *dao.Address,payPrice float64,model *OrderPrePayModel)  (map[string]interface{},error)  {
 	//参数
 	params := map[string]interface{}{
 		"open_id": order.OpenId,
@@ -167,35 +237,34 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		"notify_url": model.NotifyUrl,
 		"remark": order.Title,
 	}
-
-
-	if err!=nil{
-		tx.Rollback()
-		return nil,err
-	}
-
 	resultPrepayMap,err :=RequestPayApi("/pay/makeprepay",params)
-	if err!=nil{
-		tx.Rollback()
-		return nil,err
-	}
-	if resultPrepayMap!=nil{
-		payapiNo :=resultPrepayMap["pay_no"].(string)
-		code :=resultPrepayMap["code"].(string)
-		//将payapi的订单号更新到订单数据里
-		err :=order.OrderPayapiUpdateWithNoAndCodeTx(payapiNo,address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId,tx)
-		if err!=nil{
-			log.Error(err)
-			tx.Rollback()
-			return nil,err
-		}
-	}
 
-	tx.Commit()
+	return resultPrepayMap,err
 
-	return resultPrepayMap,nil
 }
 
+//制作预付款
+func makeImprest(order *dao.Order,address *dao.Address,payPrice float64) (map[string]interface{},error)  {
+	params := map[string]interface{}{
+		"open_id":order.OpenId,
+		"type": 1,
+		"amount": int64(payPrice*100),
+		"title": order.Title,
+		"remark": order.Title,
+	}
+	resultImprestMap,err := RequestPayApi("/pay/makeimprest",params)
+	if err!=nil{
+		return nil,err
+	}
+
+
+	resultMap := map[string]interface{}{
+		"open_id": resultImprestMap["open_id"],
+		"code": resultImprestMap["code"],
+	}
+	return resultMap,nil
+
+}
 //处理优惠信息
 func HandleCoupon(order *dao.Order,coupotokens []string,tx *dbr.Tx) (float64,error)  {
 
@@ -605,6 +674,11 @@ func OrderCancel(orderNo string,reason string,appId string) error {
 		}
 
 		tx,_ :=db.NewSession().Begin()
+		defer func() {
+			if err:=recover();err!=nil {
+				tx.Rollback()
+			}
+		}()
 		err = order.UpdateWithOrderStatusTx(comm.ORDER_STATUS_CANCELED_WAIT_SURE,orderNo,tx)
 		if err!=nil{
 			log.Error("更新订单状态失败! 订单号:",orderNo)
@@ -690,6 +764,7 @@ func orderItemSave(prodSku *dao.ProdSku,item OrderItemModel,orderNo string,tx *d
 	orderItem.No = orderNo
 	orderItem.ProdId = prodSku.ProdId
 	orderItem.SkuNo = prodSku.SkuNo
+	orderItem.DbnNo = item.DbnNo
 	orderItem.AppId = prodSku.AppId
 	orderItem.Num = item.Num
 	orderItem.OfferUnitPrice = prodSku.Price

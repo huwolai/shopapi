@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 	"gitlab.qiyunxin.com/tangtao/utils/security"
-	"time"
 )
 
 type OrderDto struct  {
@@ -80,6 +79,8 @@ type OrderItemDetailDto struct  {
 }
 
 type OrderItemDto struct  {
+	//分销编号 (推荐人的分销编号)
+	DbnNo string `json:"dbn_no"`
 	//sku编号
 	SkuNo string `json:"sku_no"`
 	//商品数量
@@ -91,7 +92,6 @@ type OrderItemDto struct  {
 
 //添加订单
 func OrderAdd(c *gin.Context)  {
-
 	appId,err :=CheckAppAuth(c)
 	if err!=nil{
 		log.Error(err)
@@ -135,26 +135,10 @@ func OrderAdd(c *gin.Context)  {
 		return
 	}
 	orderDto.OrderNo = order.No
-	//开启订单过期取消
-	OrderAutoCancel(orderDto.OrderNo,appId)
 
 	c.JSON(http.StatusOK,orderDto)
 }
 
-func OrderAutoCancel(orderNo string,appId string)  {
-	t := time.NewTimer(time.Minute * 30)
-
-	go func() {
-		<-t.C
-		log.Debug("订单",orderNo,"自动取消!")
-		//#bug 存在bug可能性(如果订单已取消,第三方支付回调的时候订单已是取消状态)
-		err :=service.OrderAutoCancel(orderNo,appId)
-		if err!=nil{
-			log.Error(err)
-			return
-		}
-	}()
-}
 
 
 //预支付订单
@@ -549,9 +533,6 @@ func orderDtoToModel(dto OrderDto) *service.OrderModel  {
 	model.Title = dto.Title
 	model.AddressId = dto.AddressId
 
-
-
-
 	items := dto.Items
 	if items!=nil {
 		itemmodels := make([]service.OrderItemModel,0)
@@ -568,6 +549,7 @@ func orderDtoToModel(dto OrderDto) *service.OrderModel  {
 
 func orderItemToModel(dto OrderItemDto) service.OrderItemModel  {
 	model :=service.OrderItemModel{}
+	model.DbnNo = dto.DbnNo
 	model.Json = dto.Json
 	model.Num = dto.Num
 	model.SkuNo = dto.SkuNo

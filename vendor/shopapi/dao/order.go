@@ -13,6 +13,7 @@ type Order struct  {
 	//预付款编号(主要针对第三方支付的)
 	PrepayNo string
 	PayapiNo string
+	MerchantAmount float64
 	CouponAmount float64
 	OpenId string
 	MerchantId int64
@@ -45,6 +46,7 @@ type OrderDetail struct  {
 	AddressId int64
 	Address string
 	Title string
+	MerchantAmount float64
 	CouponAmount float64
 	Price float64
 	RealPrice float64
@@ -87,7 +89,7 @@ func (self *Order) OrderWithNoPayAndLTTime(time string) ([]*Order,error) {
 }
 
 func (self *Order) InsertTx(tx *dbr.Tx) (int64,error)  {
-	result,err :=tx.InsertInto("order").Columns("no","prepay_no","address_id","address","merchant_id","m_open_id","payapi_no","code","open_id","app_id","title","coupon_amount","real_price","pay_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
+	result,err :=tx.InsertInto("order").Columns("no","prepay_no","address_id","address","merchant_id","m_open_id","payapi_no","code","open_id","app_id","title","coupon_amount","merchant_amount","real_price","pay_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
@@ -271,5 +273,10 @@ func (self *Order) UpdateWithCancelReasonTx(cancelReason string,orderNo string,t
 	_,err :=tx.Update("order").Set("cancel_reason",cancelReason).Where("no=?",orderNo).Exec()
 
 	return err
+}
 
+func (self *Order) UpdateAmountTx(couponAmount,payPrice,merchantAmount,omitMoney,dbnAmount float64,orderNo string,tx *dbr.Tx) error  {
+	_,err :=tx.Update("order").Set("coupon_amount",couponAmount).Set("pay_price",payPrice).Set("merchant_amount",merchantAmount).Set("omit_money",omitMoney).Set("dbn_amount",dbnAmount).Where("no=?",orderNo).Exec()
+
+	return err
 }

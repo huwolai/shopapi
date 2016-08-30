@@ -225,6 +225,8 @@ CREATE TABLE IF NOT EXISTS `order` (
   address VARCHAR(255) DEFAULT '' COMMENT '配送地址',
   payapi_no VARCHAR(255) DEFAULT '' COMMENT '支付中心的订单号',
   coupon_amount NUMERIC(10,2) COMMENT '优惠掉的金额',
+  dbn_amount NUMERIC(10,2) COMMENT '佣金',
+  merchant_amount NUMERIC(10,2) COMMENT '商户实际应得金额',
   price NUMERIC(14,2) COMMENT '订单金额',
   real_price NUMERIC(14,2) COMMENT '真实价格',
   pay_price NUMERIC(14,2) COMMENT '实际支付金额',
@@ -294,6 +296,8 @@ CREATE TABLE IF NOT EXISTS order_item (
   buy_unit_price NUMERIC(14,2) COMMENT '购买单价',
   buy_total_price NUMERIC(14,2) COMMENT '购买总金额',
   dbn_amount NUMERIC(10,2) COMMENT '分销佣金',
+  omit_money NUMERIC(1,8) COMMENT '省略金额',
+  coupon_amount NUMERIC(10,2) COMMENT '优惠金额',
   merchant_amount NUMERIC(10,2) COMMENT '商户得到的金额',
   flag VARCHAR(100) DEFAULT '' COMMENT '标记',
   json VARCHAR(1000) DEFAULT '' COMMENT '附加字段',
@@ -337,13 +341,25 @@ CREATE TABLE IF NOT EXISTS favorites(
   KEY open_app_id (open_id,app_id)
 ) CHARACTER SET utf8mb4;
 
--- 分销
-CREATE TABLE IF NOT EXISTS distribution (
+-- 进行分销的商品
+CREATE TABLE IF NOT EXISTS distribution_product (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  open_id VARCHAR(40) COMMENT '用户ID',
-  code VARCHAR(40) COMMENT '分销码',
-  prod_id BIGINT COMMENT '分销的商品ID',
+  app_id VARCHAR(40) COMMENT 'app_id',
+  prod_id BIGINT COMMENT '商品ID',
+  merchant_id BIGINT COMMENT '商户ID',
   csn_rate NUMERIC(1,2) COMMENT '佣金比例',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+) CHARACTER SET utf8mb4;
+
+-- 进行分销的用户
+CREATE TABLE IF NOT EXISTS user_distribution (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  code VARCHAR(40) COMMENT '用户唯一分销码',
+  app_id VARCHAR(40) COMMENT '',
+  open_id VARCHAR(40) COMMENT '用户ID',
+  distribution_id BIGINT COMMENT '分销ID',
+  prod_id BIGINT COMMENT '分销的商品ID',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
