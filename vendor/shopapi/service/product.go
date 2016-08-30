@@ -54,7 +54,7 @@ func  ProdImgsWithProdId(prodId int64,appId string) ([]*ProdImgsDetailDLL,error)
 	prodImgDetail := dao.NewProdImgsDetail()
 	prodImgDetals,err := prodImgDetail.ProdImgsWithProdId(prodId,appId)
 	log.Error("prodImgDetals=",prodImgDetals)
-	log.Error("size:",len(prodImgDetals))
+	log.Error("size:",len(prodImgDetals),"prod_id:",prodId,"app_id:",appId)
 	if err!=nil{
 
 		return nil,err
