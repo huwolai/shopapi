@@ -51,13 +51,44 @@ func FavoritesGet(c *gin.Context)  {
 		return
 	}
 
-	var fs []*Favorites
+	 fs :=make([]*Favorites,0)
 	if list!=nil{
 		for _,f :=range list {
 			fs = append(fs,favoritesToA(f))
 		}
 	}
 	c.JSON(http.StatusOK,fs)
+}
+
+func FavoritesIsExist(c *gin.Context)  {
+	openId :=c.Param("open_id")
+	appId := security.GetAppId2(c.Request)
+
+	objId :=c.Query("obj_id")
+	stype := c.Query("type")
+	iobjId,err :=strconv.ParseInt(objId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"obj_id格式有误!")
+		return
+	}
+	itype,err :=strconv.ParseInt(stype,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"type格式有误!")
+		return
+	}
+	isExit,err :=service.FavoritesIsExist(iobjId,itype,appId,openId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"查询收藏失败!")
+		return
+	}
+
+	isf :=0
+	if isExit {
+		isf=1
+	}
+	c.JSON(http.StatusOK,gin.H{
+		"is_favorited":isf,
+	})
 }
 
 func FavoritesDelete(c *gin.Context)  {

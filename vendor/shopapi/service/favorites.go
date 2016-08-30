@@ -3,7 +3,6 @@ package service
 import (
 	"shopapi/dao"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
-	"shopapi/comm"
 	"errors"
 )
 
@@ -12,6 +11,7 @@ type Favorites struct  {
 	AppId string
 	OpenId string
 	CoverImg string
+	Title string
 	Remark string
 	Type int
 	Flag string
@@ -21,25 +21,21 @@ type Favorites struct  {
 
 func FavoritesAdd(favorites *Favorites) error  {
 
-	if favorites.Type!=comm.FAVORITES_TYPE_PRODUCT {
-		return errors.New("暂不支持此类收藏!")
-	}
-
-	product :=dao.NewProduct()
-	product,err :=product.ProductWithId(favorites.ObjId,favorites.AppId)
-	if err!=nil{
-		log.Error(err)
-		return err
-	}
-	if  product==nil{
-		return errors.New("没有找到此商品信息!")
-	}
-
 	dfavorites :=dao.NewFavorites()
+
+	exist,err :=dfavorites.WithTypeAndObjId(favorites.ObjId,favorites.Title,favorites.OpenId,favorites.AppId)
+	if err!=nil{
+		return errors.New("查询收藏信息失败!")
+	}
+	if exist {
+		return errors.New("已收藏,不能再收藏!")
+	}
+
 	dfavorites.AppId = favorites.AppId
 	dfavorites.ObjId = favorites.ObjId
-	dfavorites.Title = product.Title
+	dfavorites.Title = favorites.Title
 	dfavorites.Remark = favorites.Remark
+	dfavorites.Type = favorites.Type
 	dfavorites.OpenId = favorites.OpenId
 	dfavorites.Flag = favorites.Flag
 	dfavorites.Json = favorites.Json
@@ -62,4 +58,9 @@ func FavoritesGet(openId,appId string) ([]*dao.Favorites,error)  {
 func FavoritesDelete(id int64) error {
 
 	return dao.NewFavorites().DeleteWithId(id)
+}
+
+func FavoritesIsExist(objId int64,typ int,appId string,openId string) (bool,error)  {
+
+	return dao.NewFavorites().WithTypeAndObjId(objId,typ,openId,appId)
 }

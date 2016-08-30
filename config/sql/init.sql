@@ -334,6 +334,8 @@ CREATE TABLE IF NOT EXISTS favorites(
   KEY open_app_id (open_id,app_id)
 ) CHARACTER SET utf8mb4;
 
+CREATE TABLE IF NOT EXISTS
+
 # INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','家常用餐','家常菜','../static/area_1.png','home');
 # INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','系列套餐','私人订制','../static/area_2.png','home');
 # INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','私人订制','家常菜','../static/area_3.png','home');

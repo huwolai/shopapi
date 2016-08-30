@@ -31,6 +31,18 @@ func (self *Favorites) WithOpenId(openId,appId string) ([]*Favorites,error)   {
 	return list,err
 }
 
+func (self *Favorites) WithTypeAndObjId(objId int64,typ int,openId string,appId string) (bool,error)   {
+	var count int64
+	_,err :=db.NewSession().Select("count(*)").From("favorites").Where("open_id=?").Where("obj_id=?",objId).Where("type=?",typ).Where("app_id=?",appId).LoadStructs(&count)
+	if err!=nil{
+		return false,err
+	}
+	if count<=0 {
+		return false
+	}
+	return true
+}
+
 func (self *Favorites) DeleteWithId(id int64) error  {
 
 	_,err :=db.NewSession().DeleteFrom("favorites").Where("id=?",id).Exec()

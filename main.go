@@ -82,6 +82,7 @@ func main() {
 			user.POST("/:open_id/favorites",api.FavoritesAdd)
 			user.GET("/:open_id/favorites",api.FavoritesGet)
 			user.DELETE("/:open_id/favorites/:id",api.FavoritesDelete)
+			user.GET("/:open_id/existfavorites",api.FavoritesIsExist)
 
 		}
 		//分类
