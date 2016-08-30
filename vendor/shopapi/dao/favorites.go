@@ -2,7 +2,6 @@ package dao
 
 import (
 	"gitlab.qiyunxin.com/tangtao/utils/db"
-	"github.com/gocraft/dbr"
 )
 
 type Favorites struct  {
