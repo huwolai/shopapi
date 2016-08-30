@@ -256,7 +256,7 @@ func (self *Order) UpdateWithOrderStatusTx(orderStatus int,orderNo string,tx *db
 }
 
 func (self *Order) UpdateOrderPayInfoWithOrderNoTX(couponAmount float64,payPrice float64,orderNo string,appId string,tx *dbr.Tx) error  {
-	_,err :=tx.Update("`order`").Set("coupon_amount",couponAmount).Set("pay_price",payPrice).Where("app_id=?",appId).Where("no=?",orderNo).Exec()
+	_,err :=tx.Update("order").Set("coupon_amount",couponAmount).Set("pay_price",payPrice).Where("app_id=?",appId).Where("no=?",orderNo).Exec()
 
 	return err
 }
