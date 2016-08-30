@@ -71,7 +71,7 @@ func FavoritesIsExist(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"obj_id格式有误!")
 		return
 	}
-	itype,err :=strconv.ParseInt(stype,10,64)
+	itype,err :=strconv.Atoi(stype)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"type格式有误!")
 		return
