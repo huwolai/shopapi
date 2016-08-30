@@ -85,7 +85,7 @@ func FavoritesIsExist(c *gin.Context)  {
 	}
 
 	isf :=0 //是否收藏
-	fid :=0 //收藏ID
+	var fid int64 //收藏ID
 	if favor!=nil {
 		isf=1
 		fid = favor.Id
