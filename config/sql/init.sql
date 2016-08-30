@@ -283,15 +283,18 @@ CREATE TABLE IF NOT EXISTS order_action(
 CREATE TABLE IF NOT EXISTS order_item (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   `no` VARCHAR(30) DEFAULT '' COMMENT '订单编号',
+  dbn_no VARCHAR(30) DEFAULT '' COMMENT '分销码',
   app_id VARCHAR(100) DEFAULT '' COMMENT 'APPID',
   m_open_id VARCHAR(255) DEFAULT '' COMMENT '商家ID',
   prod_id BIGINT COMMENT '商品ID',
   sku_no VARCHAR(255) DEFAULT '' COMMENT '商品SKU编号',
   num int COMMENT '商品数量',
   offer_unit_price NUMERIC(14,2) COMMENT '单价报价',
-  buy_unit_price NUMERIC(14,2) COMMENT '购买单价',
   offer_total_price NUMERIC(14,2) COMMENT '总价格报价',
+  buy_unit_price NUMERIC(14,2) COMMENT '购买单价',
   buy_total_price NUMERIC(14,2) COMMENT '购买总金额',
+  dbn_amount NUMERIC(10,2) COMMENT '分销佣金',
+  merchant_amount NUMERIC(10,2) COMMENT '商户得到的金额',
   flag VARCHAR(100) DEFAULT '' COMMENT '标记',
   json VARCHAR(1000) DEFAULT '' COMMENT '附加字段',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -334,7 +337,14 @@ CREATE TABLE IF NOT EXISTS favorites(
   KEY open_app_id (open_id,app_id)
 ) CHARACTER SET utf8mb4;
 
-CREATE TABLE IF NOT EXISTS
+-- 分销
+CREATE TABLE IF NOT EXISTS distribution (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  open_id VARCHAR(40) COMMENT '用户ID',
+  code VARCHAR(40) COMMENT '分销码',
+  prod_id BIGINT COMMENT '分销的商品ID',
+  csn_rate NUMERIC(1,2) COMMENT '佣金比例'
+) CHARACTER SET utf8mb4;
 
 # INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','家常用餐','家常菜','../static/area_1.png','home');
 # INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','系列套餐','私人订制','../static/area_2.png','home');

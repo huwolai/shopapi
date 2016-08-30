@@ -8,6 +8,7 @@ import (
 	"shopapi/dao"
 	"net/http"
 	"strconv"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 type Favorites struct {
@@ -78,6 +79,7 @@ func FavoritesIsExist(c *gin.Context)  {
 	}
 	isExit,err :=service.FavoritesIsExist(iobjId,itype,appId,openId)
 	if err!=nil{
+		log.Error(err)
 		util.ResponseError400(c.Writer,"查询收藏失败!")
 		return
 	}
