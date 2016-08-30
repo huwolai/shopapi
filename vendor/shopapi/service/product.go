@@ -53,6 +53,8 @@ func ProdDetailWithProdId(prodId int64,appId string) (*dao.ProductDetail,error) 
 func  ProdImgsWithProdId(prodId int64,appId string) ([]*ProdImgsDetailDLL,error) {
 	prodImgDetail := dao.NewProdImgsDetail()
 	prodImgDetals,err := prodImgDetail.ProdImgsWithProdId(prodId,appId)
+	log.Error("prodImgDetals=",prodImgDetals)
+	log.Error("size:",len(prodImgDetals))
 	if err!=nil{
 
 		return nil,err
@@ -63,6 +65,8 @@ func  ProdImgsWithProdId(prodId int64,appId string) ([]*ProdImgsDetailDLL,error)
 			detailDLLs = append(detailDLLs,prodImgsDetailToDLL(detail))
 		}
 	}
+
+	log.Error("detailDLLs size:",len(detailDLLs))
 
 	return detailDLLs,nil
 }
