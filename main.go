@@ -181,6 +181,13 @@ func main() {
 			address.GET("/:open_id/id/:id",api.AddressWithId)
 			address.GET("/:open_id/recom",api.AddressWithRecom)
 		}
+
+		//分销
+		distributions := v1.Group("/distributions")
+		{
+			//参与分销的商品
+			distributions.GET("/products",api.DistributionProducts)
+		}
 	}
 
 	router.Static("/upload","./config/upload")

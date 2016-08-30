@@ -90,7 +90,7 @@ func (self *ProductDetail) ProductListWithRecomm(appId string) ([]*ProductDetail
 		return nil,err
 	}
 
-	err = fillProdImgs(appId,prodList)
+	err = FillProdImgs(appId,prodList)
 
 	return prodList,err
 }
@@ -118,7 +118,7 @@ func (self *ProductDetail) ProductListWithMerchant(merchantId int64,appId string
 	if err!=nil{
 		return nil,err
 	}
-	err = fillProdImgs(appId,prodList)
+	err = FillProdImgs(appId,prodList)
 
 	return prodList,err
 }
@@ -131,13 +131,13 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 		return nil,err
 	}
 
-	err = fillProdImgs(appId,prodList)
+	err = FillProdImgs(appId,prodList)
 
 	return prodList,err
 }
 
 //填充商品图片数据
-func fillProdImgs(appId string,prodList []*ProductDetail) error {
+func FillProdImgs(appId string,prodList []*ProductDetail) error {
 	prodids := make([]int64,0)
 	if prodList!=nil{
 		for _,prod :=range prodList {
