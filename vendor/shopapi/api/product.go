@@ -297,7 +297,7 @@ func ProdImgsWithProdId(c *gin.Context)  {
 
 	prodId := c.Param("prod_id")
 	iprodId,_ := strconv.Atoi(prodId)
-	appId := c.Param("app_id")
+	appId := security.GetAppId2(c.Request)
 
 	dlls,err := service.ProdImgsWithProdId(int64(iprodId),appId)
 	if err!=nil{
