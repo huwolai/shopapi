@@ -103,3 +103,10 @@ const (
 
 //商户默认商品标记
 const MERCHANT_DEFAULT_PRODUCT_FLAG  = "merchant_default"
+
+const (
+	//收藏厨师
+	FAVORITES_TYPE_MERCHANT = 1
+	//收藏商品
+	FAVORITES_TYPE_PRODUCT =2
+)

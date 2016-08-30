@@ -74,9 +74,14 @@ func main() {
 			user.POST("/:open_id/merchant",api.MerchantAdd)
 			user.GET("/:open_id/merchant",api.MerchantWithOpenId)
 			user.POST("/:open_id/recharge",api.AccountPreRecharge)
+			//用户账户信息
 			user.POST("/:open_id/account",api.AccountDetail)
 			//用户订单
 			user.GET("/:open_id/orders",api.OrderWithUserAndStatus)
+			//用户收藏
+			user.POST("/:open_id/favorites",api.FavoritesAdd)
+			user.GET("/:open_id/favorites",api.FavoritesGet)
+			user.DELETE("/:open_id/favorites/:id",api.FavoritesDelete)
 
 		}
 		//分类
