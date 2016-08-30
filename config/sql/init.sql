@@ -235,7 +235,7 @@ CREATE TABLE IF NOT EXISTS `order` (
   open_id VARCHAR(255) DEFAULT '' COMMENT '用户ID',
   app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
   title VARCHAR(255) DEFAULT '' COMMENT '订单标题',
-  omit_money NUMERIC(10,4) COMMENT '省略金额',
+  omit_money NUMERIC(8,8) COMMENT '省略金额',
   order_status int COMMENT '订单状态 0，未确认；1，已确认；2，已取消；3，无效；4，退货',
   pay_status int COMMENT '付款状态 支付状态；0，未付款；2，付款中；1，已付款',
   shipping_fee  decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '配送费用',
@@ -296,7 +296,7 @@ CREATE TABLE IF NOT EXISTS order_item (
   buy_unit_price NUMERIC(14,2) COMMENT '购买单价',
   buy_total_price NUMERIC(14,2) COMMENT '购买总金额',
   dbn_amount NUMERIC(10,2) COMMENT '分销佣金',
-  omit_money NUMERIC(1,8) COMMENT '省略金额',
+  omit_money NUMERIC(8,8) COMMENT '省略金额',
   coupon_amount NUMERIC(10,2) COMMENT '优惠金额',
   merchant_amount NUMERIC(10,2) COMMENT '商户得到的金额',
   flag VARCHAR(100) DEFAULT '' COMMENT '标记',
@@ -347,7 +347,7 @@ CREATE TABLE IF NOT EXISTS distribution_product (
   app_id VARCHAR(40) COMMENT 'app_id',
   prod_id BIGINT COMMENT '商品ID',
   merchant_id BIGINT COMMENT '商户ID',
-  csn_rate NUMERIC(1,2) COMMENT '佣金比例',
+  csn_rate NUMERIC(2,2) COMMENT '佣金比例',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
