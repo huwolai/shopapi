@@ -38,9 +38,9 @@ func (self *Favorites) WithTypeAndObjId(objId int64,typ int,openId string,appId 
 		return false,err
 	}
 	if count<=0 {
-		return false
+		return false,nil
 	}
-	return true
+	return true,nil
 }
 
 func (self *Favorites) DeleteWithId(id int64) error  {
