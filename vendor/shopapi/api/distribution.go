@@ -22,7 +22,7 @@ type DistributionProductDetail struct {
 	//折扣价格
 	DisPrice float64 `json:"dis_price"`
 	//是否已添加分销
-	Added int
+	Added int `json:"added"`
 	//佣金比例
 	CsnRate float64 `json:"csn_rate"`
 	//商品佣金
