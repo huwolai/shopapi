@@ -193,16 +193,24 @@ func OrderSure(orderNo,appId string) error  {
 	if order==nil{
 		return errors.New("订单没找到!")
 	}
-
-	err =order.UpdateWithOrderStatus(comm.ORDER_STATUS_SURED,order.No)
+	tx,_ :=db.NewSession().Begin()
+	defer func() {
+		if err:=recover();err!=nil{
+			log.Error(err)
+			tx.Rollback()
+		}
+	}()
+	err =order.UpdateWithOrderStatusTx(comm.ORDER_STATUS_SURED,order.No,tx)
 	if err!=nil{
 		log.Error(err)
+		tx.Rollback()
 		return err
 	}
 
 	//订单的钱结算
 	err = allocOrderAmount(order)
 	if err!=nil{
+		tx.Rollback()
 		return err
 	}
 	return nil
@@ -217,7 +225,7 @@ func allocOrderAmount(order *dao.Order) error  {
 		log.Error(err)
 		return err
 	}
-	if items!=nil{
+	if items==nil{
 		return errors.New("没有找到订单明细数据!")
 	}
 

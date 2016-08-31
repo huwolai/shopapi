@@ -253,6 +253,8 @@ func (self *Order) UpdateWithOrderStatus(orderStatus int,orderNo string) error  
 	return err
 }
 
+
+
 func (self *Order) UpdateWithOrderStatusTx(orderStatus int,orderNo string,tx *dbr.Tx) error  {
 
 	_,err :=tx.Update("order").Set("order_status",orderStatus).Where("no=?",orderNo).Exec()
