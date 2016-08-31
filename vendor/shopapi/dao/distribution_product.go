@@ -52,15 +52,23 @@ func NewDistributionProductDetail() *DistributionProductDetail  {
 	return &DistributionProductDetail{}
 }
 
-func (self *DistributionProductDetail) DetailWithAppId(openId string,appId string) ([]*DistributionProductDetail,error)  {
+func (self *DistributionProductDetail) DetailWithAppId(added string,openId string,appId string) ([]*DistributionProductDetail,error)  {
 	session := db.NewSession()
 	var prodList []*DistributionProductDetail
-	_,err :=session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json,dp.csn_rate,if(ud.open_id is null,0,1) added from merchant_prod md,merchant mt,product pt,distribution_product dp left JOIN user_distribution ud on  dp.prod_id = ud.prod_id and ud.open_id=? where pt.status=1 and pt.app_id=dp.app_id and pt.id = dp.prod_id and dp.merchant_id = md.id  and md.merchant_id=mt.id and pt.app_id=? ",openId,appId).LoadStructs(&prodList)
-	if err!=nil{
-		return nil,err
+
+	if added=="" {
+		_,err :=session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json,dp.csn_rate,if(ud.open_id is null,0,1) added from merchant_prod md,merchant mt,product pt,distribution_product dp left JOIN user_distribution ud on  dp.prod_id = ud.prod_id and ud.open_id=? where pt.status=1 and pt.app_id=dp.app_id and pt.id = dp.prod_id and dp.merchant_id = md.id  and md.merchant_id=mt.id and pt.app_id=? ",openId,appId).LoadStructs(&prodList)
+		if err!=nil{
+			return nil,err
+		}
+	}else{
+		_,err :=session.SelectBySql("select * from (select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json,dp.csn_rate,if(ud.open_id is null,0,1) added from merchant_prod md,merchant mt,product pt,distribution_product dp left JOIN user_distribution ud on  dp.prod_id = ud.prod_id and ud.open_id=? where pt.status=1 and pt.app_id=dp.app_id and pt.id = dp.prod_id and dp.merchant_id = md.id  and md.merchant_id=mt.id and pt.app_id=?) tt where tt.added = ?",openId,appId,added).LoadStructs(&prodList)
+		if err!=nil{
+			return nil,err
+		}
 	}
 
-	err = FillDistributionProdImgs(appId,prodList)
+	err := FillDistributionProdImgs(appId,prodList)
 
 	return prodList,err
 }

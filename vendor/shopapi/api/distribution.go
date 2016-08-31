@@ -53,8 +53,8 @@ func DistributionProducts(c *gin.Context)  {
 	appId :=security.GetAppId2(c.Request)
 
 	openId := security.GetOpenId(c.Request)
-
-	list,err := service.DistributionProducts(openId,appId)
+	added :=c.Query("added")
+	list,err := service.DistributionProducts(openId,appId,added)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"查询失败!")
 		return
