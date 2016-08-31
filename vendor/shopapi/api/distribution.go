@@ -21,6 +21,8 @@ type DistributionProductDetail struct {
 	Price float64 `json:"price"`
 	//折扣价格
 	DisPrice float64 `json:"dis_price"`
+	//是否已添加分销
+	Added int
 	//佣金比例
 	CsnRate float64 `json:"csn_rate"`
 	//商品佣金
@@ -50,7 +52,9 @@ func DistributionProducts(c *gin.Context)  {
 
 	appId :=security.GetAppId2(c.Request)
 
-	list,err := service.DistributionProducts(appId)
+	openId := security.GetOpenId(c.Request)
+
+	list,err := service.DistributionProducts(openId,appId)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"查询失败!")
 		return
@@ -80,6 +84,7 @@ func distributionProductDetailToA(model *dao.DistributionProductDetail) *Distrib
 	a.Price = model.Price
 	a.Title = model.Title
 	a.Status = model.Status
+	a.Added = model.Added
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*DisProdImgsDetailDto,0)
 
