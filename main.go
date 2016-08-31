@@ -87,7 +87,7 @@ func main() {
 			//用户添加分销
 			user.POST("/:open_id/distribution/:id",api.DistributionProductAdd)
 			//用户取消分销
-			user.POST("/:open_id/distribution/:id",api.DistributionProductCancel)
+			user.DELETE("/:open_id/distribution/:id",api.DistributionProductCancel)
 
 		}
 		//分类
