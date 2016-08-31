@@ -34,11 +34,15 @@ func FavoritesAdd(c *gin.Context)  {
 	}
 	param.OpenId = openId
 	param.AppId = appId
-	err =service.FavoritesAdd(favoritesToS(param))
+	model,err :=service.FavoritesAdd(favoritesToS(param))
 	if err!=nil{
 		util.ResponseError400(c.Writer,"添加收藏失败!")
 		return
 	}
+
+	c.JSON(http.StatusOK,gin.H{
+		"id":model.Id,
+	})
 	 util.ResponseSuccess(c.Writer)
 }
 

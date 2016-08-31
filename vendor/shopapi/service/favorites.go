@@ -19,16 +19,18 @@ type Favorites struct  {
 
 }
 
-func FavoritesAdd(favorites *Favorites) error  {
+func FavoritesAdd(favorites *Favorites) (*dao.Favorites,error)  {
 
 	dfavorites :=dao.NewFavorites()
 
 	favort,err :=dfavorites.WithTypeAndObjId(favorites.ObjId,favorites.Type,favorites.OpenId,favorites.AppId)
 	if err!=nil{
-		return errors.New("查询收藏信息失败!")
+		log.Error(err)
+		return nil,errors.New("查询收藏信息失败!")
 	}
 	if favort!=nil {
-		return errors.New("已收藏,不能再收藏!")
+		log.Error("已收藏,不能再收藏!")
+		return nil,errors.New("已收藏,不能再收藏!")
 	}
 
 	dfavorites.AppId = favorites.AppId
@@ -40,13 +42,14 @@ func FavoritesAdd(favorites *Favorites) error  {
 	dfavorites.Flag = favorites.Flag
 	dfavorites.Json = favorites.Json
 	dfavorites.CoverImg = favorites.CoverImg
-	err =dfavorites.Insert()
+	lastid,err :=dfavorites.Insert()
+	dfavorites.Id = lastid
 	if err!=nil{
 		log.Error(err)
-		return err
+		return nil,err
 	}
 
-	return err
+	return dfavorites,err
 }
 
 func FavoritesGet(openId,appId string) ([]*dao.Favorites,error)  {

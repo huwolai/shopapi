@@ -22,9 +22,13 @@ func NewFavorites() *Favorites  {
 	return &Favorites{}
 }
 
-func (self *Favorites) Insert() error  {
-	_,err :=db.NewSession().InsertInto("favorites").Columns("open_id","app_id","title","cover_img","remark","type","obj_id","flag","json").Record(self).Exec()
-	return err
+func (self *Favorites) Insert() (int64,error)  {
+	result,err :=db.NewSession().InsertInto("favorites").Columns("open_id","app_id","title","cover_img","remark","type","obj_id","flag","json").Record(self).Exec()
+	if err!=nil{
+		return 0,err
+	}
+	lastId,err :=result.LastInsertId()
+	return lastId,err
 }
 
 func (self *Favorites) WithOpenId(openId,appId string) ([]*Favorites,error)   {
