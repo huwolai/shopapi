@@ -126,6 +126,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		return nil,errors.New("计算订单金额失败!")
 	}
 
+	log.Error("model.PayType=",model.PayType,"order.PayStatus=",order.PayStatus)
 
 	if model.PayType == comm.Pay_Type_Account {//账户支付
 
@@ -135,6 +136,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 			resultImprestMap,err := makeImprest(order,address,payPrice)
 			if err!=nil{
 				tx.Rollback()
+				log.Error(err)
 				return nil,err
 			}
 			code :=resultImprestMap["code"].(string)
