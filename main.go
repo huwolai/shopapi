@@ -9,8 +9,6 @@ import (
 	"shopapi/api"
 	"shopapi/task"
 	"gitlab.qiyunxin.com/tangtao/utils/queue"
-	"shopapi/comm"
-	"log"
 )
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -47,9 +45,6 @@ func main() {
 	}else if env == "preproduction" {
 		gin.SetMode(gin.TestMode)
 	}
-
-	f :=comm.Floor(50.19*0.1,2)
-	log.Println(f)
 
 	queue.SetupAMQP(config.GetValue("amqp_url").ToString())
 
