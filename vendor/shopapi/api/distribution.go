@@ -122,7 +122,7 @@ func distributionProductDetailToA(model *dao.DistributionProductDetail) *Distrib
 	a :=&DistributionProductDetail{}
 	a.AppId = model.AppId
 	a.CsnRate = model.CsnRate
-	a.CsnAmount = comm.Round(model.DisPrice*model.CsnRate,2)
+	a.CsnAmount = comm.Floor(model.DisPrice*model.CsnRate,2)
 	a.DisPrice = model.DisPrice
 	a.Json = model.Json
 	a.MerchantId = model.MerchantId

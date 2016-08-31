@@ -199,8 +199,8 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 				}
 				couponAmount := (oItem.BuyTotalPrice / order.RealPrice) * couponTotalAmount
 				dbnAmount := payPrice * distribution.CsnRate
-				oItem.CouponAmount = comm.Round(couponAmount, 2)
-				oItem.DbnAmount = comm.Round(dbnAmount, 2)
+				oItem.CouponAmount = comm.Floor(couponAmount, 2)
+				oItem.DbnAmount = comm.Floor(dbnAmount, 2)
 				oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
 				oItem.OmitMoney = (couponAmount - oItem.CouponAmount) + (dbnAmount - oItem.DbnAmount)
 				err = oItem.UpdateAmountWithIdTx(oItem.DbnAmount, oItem.OmitMoney, oItem.CouponAmount, oItem.MerchantAmount, oItem.Id, tx)
