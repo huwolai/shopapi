@@ -71,7 +71,31 @@ func DistributionProducts(c *gin.Context)  {
 		}
 	}
 	c.JSON(http.StatusOK,details)
+}
 
+//商户分销的商品
+func DistributionWithMerchant(c *gin.Context)  {
+
+	appId :=security.GetAppId2(c.Request)
+	merchantId := c.Param("merchant_id")
+	imerchantId,err := strconv.ParseInt(merchantId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商户ID格式有误!")
+		return
+	}
+	list,err := service.DistributionWithMerchant(imerchantId,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"查询失败!")
+		return
+	}
+
+	details :=make([]*DistributionProductDetail,0)
+	if list!=nil{
+		for _,detail :=range list {
+			details = append(details,distributionProductDetailToA(detail))
+		}
+	}
+	c.JSON(http.StatusOK,details)
 }
 
 //添加分销
@@ -99,15 +123,15 @@ func DistributionProductAdd(c *gin.Context)  {
 
 //取消分销
 func DistributionProductCancel(c *gin.Context) {
-	//appId :=security.GetAppId2(c.Request)
-	//openId := c.Param("open_id")
+	appId :=security.GetAppId2(c.Request)
+	openId := c.Param("open_id")
 	distributionId := c.Param("id")
 	idistributionId,err :=strconv.ParseInt(distributionId,10,64)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"id格式有误")
 		return
 	}
-	err =service.DistributionProductCancel(idistributionId)
+	err =service.DistributionProductCancel(idistributionId,openId,appId)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"取消失败!")

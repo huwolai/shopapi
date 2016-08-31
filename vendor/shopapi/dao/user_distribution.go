@@ -57,8 +57,8 @@ func (self *UserDistribution) Insert() error  {
 	return err
 }
 
-func (self *UserDistribution) DeleteWithId(id int64) error  {
-	_,err :=db.NewSession().DeleteFrom("user_distribution").Where("id=?",id).Exec()
+func (self *UserDistribution) DeleteWithDistributionId(distributionId int64,openId,appId string) error  {
+	_,err :=db.NewSession().DeleteFrom("user_distribution").Where("distribution_id=?",distributionId).Where("open_id=?",openId).Where("app_id=?",appId).Exec()
 
 	return err
 }

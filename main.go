@@ -146,6 +146,8 @@ func main() {
 			merchant.GET("/:merchant_id/orders",api.MerchantOrders)
 			//商户审核
 			merchant.POST("/:merchant_id/audit",api.MerchantAudit)
+			//商户分销商品
+			merchant.GET("/:merchant_id/distributions/products",api.DistributionWithMerchant)
 		}
 
 		//推荐

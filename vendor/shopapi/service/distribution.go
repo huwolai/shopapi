@@ -14,6 +14,11 @@ func DistributionProducts(added,openId,appId string)  ([]*dao.DistributionProduc
 	return distDetail.DetailWithAppId(added,openId,appId)
 }
 
+func DistributionWithMerchant(merchantId int64,appId string) ([]*dao.DistributionProductDetail,error)  {
+	distDetail := dao.NewDistributionProductDetail()
+	return distDetail.DistributionWithMerchant(merchantId,appId)
+}
+
 func DistributionProductAdd(distributionId int64,openId string,appId string) (*dao.UserDistribution,error)  {
 
 	distributionProduct := dao.NewDistributionProduct()
@@ -40,7 +45,7 @@ func DistributionProductAdd(distributionId int64,openId string,appId string) (*d
 	return userDistribution,nil
 }
 
-func DistributionProductCancel(distributionId int64) error  {
+func DistributionProductCancel(distributionId int64,openId,appId string) error  {
 
-	return dao.NewUserDistribution().DeleteWithId(distributionId)
+	return dao.NewUserDistribution().DeleteWithDistributionId(distributionId,openId,appId)
 }
