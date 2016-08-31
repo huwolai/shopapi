@@ -183,6 +183,105 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 
 }
 
+//确认订单
+func OrderSure(orderNo,appId string) error  {
+	order :=dao.NewOrder()
+	order,err :=order.OrderWithNo(orderNo,appId)
+	if err!=nil{
+		return errors.New("订单查询错误!")
+	}
+	if order==nil{
+		return errors.New("订单没找到!")
+	}
+
+	err =order.UpdateWithOrderStatus(comm.ORDER_STATUS_SURED,order.No)
+	if err!=nil{
+		log.Error(err)
+		return err
+	}
+
+	//订单的钱结算
+	err = allocOrderAmount(order)
+	if err!=nil{
+		return err
+	}
+	return nil
+}
+
+//分订单金额
+func allocOrderAmount(order *dao.Order) error  {
+
+	orderItem := dao.NewOrderItem()
+	items,err := orderItem.OrderItemWithOrderNo(order.No)
+	if err!=nil{
+		log.Error(err)
+		return err
+	}
+	if items!=nil{
+		return errors.New("没有找到订单明细数据!")
+	}
+
+	//分配给商户的钱
+	imprestsModel := &ImprestsModel{}
+	imprestsModel.Code = order.Code
+	imprestsModel.Amount = int64(order.MerchantAmount*100)
+	imprestsModel.OpenId = order.MOpenId
+	imprestsModel.Title=order.Title
+	imprestsModel.Remark = order.Title
+	_,err =FetchImprests(imprestsModel)
+	if err!=nil{
+		log.Error(err)
+		log.Error("syserr->订单号[",order.No,"]","商户ID[",order.MOpenId,"]", "结算商户的钱失败!,导致结算给分销者的钱未成功!严重问题")
+		return err
+	}
+
+	if order.DbnAmount<=0 {
+		log.Warn("此订单",order.No,"没有需要分配给分销者的钱!")
+		return nil
+	}
+	//分配给分销者的钱
+	distribMap :=make(map[string]float64)
+	for _,oItem :=range items {
+		if oItem.DbnNo != "" {
+			distribution := dao.NewUserDistributionDetail()
+			distribution, err := distribution.WithCode(oItem.DbnNo)
+			if err != nil {
+				log.Error(err)
+				return errors.New("查询分销信息失败!")
+			}
+			if distribution==nil{
+				log.Warn("分销编号:",oItem.DbnNo,"没有找到!")
+				continue
+			}
+			disamount := distribMap[distribution.OpenId]
+			disamount+=oItem.DbnAmount
+			distribMap[distribution.OpenId] = disamount
+		}
+	}
+
+	if len(distribMap)>0 {
+		for key,value :=range distribMap {
+			//分配给商户的钱
+			imprestsModel := &ImprestsModel{}
+			imprestsModel.Code = order.Code
+			imprestsModel.Amount =int64(value*100)
+			imprestsModel.OpenId = key
+			imprestsModel.Title= "分销佣金"
+			imprestsModel.Remark = "分销佣金"
+			_,err =FetchImprests(imprestsModel)
+			if err!=nil{
+				log.Error(err)
+				log.Error("syserr->订单号[",order.No,"]","分销者ID[",key,"]", "结算商分销者的钱失败!,可能导致此订单的后面的分销者没结算到钱!严重问题")
+				return err
+			}
+		}
+	}
+
+
+	return nil
+
+}
+
 //计算分销金额
 func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,tx *dbr.Tx)  error {
 	orderItem := dao.NewOrderItem()
@@ -203,12 +302,16 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 					log.Error(err)
 					return errors.New("查询分销信息失败!")
 				}
+				if distribution==nil{
+					log.Warn("分销编号:",oItem.DbnNo,"没有找到!")
+					continue
+				}
 				couponAmount := (oItem.BuyTotalPrice / order.RealPrice) * couponTotalAmount
 				dbnAmount := payPrice * distribution.CsnRate
 				oItem.CouponAmount = comm.Floor(couponAmount, 2)
 				oItem.DbnAmount = comm.Floor(dbnAmount, 2)
 				oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
-				oItem.OmitMoney = (couponAmount - oItem.CouponAmount) + (dbnAmount - oItem.DbnAmount)
+				oItem.OmitMoney = 0
 				err = oItem.UpdateAmountWithIdTx(oItem.DbnAmount, oItem.OmitMoney, oItem.CouponAmount, oItem.MerchantAmount, oItem.Id, tx)
 				if err != nil {
 					log.Error(err)
@@ -713,6 +816,16 @@ func OrderCancel(orderNo string,reason string,appId string) error {
 
 func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 
+	merchant := dao.NewMerchant()
+	merchant,err  :=merchant.MerchantWithId(model.MerchantId)
+	if err!=nil{
+		log.Error(err)
+		return nil,err
+	}
+	if merchant==nil{
+		log.Error("商户不存在!")
+		return nil,errors.New("商户不存在!")
+	}
 	order := dao.NewOrder()
 	order.Json = model.Json
 	order.OpenId = model.OpenId
@@ -723,7 +836,8 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	order.PayStatus = model.PayStatus
 	order.AddressId = model.AddressId
 	order.MerchantId = model.MerchantId
-	order.MOpenId = model.MOpenId
+	order.MOpenId = merchant.OpenId
+	order.MerchantName = merchant.Name
 
 
 	items := model.Items

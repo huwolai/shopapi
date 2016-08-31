@@ -218,8 +218,8 @@ CREATE TABLE IF NOT EXISTS prod_category (
 -- 订单
 CREATE TABLE IF NOT EXISTS `order` (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  no VARCHAR(30)  DEFAULT '' COMMENT '订单编号',
-  prepay_no VARCHAR(30) DEFAULT '' COMMENT '预付款编号(主要针对第三方支付的)',
+  no VARCHAR(40)  DEFAULT '' COMMENT '订单编号',
+  prepay_no VARCHAR(40) DEFAULT '' COMMENT '预付款编号(主要针对第三方支付的)',
   code VARCHAR(255) DEFAULT '' COMMENT '预付款编号',
   address_id VARCHAR(255) DEFAULT '' COMMENT '地址ID',
   address VARCHAR(255) DEFAULT '' COMMENT '配送地址',
@@ -232,6 +232,7 @@ CREATE TABLE IF NOT EXISTS `order` (
   pay_price NUMERIC(14,2) COMMENT '实际支付金额',
   merchant_id VARCHAR(255) DEFAULT '' COMMENT '商户ID',
   m_open_id VARCHAR(255) DEFAULT '' COMMENT '商户OpenId',
+  merchant_name VARCHAR(255) DEFAULT '' COMMENT '商户名称',
   open_id VARCHAR(255) DEFAULT '' COMMENT '用户ID',
   app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
   title VARCHAR(255) DEFAULT '' COMMENT '订单标题',
@@ -271,8 +272,8 @@ CREATE TABLE IF NOT EXISTS order_coupon(
 -- 对订单操作日志表
 CREATE TABLE IF NOT EXISTS order_action(
   id mediumint(8) unsigned  PRIMARY KEY AUTO_INCREMENT,
-  order_no VARCHAR(30) DEFAULT '' COMMENT '订单号',
-  action_open_id VARCHAR(30) DEFAULT '' COMMENT '操作用户openID',
+  order_no VARCHAR(40) DEFAULT '' COMMENT '订单号',
+  action_open_id VARCHAR(40) DEFAULT '' COMMENT '操作用户openID',
   order_status int COMMENT '订单状态 0，未确认；1，已确认；2，已取消；3，无效；4，退货',
   pay_status int COMMENT '付款状态 支付状态；0，未付款；2，付款中；1，已付款',
   `action_note` varchar(255)  DEFAULT '' COMMENT '操作备注',
@@ -284,8 +285,8 @@ CREATE TABLE IF NOT EXISTS order_action(
 -- 订单项
 CREATE TABLE IF NOT EXISTS order_item (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  `no` VARCHAR(30) DEFAULT '' COMMENT '订单编号',
-  dbn_no VARCHAR(30) DEFAULT '' COMMENT '分销码',
+  `no` VARCHAR(40) DEFAULT '' COMMENT '订单编号',
+  dbn_no VARCHAR(40) DEFAULT '' COMMENT '分销码',
   app_id VARCHAR(100) DEFAULT '' COMMENT 'APPID',
   m_open_id VARCHAR(255) DEFAULT '' COMMENT '商家ID',
   prod_id BIGINT COMMENT '商品ID',

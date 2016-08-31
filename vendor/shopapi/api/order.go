@@ -140,7 +140,6 @@ func OrderAdd(c *gin.Context)  {
 }
 
 
-
 //预支付订单
 func OrderPrePay(c *gin.Context)  {
 
@@ -258,6 +257,27 @@ func OrderRefuseCancel(c *gin.Context)  {
 	util.ResponseSuccess(c.Writer)
 }
 
+//确认订单
+func OrderSure(c *gin.Context)  {
+
+	_,err := security.CheckUserAuth(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+	orderNo :=c.Param("order_no")
+	appId :=security.GetAppId2(c.Request)
+	err =service.OrderSure(orderNo,appId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"订单确认失败!")
+		return
+	}
+
+	util.ResponseSuccess(c.Writer)
+}
+
+//同意取消订单
 func OrderAgreeCancel(c *gin.Context)  {
 	_,err := security.CheckUserAuth(c.Request)
 	if err!=nil{

@@ -172,6 +172,8 @@ func main() {
 			order.PUT("/:order_no/agree_cancel",api.OrderAgreeCancel)
 			//商户拒绝取消订单
 			order.PUT("/:order_no/refuse_cancel",api.OrderRefuseCancel)
+			//订单确认
+			order.PUT("/:order_no/sure",api.OrderSure)
 		}
 
 		pay := v1.Group("/pay")
