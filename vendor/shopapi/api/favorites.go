@@ -12,6 +12,7 @@ import (
 )
 
 type Favorites struct {
+	Id int64 `json:"id"`
 	ObjId int64 `json:"obj_id"`
 	AppId string `json:"app_id"`
 	OpenId string `json:"open_id"`
@@ -118,6 +119,7 @@ func FavoritesDelete(c *gin.Context)  {
 func favoritesToA(model *dao.Favorites) *Favorites  {
 
 	a :=&Favorites{}
+	a.Id = model.Id
 	a.Type = model.Type
 	a.Remark = model.Remark
 	a.AppId = model.AppId

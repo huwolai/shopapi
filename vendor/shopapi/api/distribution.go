@@ -19,6 +19,8 @@ type DistributionProductDetail struct {
 	AppId string `json:"app_id"`
 	//商品标题
 	Title string `json:"title"`
+	//分销编号
+	DbnNo string `json:"dbn_no"`
 	//商品价格
 	Price float64 `json:"price"`
 	//折扣价格
@@ -156,6 +158,7 @@ func distributionProductDetailToA(model *dao.DistributionProductDetail) *Distrib
 	a.Title = model.Title
 	a.Status = model.Status
 	a.Added = model.Added
+	a.DbnNo = model.DbnNo
 	a.DistributionId = model.DistributionId
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*DisProdImgsDetailDto,0)
