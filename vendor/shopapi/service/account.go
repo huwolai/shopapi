@@ -28,6 +28,7 @@ type AccountDetailModel struct  {
 
 	//账户余额 单位分
 	Amount int64 `json:"amount"`
+	CashoutAmount int64 `json:"cashout_amount"`
 	//冻结金额
 	FreezeAmount int64 `json:"freeze_amount"`
 	//账户状态 1.正常 0.异常 3.锁定
