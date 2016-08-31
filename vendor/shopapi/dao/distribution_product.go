@@ -36,6 +36,7 @@ type DistributionProductDetail struct {
 	CsnRate float64
 	//是否已添加分销
 	Added int
+	DistributionId int64
 	//商户ID
 	MerchantId int64
 	//商户名称
@@ -65,12 +66,12 @@ func (self *DistributionProductDetail) DetailWithAppId(added string,openId strin
 
 
 	if added=="" {
-		_,err :=session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json,dp.csn_rate,if(ud.open_id is null,0,1) added from merchant_prod md,merchant mt,product pt,distribution_product dp left JOIN user_distribution ud on  dp.prod_id = ud.prod_id and ud.open_id=? where pt.status=1 and pt.app_id=dp.app_id and pt.id = dp.prod_id and dp.merchant_id = md.id  and md.merchant_id=mt.id and pt.app_id=? ",openId,appId).LoadStructs(&prodList)
+		_,err :=session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json,dp.csn_rate,if(ud.open_id is null,0,1) added,dp.id distribution_id from merchant_prod md,merchant mt,product pt,distribution_product dp left JOIN user_distribution ud on  dp.prod_id = ud.prod_id and ud.open_id=? where pt.status=1 and pt.app_id=dp.app_id and pt.id = dp.prod_id and dp.merchant_id = md.id  and md.merchant_id=mt.id and pt.app_id=? ",openId,appId).LoadStructs(&prodList)
 		if err!=nil{
 			return nil,err
 		}
 	}else{
-		_,err :=session.SelectBySql("select * from (select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json,dp.csn_rate,if(ud.open_id is null,0,1) added from merchant_prod md,merchant mt,product pt,distribution_product dp left JOIN user_distribution ud on  dp.prod_id = ud.prod_id and ud.open_id=? where pt.status=1 and pt.app_id=dp.app_id and pt.id = dp.prod_id and dp.merchant_id = md.id  and md.merchant_id=mt.id and pt.app_id=?) tt where tt.added = ?",openId,appId,added).LoadStructs(&prodList)
+		_,err :=session.SelectBySql("select * from (select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json,dp.csn_rate,if(ud.open_id is null,0,1) added,dp.id distribution_id from merchant_prod md,merchant mt,product pt,distribution_product dp left JOIN user_distribution ud on  dp.prod_id = ud.prod_id and ud.open_id=? where pt.status=1 and pt.app_id=dp.app_id and pt.id = dp.prod_id and dp.merchant_id = md.id  and md.merchant_id=mt.id and pt.app_id=?) tt where tt.added = ?",openId,appId,added).LoadStructs(&prodList)
 		if err!=nil{
 			return nil,err
 		}

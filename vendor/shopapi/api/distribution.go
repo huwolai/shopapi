@@ -31,6 +31,8 @@ type DistributionProductDetail struct {
 	CsnAmount float64 `json:"csn_amount"`
 	//商品状态
 	Status int `json:"status"`
+	//分销ID
+	DistributionId int64 `json:"distribution_id"`
 	//商户ID
 	MerchantId int64 `json:"merchant_id"`
 	//商户名称
@@ -130,6 +132,7 @@ func distributionProductDetailToA(model *dao.DistributionProductDetail) *Distrib
 	a.Title = model.Title
 	a.Status = model.Status
 	a.Added = model.Added
+	a.DistributionId = model.DistributionId
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*DisProdImgsDetailDto,0)
 
