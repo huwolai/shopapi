@@ -23,6 +23,7 @@ type AccountPreRechargeDto struct  {
 type AccountDetailDto struct  {
 	//账户余额 单位元
 	Amount float64 `json:"amount"`
+	FreezeAmount float64 `json:"freeze_amount"`
 	//账户状态 1.正常 0.异常 3.锁定
 	Status int `json:"status"`
 	//是否设置支付密码
@@ -201,5 +202,6 @@ func accountDetailModelToDto(model *service.AccountDetailModel) *AccountDetailDt
 	dto.Amount = float64(model.Amount)/100.0
 	dto.PasswordIsSet = model.PasswordIsSet
 	dto.Status = model.Status
+	dto.FreezeAmount = model.FreezeAmount
 	return dto
 }
