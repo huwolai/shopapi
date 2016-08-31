@@ -43,7 +43,6 @@ func FavoritesAdd(c *gin.Context)  {
 	c.JSON(http.StatusOK,gin.H{
 		"id":model.Id,
 	})
-	 util.ResponseSuccess(c.Writer)
 }
 
 func FavoritesGet(c *gin.Context)  {
