@@ -202,6 +202,6 @@ func accountDetailModelToDto(model *service.AccountDetailModel) *AccountDetailDt
 	dto.Amount = float64(model.Amount)/100.0
 	dto.PasswordIsSet = model.PasswordIsSet
 	dto.Status = model.Status
-	dto.FreezeAmount = model.FreezeAmount
+	dto.FreezeAmount = float64(model.FreezeAmount/100.0)
 	return dto
 }
