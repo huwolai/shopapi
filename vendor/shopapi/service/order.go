@@ -91,6 +91,9 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 	}
 	address := dao.NewAddress()
 	address,err = address.WithId(model.AddressId)
+	if err!=nil{
+		return nil,errors.New("查询地址失败!")
+	}
 	if address==nil{
 		return nil,errors.New("没有找到对应的地址信息!")
 	}
@@ -98,6 +101,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 	tx,_ :=db.NewSession().Begin()
 	defer func() {
 		if err :=recover();err!=nil{
+			log.Error(err)
 			tx.Rollback()
 		}
 	}()
