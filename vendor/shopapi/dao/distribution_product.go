@@ -64,7 +64,7 @@ func (self *DistributionProduct) WithId(id int64) (*DistributionProduct,error) {
 
 func (self *DistributionProductDetail) DistributionWithMerchant(merchantId int64,appId string) ([]*DistributionProductDetail,error)  {
 	var prodList []*DistributionProductDetail
-	_,err :=db.NewSession().SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json,dp.csn_rate,dp.id distribution_id,ud.`code` dbn_no from merchant_prod md,merchant mt,product pt,distribution_product dp, user_distribution ud  where   dp.prod_id = ud.prod_id and dp.merchant_id=? and pt.status=1 and pt.app_id=dp.app_id and pt.id = dp.prod_id and dp.merchant_id = md.id  and md.merchant_id=mt.id and pt.app_id=?",merchantId,appId).LoadStructs(&prodList)
+	_,err :=db.NewSession().SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json,dp.csn_rate,dp.id distribution_id,ud.`code` dbn_no from merchant mt,product pt,distribution_product dp, user_distribution ud  where   dp.prod_id = ud.prod_id and dp.prod_id = pt.id and ud.open_id = mt.open_id and mt.id = ? and pt.status=1 and dp.app_id=?",merchantId,appId).LoadStructs(&prodList)
 
 	err = FillDistributionProdImgs(appId,prodList)
 
