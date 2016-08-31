@@ -8,6 +8,8 @@ import (
 	"shopapi/dao"
 	"shopapi/comm"
 	"net/http"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
+	"strconv"
 )
 
 
@@ -68,6 +70,49 @@ func DistributionProducts(c *gin.Context)  {
 	}
 	c.JSON(http.StatusOK,details)
 
+}
+
+//添加分销
+func DistributionProductAdd(c *gin.Context)  {
+	appId :=security.GetAppId2(c.Request)
+	openId := c.Param("open_id")
+	distributionId := c.Param("id")
+	idistributionId,err :=strconv.ParseInt(distributionId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"id格式有误")
+		return
+	}
+
+	ud,err :=service.DistributionProductAdd(idistributionId,openId,appId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"添加分销失败!")
+		return
+	}
+
+	c.JSON(http.StatusOK,gin.H{
+		"code":ud.Code,
+	})
+}
+
+//取消分销
+func DistributionProductCancel(c *gin.Context) {
+	//appId :=security.GetAppId2(c.Request)
+	//openId := c.Param("open_id")
+	distributionId := c.Param("id")
+	idistributionId,err :=strconv.ParseInt(distributionId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"id格式有误")
+		return
+	}
+	err =service.DistributionProductCancel(idistributionId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"取消失败!")
+		return
+	}
+
+	util.ResponseSuccess(c.Writer)
 }
 
 func distributionProductDetailToA(model *dao.DistributionProductDetail) *DistributionProductDetail  {

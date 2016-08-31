@@ -84,6 +84,11 @@ func main() {
 			user.DELETE("/:open_id/favorites/:id",api.FavoritesDelete)
 			user.GET("/:open_id/existfavorites",api.FavoritesIsExist)
 
+			//用户添加分销
+			user.POST("/:open_id/distribution/:id",api.DistributionProductAdd)
+			//用户取消分销
+			user.POST("/:open_id/distribution/:id",api.DistributionProductCancel)
+
 		}
 		//分类
 		categories := v1.Group("/categories")

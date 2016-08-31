@@ -52,6 +52,13 @@ func NewDistributionProductDetail() *DistributionProductDetail  {
 	return &DistributionProductDetail{}
 }
 
+func (self *DistributionProduct) WithId(id int64) (*DistributionProduct,error) {
+	var model *DistributionProduct
+	_,err :=db.NewSession().Select("*").From("distribution_product").Where("id=?",id).LoadStructs(&model)
+
+	return model,err
+}
+
 func (self *DistributionProductDetail) DetailWithAppId(added string,openId string,appId string) ([]*DistributionProductDetail,error)  {
 	session := db.NewSession()
 	var prodList []*DistributionProductDetail

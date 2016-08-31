@@ -7,6 +7,7 @@ import (
 
 type UserDistribution struct  {
 	Id int64
+	AppId string
 	OpenId string
 	//分销编号
 	Code string
@@ -19,6 +20,7 @@ type UserDistribution struct  {
 
 type UserDistributionDetail struct  {
 	Id int64
+	AppId string
 	OpenId string
 	//分销编号
 	Code string
@@ -45,6 +47,18 @@ func NewUserDistributionDetail() *UserDistributionDetail  {
 func (self *UserDistribution) InsertTx(tx *dbr.Tx) error  {
 
 	_,err :=tx.InsertInto("user_distribution").Columns("app_id","open_id","code","prod_id","distribution_id").Record(self).Exec()
+
+	return err
+}
+func (self *UserDistribution) Insert() error  {
+
+	_,err :=db.NewSession().InsertInto("user_distribution").Columns("app_id","open_id","code","prod_id","distribution_id").Record(self).Exec()
+
+	return err
+}
+
+func (self *UserDistribution) DeleteWithId(id int64) error  {
+	_,err :=db.NewSession().DeleteFrom("user_distribution").Where("id=?,id").Exec()
 
 	return err
 }
