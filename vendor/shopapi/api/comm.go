@@ -66,8 +66,6 @@ func ImageUpload(c *gin.Context)  {
 		name = "file"
 	}
 
-	log.Error(c.Request.MultipartForm.Value)
-
 	file, _ , err := c.Request.FormFile(name)
 
 	if err != nil {
