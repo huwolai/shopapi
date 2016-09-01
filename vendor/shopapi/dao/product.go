@@ -71,14 +71,14 @@ func (self *ProductDetail) ProdDetailListWith(flags []string,noflags []string,is
 	var prodList []*ProductDetail
 	buider :=db.NewSession().Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id")
 	if flags!=nil{
-		buider = buider.Where("flag in ?",flags)
+		buider = buider.Where("product.flag in ?",flags)
 	}
 
 	if noflags!=nil {
-		buider = buider.Where("flag not in ?",noflags)
+		buider = buider.Where("product.flag not in ?",noflags)
 	}
 	if isRecomm!="" {
-		buider = buider.Where("is_recomm=?",isRecomm)
+		buider = buider.Where("product.is_recomm=?",isRecomm)
 	}
 	if orderBy!="" {
 		buider =buider.OrderDir(orderBy,false)
