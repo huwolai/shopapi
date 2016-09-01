@@ -80,6 +80,13 @@ func (self *ProductDetail) ProdDetailListCountWith(flags []string,noflags []stri
 	return count,err
 }
 
+func (self *Product) SoldNumInc(num int,prodId int64,tx *dbr.Tx) error  {
+
+	_,err :=tx.UpdateBySql("update product set sold_num=sold_num+? where id=?",num,prodId).Exec()
+
+	return err
+}
+
 func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 
 	result,err :=tx.InsertInto("product").Columns("title","app_id","description","sold_num","price","dis_price","json","flag","status","is_recom").Record(self).Exec()

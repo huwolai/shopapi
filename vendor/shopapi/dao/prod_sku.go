@@ -42,6 +42,13 @@ func (self *ProdSku) WithSkuNo(skuNo string) (*ProdSku,error)   {
 	return prodSku,err
 }
 
+func (self *ProdSku) SoldNumInc(num int,skuNo string,appId string,tx *dbr.Tx) error  {
+
+	_,err :=db.NewSession().UpdateBySql("update prod_sku set sold_num=sold_num+? where sku_no=? and app_id=?",num,skuNo,appId).Exec()
+
+	return err
+}
+
 func (self *ProdSku) WithProdIdAndSymbolPath(attrSymbolPath string,prodId int64) (*ProdSku,error)  {
 	var prodSku *ProdSku
 	_,err :=db.NewSession().Select("*").From("prod_sku").Where("attr_symbol_path=?",attrSymbolPath).Where("prod_id=?",prodId).LoadStructs(&prodSku)

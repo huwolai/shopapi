@@ -548,13 +548,28 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 			tx.Rollback()
 		}
 	}()
-
+	orderItem := dao.NewOrderItem()
+	orderItems,err :=orderItem.OrderItemWithOrderNo(orderNo)
+	if err!=nil{
+		return  errors.New("查询订单明细失败!")
+	}
+	if orderItems==nil{
+		return  errors.New("订单明细为空!")
+	}
 	//调整商品库存
-	err = ProdSKUStockSubWithOrder(orderNo,tx)
+	err = ProdSKUStockSubWithOrder(orderItems,tx)
 	if err!=nil{
 		tx.Rollback()
 		return err
 	}
+
+	//商品累计销量增加
+	err = ProdSoldNumAdd(orderItems,tx)
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+
 	//商户权重加1
 	err =MerchantWeightAdd(1,order.MerchantId,tx)
 	if err!=nil{
@@ -627,33 +642,46 @@ func MerchantWeightAdd(num int,merchantId int64,tx *dbr.Tx) error {
 	return merchant.IncrWeightWithIdTx(num,merchantId,tx)
 }
 
-//减商品sku的库存
-func ProdSKUStockSubWithOrder(orderNo string,tx *dbr.Tx) error  {
-	orderItem := dao.NewOrderItem()
-	orderItems,err :=orderItem.OrderItemWithOrderNo(orderNo)
-	if err!=nil{
-		return  errors.New("查询订单明细失败!")
-	}
-	if orderItems!=nil&&len(orderItems)>0{
-		for _,oItem :=range orderItems {
-			prodSku := dao.NewProdSku()
-			prodSku,err :=prodSku.WithSkuNo(oItem.SkuNo)
-			if err!=nil{
-				log.Error(err)
-				return  errors.New("查询订单SKU失败!")
-			}
-			if prodSku==nil{
-				return  errors.New("没有找到对应的商品信息!")
-			}
+//商品累计销售数量递增
+func ProdSoldNumAdd(orderItems []*dao.OrderItem,tx *dbr.Tx) error  {
 
-			if  prodSku.Stock < oItem.Num {
-				return  errors.New("库存数量不足!")
-			}
-			err =prodSku.UpdateStockWithSkuNoTx(prodSku.Stock-oItem.Num,oItem.SkuNo,tx)
-			if err!=nil{
-				log.Error(err)
-				return  errors.New("修改库存失败!")
-			}
+	for _,oItem :=range orderItems {
+		err :=dao.NewProduct().SoldNumInc(oItem.Num,oItem.ProdId,tx)
+		if err!=nil{
+			log.Error(err)
+			return err
+		}
+		err =dao.NewProdSku().SoldNumInc(oItem.Num,oItem.SkuNo,oItem.AppId,tx)
+		if err!=nil{
+			log.Error(err)
+			return err
+		}
+	}
+
+	return nil
+}
+
+//减商品sku的库存
+func ProdSKUStockSubWithOrder(orderItems []*dao.OrderItem,tx *dbr.Tx) error  {
+
+	for _,oItem :=range orderItems {
+		prodSku := dao.NewProdSku()
+		prodSku,err :=prodSku.WithSkuNo(oItem.SkuNo)
+		if err!=nil{
+			log.Error(err)
+			return  errors.New("查询订单SKU失败!")
+		}
+		if prodSku==nil{
+			return  errors.New("没有找到对应的商品信息!")
+		}
+
+		if  prodSku.Stock < oItem.Num {
+			return  errors.New("库存数量不足!")
+		}
+		err =prodSku.UpdateStockWithSkuNoTx(prodSku.Stock-oItem.Num,oItem.SkuNo,tx)
+		if err!=nil{
+			log.Error(err)
+			return  errors.New("修改库存失败!")
 		}
 	}
 	return nil
