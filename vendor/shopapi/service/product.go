@@ -44,6 +44,7 @@ type ProdAttrValueDto struct  {
 
 func ProdDetailListWith(flags []string,noflags []string,isRecomm string,orderBy string,pageIndex int,pageSize int)  {
 
+	//return dao.NewProductDetail().ProdDetailListWith()
 }
 
 //商品详情

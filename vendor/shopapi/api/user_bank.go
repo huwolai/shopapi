@@ -12,7 +12,7 @@ import (
 )
 
 type UserBank struct  {
-	Id int64
+	Id int64 `json:"id"`
 	AppId string `json:"app_id"`
 	OpenId string `json:"open_id"`
 	AccountName string `json:"account_name"`
