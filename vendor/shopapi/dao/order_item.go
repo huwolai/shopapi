@@ -50,6 +50,8 @@ type OrderItemDetail struct  {
 	ProdTitle string
 	//商品cover 封面图 url
 	ProdCoverImg string
+	//商品标识
+	ProdFlag string
 	//购买数量
 	Num int
 	OfferUnitPrice float64
@@ -96,7 +98,7 @@ func (self *OrderItem) UpdateAmountWithIdTx(dbnAmount float64,omitMoney float64,
 func (self *OrderItemDetail) OrderItemDetailWithOrderNo(orderNo []string) ([]*OrderItemDetail,error)  {
 	sess := db.NewSession()
 	var orderItems []*OrderItemDetail
-	_,err :=sess.SelectBySql("select od.*,pt.title prod_title,mt.id merchant_id,mt.`name` merchant_name,mt.open_id from order_item od,product pt,merchant_prod mpd,merchant mt where od.prod_id=pt.id and mpd.prod_id=pt.id and mpd.merchant_id=mt.id and  `no` in ?",orderNo).LoadStructs(&orderItems)
+	_,err :=sess.SelectBySql("select od.*,pt.title prod_title,mt.id merchant_id,mt.`name` merchant_name,mt.open_id,pt.flag prod_flag from order_item od,product pt,merchant_prod mpd,merchant mt where od.prod_id=pt.id and mpd.prod_id=pt.id and mpd.merchant_id=mt.id and  `no` in ?",orderNo).LoadStructs(&orderItems)
 	if err !=nil {
 		return nil,err
 	}

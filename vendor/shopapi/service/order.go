@@ -236,8 +236,8 @@ func allocOrderAmount(order *dao.Order) error  {
 	imprestsModel.Code = order.Code
 	imprestsModel.Amount = int64(order.MerchantAmount*100)
 	imprestsModel.OpenId = order.MOpenId
-	imprestsModel.Title=order.Title
-	imprestsModel.Remark = order.Title
+	imprestsModel.Title="卖商品"
+	imprestsModel.Remark = "卖商品"
 	_,err =FetchImprests(imprestsModel)
 	if err!=nil{
 		log.Error(err)

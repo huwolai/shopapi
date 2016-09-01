@@ -68,6 +68,8 @@ type OrderItemDetailDto struct  {
 	//商品cover 封面图 url
 	ProdCoverImg string `json:"prod_coverimg"`
 	ProdTitle string `json:"prod_title"`
+	//商品标识
+	ProdFlag string `json:"prod_flag"`
 	ProdId int64 `json:"prod_id"`
 	Num int `json:"num"`
 	OfferUnitPrice float64 `json:"offer_unit_price"`
@@ -529,6 +531,7 @@ func orderItemDetailToDto(model *dao.OrderItemDetail) *OrderItemDetailDto  {
 	dto.OfferTotalPrice = model.OfferTotalPrice
 	dto.OfferUnitPrice = model.OfferUnitPrice
 	dto.ProdId = model.ProdId
+	dto.ProdFlag = model.ProdFlag
 	dto.ProdTitle = model.ProdTitle
 	dto.ProdCoverImg  = model.ProdCoverImg
 	dto.MerchantName = model.MerchantName
