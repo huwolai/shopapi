@@ -42,9 +42,14 @@ type ProdAttrValueDto struct  {
 	Json string  `json:"json"`
 }
 
-func ProdDetailListWith(flags []string,noflags []string,isRecomm string,orderBy string,pageIndex int,pageSize int)  {
+func ProdDetailListWith(flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64) ([]*dao.ProductDetail,error)  {
 
-	//return dao.NewProductDetail().ProdDetailListWith()
+	return dao.NewProductDetail().ProdDetailListWith(flags,noflags,isRecomm,orderBy,pageIndex,pageSize)
+}
+
+func ProdDetailListCountWith(flags []string,noflags []string,isRecomm string,orderBy string) (int64,error)  {
+
+	return dao.NewProductDetail().ProdDetailListCountWith(flags,noflags,isRecomm,orderBy)
 }
 
 //商品详情

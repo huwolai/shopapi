@@ -67,11 +67,17 @@ func NewProduct() *Product  {
 }
 
 //详情集合
-func (self *ProductDetail) ProdDetailListWith(flags []string,noflags []string,isRecomm string,orderBy string,pageIndex int,pageSize int) ([]*ProductDetail,error)  {
+func (self *ProductDetail) ProdDetailListWith(flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64) ([]*ProductDetail,error)  {
 	var list []*ProductDetail
 	_,err :=db.NewSession().Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id").LoadStructs(&list)
 
 	return list,err
+}
+
+func (self *ProductDetail) ProdDetailListCountWith(flags []string,noflags []string,isRecomm string,orderBy string)  (int64,error) {
+	var count int64
+	err :=db.NewSession().Select("count(*)").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id").LoadValue(&count)
+	return count,err
 }
 
 func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {

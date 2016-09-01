@@ -10,6 +10,7 @@ import (
 	"shopapi/dao"
 	"gitlab.qiyunxin.com/tangtao/utils/security"
 	"strings"
+	"gitlab.qiyunxin.com/tangtao/utils/page"
 )
 
 type ProductParam struct  {
@@ -135,6 +136,51 @@ type ProdSkuDto struct  {
 	AttrSymbolPath string `json:"attr_symbol_path"`
 	Stock int `json:"stock"`
 	Json string `json:"json"`
+}
+
+func ProdDetailListWith(c *gin.Context)  {
+
+	flags :=c.Query("flags")
+	noflags :=c.Query("noflags")
+	isRecomm :=c.Query("is_recomm")
+	orderBy :=c.Query("order_by")
+	pindex,psize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+	flagsArray,noflagsArray :=GetFlagsAndNoFlags(flags,noflags)
+	prodList,err :=service.ProdDetailListWith(flagsArray,noflagsArray,isRecomm,orderBy,pindex,psize)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询商品失败!")
+		return
+	}
+	count,err :=service.ProdDetailListCountWith(flagsArray,noflagsArray,isRecomm,orderBy)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询商品数量失败!")
+		return
+	}
+
+	prodListDtos :=make([]*ProductDetailDto,0)
+	if prodList!=nil {
+
+		for _,prodDetail :=range prodList {
+			prodListDtos = append(prodListDtos,productDetailToDto(prodDetail))
+		}
+	}
+	c.JSON(http.StatusOK,page.NewPage(pindex,psize,uint64(count),prodListDtos))
+
+}
+
+func GetFlagsAndNoFlags(flags string,noflags string) ([]string,[]string)  {
+
+	var flagsArray []string
+	if flags!=""{
+		flagsArray = strings.Split(flags,",")
+	}
+	var noflagsArray []string
+	if noflags!="" {
+		noflagsArray = strings.Split(noflags,",")
+	}
+	return flagsArray,noflagsArray
 }
 
 func ProductSkuWithProdIdAndSymbolPath(c *gin.Context) {

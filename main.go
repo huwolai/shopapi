@@ -113,6 +113,7 @@ func main() {
 		products :=v1.Group("/products")
 		{
 			products.POST("/:merchant_id",api.ProductAdd)
+			products.GET("/",api.ProdDetailListWith)
 		}
 		//商品
 		product :=v1.Group("/product")
@@ -204,6 +205,11 @@ func main() {
 		{
 			//参与分销的商品
 			distributions.GET("/products",api.DistributionProducts)
+		}
+		//建议
+		suggests := v1.Group("/suggests")
+		{
+			suggests.POST("/",api.SuggestAdd)
 		}
 	}
 
