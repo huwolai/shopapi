@@ -47,9 +47,9 @@ func ProdDetailListWith(flags []string,noflags []string,isRecomm string,orderBy 
 	return dao.NewProductDetail().ProdDetailListWith(flags,noflags,isRecomm,orderBy,pageIndex,pageSize,appId)
 }
 
-func ProdDetailListCountWith(flags []string,noflags []string,isRecomm string,orderBy string) (int64,error)  {
+func ProdDetailListCountWith(flags []string,noflags []string,isRecomm string) (int64,error)  {
 
-	return dao.NewProductDetail().ProdDetailListCountWith(flags,noflags,isRecomm,orderBy)
+	return dao.NewProductDetail().ProdDetailListCountWith(flags,noflags,isRecomm)
 }
 
 //商品详情

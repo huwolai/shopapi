@@ -154,7 +154,7 @@ func ProdDetailListWith(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"查询商品失败!")
 		return
 	}
-	count,err :=service.ProdDetailListCountWith(flagsArray,noflagsArray,isRecomm,orderBy)
+	count,err :=service.ProdDetailListCountWith(flagsArray,noflagsArray,isRecomm)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询商品数量失败!")

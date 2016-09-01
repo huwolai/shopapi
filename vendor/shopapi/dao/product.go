@@ -92,9 +92,22 @@ func (self *ProductDetail) ProdDetailListWith(flags []string,noflags []string,is
 	return prodList,err
 }
 
-func (self *ProductDetail) ProdDetailListCountWith(flags []string,noflags []string,isRecomm string,orderBy string)  (int64,error) {
+func (self *ProductDetail) ProdDetailListCountWith(flags []string,noflags []string,isRecomm string)  (int64,error) {
 	var count int64
-	err :=db.NewSession().Select("count(*)").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id").LoadValue(&count)
+	buider :=db.NewSession().Select("count(*)").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id")
+	if flags!=nil{
+		buider = buider.Where("product.flag in ?",flags)
+	}
+
+	if noflags!=nil {
+		buider = buider.Where("product.flag not in ?",noflags)
+	}
+	if isRecomm!="" {
+		buider = buider.Where("product.is_recomm=?",isRecomm)
+	}
+
+	err :=buider.LoadValue(&count)
+
 	return count,err
 }
 
