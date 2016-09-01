@@ -19,6 +19,7 @@ func UserBankGet(openId,appId string) ([]*dao.UserBank,error) {
 func UserBankAdd(userBank *UserBank) (*dao.UserBank,error) {
 	uBank :=dao.NewUserBank()
 	uBank.AccountName = userBank.AccountName
+	uBank.AppId = userBank.AppId
 	uBank.OpenId = userBank.OpenId
 	uBank.BankName = userBank.BankName
 	uBank.BankNo = userBank.BankNo
@@ -43,6 +44,7 @@ func UserBankUpdate(userBank *UserBank) (*dao.UserBank,error)  {
 	uBank.OpenId = userBank.OpenId
 	uBank.BankName = userBank.BankName
 	uBank.BankNo = userBank.BankNo
+	uBank.AppId = userBank.AppId
 	uBank.Id = userBank.Id
 
 	err := uBank.UpdateWithId(userBank.Id)

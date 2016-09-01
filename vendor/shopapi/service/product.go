@@ -42,6 +42,10 @@ type ProdAttrValueDto struct  {
 	Json string  `json:"json"`
 }
 
+func ProdDetailListWith(flags []string,noflags []string,isRecomm string,orderBy string,pageIndex int,pageSize int)  {
+
+}
+
 //商品详情
 func ProdDetailWithProdId(prodId int64,appId string) (*dao.ProductDetail,error)  {
 
