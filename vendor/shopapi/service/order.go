@@ -213,6 +213,8 @@ func OrderSure(orderNo,appId string) error  {
 		tx.Rollback()
 		return err
 	}
+
+	tx.Commit()
 	return nil
 }
 
