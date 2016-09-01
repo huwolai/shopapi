@@ -69,8 +69,24 @@ func NewProduct() *Product  {
 //详情集合
 func (self *ProductDetail) ProdDetailListWith(flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*ProductDetail,error)  {
 	var prodList []*ProductDetail
-	_,err :=db.NewSession().Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id").LoadStructs(&prodList)
+	buider :=db.NewSession().Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id")
+	if flags!=nil{
+		buider = buider.Where("flag in ?",flags)
+	}
 
+	if noflags!=nil {
+		buider = buider.Where("flag not in ?",noflags)
+	}
+	if isRecomm!="" {
+		buider = buider.Where("is_recomm=?",isRecomm)
+	}
+	if orderBy!="" {
+		buider =buider.OrderDir(orderBy,false)
+	}
+	_,err :=buider.Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&prodList)
+	if err!=nil{
+		return nil,err
+	}
 	err = FillProdImgs(appId,prodList)
 
 	return prodList,err
