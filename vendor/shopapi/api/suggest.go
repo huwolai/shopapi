@@ -8,9 +8,9 @@ import (
 )
 
 type Suggest struct  {
-	OpenId string
-	Contact string
-	Content string
+	OpenId string `json:"open_id"`
+	Contact string `json:"contact"`
+	Content string `json:"content"`
 }
 
 // 添加建议
