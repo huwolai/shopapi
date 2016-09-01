@@ -145,9 +145,10 @@ func ProdDetailListWith(c *gin.Context)  {
 	noflags :=c.Query("noflags")
 	isRecomm :=c.Query("is_recomm")
 	orderBy :=c.Query("order_by")
+	appId :=security.GetOpenId(c.Request)
 	pindex,psize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 	flagsArray,noflagsArray :=GetFlagsAndNoFlags(flags,noflags)
-	prodList,err :=service.ProdDetailListWith(flagsArray,noflagsArray,isRecomm,orderBy,pindex,psize)
+	prodList,err :=service.ProdDetailListWith(flagsArray,noflagsArray,isRecomm,orderBy,pindex,psize,appId)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询商品失败!")
