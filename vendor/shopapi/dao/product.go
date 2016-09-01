@@ -19,6 +19,8 @@ type Product struct  {
 	DisPrice float64
 	//是否推荐
 	IsRecom int
+	//已售数量
+	SoldNum int
 	//商品状态
 	Status int
 	Flag string
@@ -40,6 +42,8 @@ type ProductDetail struct {
 	Status int
 	//是否推荐
 	IsRecom int
+	//已售数量
+	SoldNum int
 	//商户ID
 	MerchantId int64
 	//商户名称
@@ -62,9 +66,17 @@ func NewProduct() *Product  {
 	return &Product{}
 }
 
+//详情集合
+func ProdDetailListWith(flags []string,noflags []string,isRecomm string,orderBy string,pageIndex int,pageSize int) ([]*ProductDetail,error)  {
+	var list []*ProductDetail
+	_,err :=db.NewSession().Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id").LoadStructs(&list)
+
+	return list,err
+}
+
 func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 
-	result,err :=tx.InsertInto("product").Columns("title","app_id","description","price","dis_price","json","flag","status","is_recom").Record(self).Exec()
+	result,err :=tx.InsertInto("product").Columns("title","app_id","description","sold_num","price","dis_price","json","flag","status","is_recom").Record(self).Exec()
 	if err !=nil {
 
 		return 0,err

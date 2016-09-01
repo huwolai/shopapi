@@ -10,6 +10,7 @@ type ProdSku struct  {
 	SkuNo string
 	ProdId int64
 	AppId string
+	SoldNum int
 	Price float64
 	DisPrice float64
 	AttrSymbolPath string
@@ -23,13 +24,13 @@ func NewProdSku() *ProdSku  {
 }
 
 func (self *ProdSku) InsertTx(tx *dbr.Tx) (error)  {
-	_,err :=tx.InsertInto("prod_sku").Columns("sku_no","prod_id","app_id","price","dis_price","attr_symbol_path","stock","json").Record(self).Exec()
+	_,err :=tx.InsertInto("prod_sku").Columns("sku_no","prod_id","app_id","sold_num","price","dis_price","attr_symbol_path","stock","json").Record(self).Exec()
 	return err
 }
 
 func (self *ProdSku) Insert() (error)  {
 
-	_,err :=db.NewSession().InsertInto("prod_sku").Columns("sku_no","prod_id","app_id","price","dis_price","attr_symbol_path","stock","json").Record(self).Exec()
+	_,err :=db.NewSession().InsertInto("prod_sku").Columns("sku_no","prod_id","app_id","sold_num","price","dis_price","attr_symbol_path","stock","json").Record(self).Exec()
 
 	return err
 }

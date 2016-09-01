@@ -88,6 +88,14 @@ func main() {
 			user.POST("/:open_id/distribution/:id",api.DistributionProductAdd)
 			//用户取消分销
 			user.DELETE("/:open_id/distribution/:id",api.DistributionProductCancel)
+			//添加银行信息
+			user.POST("/:open_id/banks",api.UserBankAdd)
+			//查询用户银行信息
+			user.GET("/:open_id/banks",api.UserBankGet)
+			//修改用户银行信息
+			user.PUT("/:open_id/banks",api.UserBankUpdate)
+			//删除银行信息
+			user.DELETE("/:open_id/bank/:id",api.UserBankDel)
 
 		}
 		//分类

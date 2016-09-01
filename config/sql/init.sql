@@ -140,6 +140,7 @@ CREATE TABLE IF NOT EXISTS product(
   dis_price NUMERIC(14,2) COMMENT '折扣价格',
   status int COMMENT '商品状态',
   is_recom int COMMENT '是否推荐 1.推荐 0.不推荐',
+  sold_num int COMMENT '已售数量',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
   flag VARCHAR(255) DEFAULT '' COMMENT '标记',
@@ -194,6 +195,7 @@ CREATE TABLE IF NOT EXISTS prod_sku(
   price NUMERIC(14,2) COMMENT '原价',
   dis_price NUMERIC(14,2) COMMENT '折扣价格',
   attr_symbol_path VARCHAR(255) DEFAULT '' COMMENT '属性组合出的规格路径',
+  sold_num int COMMENT '已售数量',
   stock int COMMENT '库存量',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
@@ -363,6 +365,19 @@ CREATE TABLE IF NOT EXISTS user_distribution (
   prod_id BIGINT COMMENT '分销的商品ID',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+) CHARACTER SET utf8mb4;
+
+-- 用户银行信息
+CREATE TABLE IF NOT EXISTS  user_bank(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  app_id VARCHAR(40) COMMENT 'appid',
+  open_id VARCHAR(40) COMMENT '用户ID',
+  account_name VARCHAR(100) COMMENT '开户人名称',
+  bank_name VARCHAR(100) COMMENT '银行名称',
+  bank_no VARCHAR(40) COMMENT '银行账号',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+
 ) CHARACTER SET utf8mb4;
 
 # INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','家常用餐','家常菜','../static/area_1.png','home');
