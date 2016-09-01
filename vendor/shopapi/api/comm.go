@@ -61,7 +61,12 @@ func ImageUpload(c *gin.Context)  {
 		return
 	}
 
-	file, _ , err := c.Request.FormFile("file")
+	name := c.Query("name")
+	if name=="" {
+		name = "file"
+	}
+
+	file, _ , err := c.Request.FormFile(name)
 
 	if err != nil {
 		log.Debug("获取文件错误!")
