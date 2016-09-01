@@ -314,24 +314,18 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 					log.Warn("分销编号:",oItem.DbnNo,"没有找到!")
 					continue
 				}
-				couponAmount := (oItem.BuyTotalPrice / order.RealPrice) * couponTotalAmount
 				dbnAmount := payPrice * distribution.CsnRate
-				oItem.CouponAmount = comm.Floor(couponAmount, 2)
 				oItem.DbnAmount = comm.Floor(dbnAmount, 2)
-				oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
-				oItem.OmitMoney = 0
-				err = oItem.UpdateAmountWithIdTx(oItem.DbnAmount, oItem.OmitMoney, oItem.CouponAmount, oItem.MerchantAmount, oItem.Id, tx)
-				if err != nil {
-					log.Error(err)
-					return errors.New("更新订单详情失败!")
-				}
-			}else{
-				oItem.MerchantAmount = oItem.BuyTotalPrice
-				err = oItem.UpdateAmountWithIdTx(oItem.DbnAmount, oItem.OmitMoney, oItem.CouponAmount, oItem.MerchantAmount, oItem.Id, tx)
-				if err != nil {
-					log.Error(err)
-					return errors.New("更新订单详情失败!")
-				}
+
+			}
+			couponAmount := (oItem.BuyTotalPrice / order.RealPrice) * couponTotalAmount
+			oItem.CouponAmount = comm.Floor(couponAmount, 2)
+			oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
+			oItem.OmitMoney = 0
+			err = oItem.UpdateAmountWithIdTx(oItem.DbnAmount, oItem.OmitMoney, oItem.CouponAmount, oItem.MerchantAmount, oItem.Id, tx)
+			if err != nil {
+				log.Error(err)
+				return errors.New("更新订单详情失败!")
 			}
 			totaldbnAmount += oItem.DbnAmount
 			totalOmitMoney += oItem.OmitMoney
