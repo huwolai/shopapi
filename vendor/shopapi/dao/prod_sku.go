@@ -44,7 +44,7 @@ func (self *ProdSku) WithSkuNo(skuNo string) (*ProdSku,error)   {
 
 func (self *ProdSku) SoldNumInc(num int,skuNo string,appId string,tx *dbr.Tx) error  {
 
-	_,err :=db.NewSession().UpdateBySql("update prod_sku set sold_num=sold_num+? where sku_no=? and app_id=?",num,skuNo,appId).Exec()
+	_,err :=tx.UpdateBySql("update prod_sku set sold_num=sold_num+? where sku_no=? and app_id=?",num,skuNo,appId).Exec()
 
 	return err
 }
