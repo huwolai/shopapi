@@ -545,7 +545,9 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 
 	defer func() {
 		if err :=recover();err!=nil{
+			log.Error(err)
 			tx.Rollback()
+			return err
 		}
 	}()
 	orderItem := dao.NewOrderItem()
