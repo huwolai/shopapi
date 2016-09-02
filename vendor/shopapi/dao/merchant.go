@@ -124,5 +124,45 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,appI
 	return mdetails,err
 }
 
+func (self *Merchant)  With(flags []string,noflags []string,status string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*Merchant,error){
+
+	builder :=db.NewSession().Select("*").From("merchant").Where("app_id=?",appId)
+	if flags!=nil&&len(flags)>0{
+		builder = builder.Where("flag in ?",flags)
+	}
+
+	if noflags!=nil&&len(noflags) >0 {
+		builder = builder.Where("flag not in ?",noflags)
+	}
+	if status!="" {
+		builder = builder.Where("status=?",status)
+	}
+	if orderBy!="" {
+		builder = builder.OrderDir(orderBy,false)
+	}
+	var list []*Merchant
+	_,err :=builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&list)
+
+	return list,err
+}
+
+func (self *Merchant) CountWith(flags []string,noflags []string,status string,appId string) (int64,error)  {
+	builder :=db.NewSession().Select("count(*)").From("merchant").Where("app_id=?",appId)
+	if flags!=nil&&len(flags)>0{
+		builder = builder.Where("flag in ?",flags)
+	}
+
+	if noflags!=nil&&len(noflags) >0 {
+		builder = builder.Where("flag not in ?",noflags)
+	}
+	if status!="" {
+		builder = builder.Where("status=?",status)
+	}
+	var count int64
+	err :=builder.LoadValue(&count)
+
+	return count,err
+}
+
 
 

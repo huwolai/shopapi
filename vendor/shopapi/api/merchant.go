@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"gitlab.qiyunxin.com/tangtao/utils/security"
 	"strings"
+	"gitlab.qiyunxin.com/tangtao/utils/page"
 )
 
 
@@ -167,6 +168,33 @@ func MerchantAdd(c *gin.Context)  {
 	param.Id =mdll.Id
 	c.JSON(http.StatusOK,param)
 
+}
+
+func MerchantWith(c *gin.Context)  {
+
+	flags := c.Query("flags")
+	noflags := c.Query("noflags")
+	status :=c.Query("status")
+	orderBy := c.Query("order_by")
+
+	appId :=security.GetAppId2(c.Request)
+	flagsArray,noflagArray := GetFlagsAndNoFlags(flags,noflags)
+
+	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+
+	merchants,err := service.MerchantWith(flagsArray,noflagArray,status,orderBy,pIndex,pSize,appId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询失败!")
+		return
+	}
+	merchantsDto :=make([]*MerchantDto,0)
+	if merchants!=nil{
+		for _,merchant :=range merchants {
+			merchantsDto = append(merchantsDto,merchantToDto(merchant))
+		}
+	}
+	c.JSON(http.StatusOK,merchantsDto)
 }
 
 func MerchantOpenWithMerchantId(c *gin.Context)  {

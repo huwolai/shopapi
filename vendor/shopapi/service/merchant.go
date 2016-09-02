@@ -101,13 +101,21 @@ func MerchantUpdate(dll *MerchantDetailDLL) error  {
 					return err
 				}
 			}
-
 		}
 	}
-
 	err =tx.Commit()
 	return err
 
+}
+
+func MerchantWith(flags []string,noflags []string,status string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*dao.Merchant,error)  {
+
+	return dao.NewMerchant().With(flags,noflags,status,orderBy,pageIndex,pageSize,appId)
+}
+
+func MerchantCountWith(flags []string,noflags []string,status string,orderBy string,appId string) (int64,error) {
+
+	return dao.NewMerchant().CountWith(flags,noflags,status,appId)
 }
 
 func fillMerchantImg(merchantImg *dao.MerchantImgs,dll *MerchantImgDLL)  {
