@@ -241,7 +241,7 @@ func (self *Order) UpdateWithStatus(orderStatus int,payStatus int,orderNo string
 
 func (self *Order) UpdateWithStatusTx(orderStatus int,payStatus int,orderNo string,tx *dbr.Tx) error {
 
-	_,err :=tx.Update("order").Set("order_status",orderStatus).Set("pay_status",payStatus).Where("no=?",orderNo).Exec()
+	_,err :=tx.Update("`order`").Set("order_status",orderStatus).Set("pay_status",payStatus).Where("`no`=?",orderNo).Exec()
 
 	return err
 }
