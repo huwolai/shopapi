@@ -24,6 +24,8 @@ type MerchantDto struct {
 	Address string `json:"address"`
 	//权重
 	Weight int `json:"weight"`
+	//手机号
+	Mobile string `json:"mobile"`
 	CoverDistance float64 `json:"cover_distance"`
 	//经度
 	Longitude float64 `json:"longitude"`
@@ -188,13 +190,20 @@ func MerchantWith(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"查询失败!")
 		return
 	}
+
+	count,err := service.MerchantCountWith(flagsArray,noflagArray,status,orderBy,appId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询数量失败!")
+		return
+	}
 	merchantsDto :=make([]*MerchantDto,0)
 	if merchants!=nil{
 		for _,merchant :=range merchants {
 			merchantsDto = append(merchantsDto,merchantToDto(merchant))
 		}
 	}
-	c.JSON(http.StatusOK,merchantsDto)
+	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(count),merchantsDto))
 }
 
 func MerchantOpenWithMerchantId(c *gin.Context)  {
@@ -524,6 +533,10 @@ func merchantToDto(model *dao.Merchant)  *MerchantDto {
 	dto.Id = model.Id
 	dto.OpenId = model.OpenId
 	dto.Weight = model.Weight
+
+	if len(model.Mobile)==11 {
+		dto.Mobile =  strings.Replace(model.Mobile,model.Mobile[3:8],"*****",1)
+	}
 
 	return dto
 }

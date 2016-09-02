@@ -19,6 +19,7 @@ type MerchantDetailDLL struct  {
 	//维度
 	Latitude float64
 	Address string
+	Mobile string
 	//覆盖距离
 	CoverDistance float64
 	Json string
@@ -170,6 +171,11 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 		return nil,errors.New("已经是商户了!")
 	}
 
+	account,err :=dao.NewAccount().AccountWithOpenId(dll.OpenId,dll.AppId)
+	if err!=nil{
+		return nil,errors.New("用户信息未找到!")
+	}
+
 	sesson := db.NewSession()
 	tx,_  :=sesson.Begin()
 	defer func() {
@@ -184,6 +190,7 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 	merchant.Json=dll.Json
 	merchant.Name = dll.Name
 	merchant.OpenId = dll.OpenId
+	merchant.Mobile  = account.Mobile
 	merchant.Status = comm.MERCHANT_STATUS_WAIT_AUIT //等待审核
 	merchant.AppId = dll.AppId
 	merchant.Longitude = dll.Longitude

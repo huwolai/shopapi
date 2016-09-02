@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS merchant(
   name VARCHAR(255) DEFAULT '' COMMENT '商户名称',
   app_id VARCHAR(40) DEFAULT '' COMMENT 'APPID',
   open_id VARCHAR(40) DEFAULT '' COMMENT '商户open_id',
+  mobile VARCHAR(20) DEFAULT '' COMMENT '手机号',
   longitude NUMERIC(14,10)  COMMENT '经度',
   latitude NUMERIC(14,10) COMMENT '维度',
   address VARCHAR(255) DEFAULT '' COMMENT '商户地址',
