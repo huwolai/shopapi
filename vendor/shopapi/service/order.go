@@ -590,7 +590,12 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		return errors.New("通知第三方优惠服务失败!")
 	}
 
-	tx.Commit()
+	err :=tx.Commit()
+	if err!=nil{
+		log.Error(err)
+		tx.Rollback()
+		return errors.New("数据提交失败!")
+	}
 
 	return nil
 }
