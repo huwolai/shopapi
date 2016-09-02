@@ -543,12 +543,12 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 
 	tx,_ :=db.NewSession().Begin()
 
-	defer func() {
-		if err :=recover();err!=nil{
-			log.Error(err)
-			tx.Rollback()
-		}
-	}()
+	//defer func() {
+	//	if err :=recover();err!=nil{
+	//		log.Error(err)
+	//		tx.Rollback()
+	//	}
+	//}()
 	orderItem := dao.NewOrderItem()
 	orderItems,err :=orderItem.OrderItemWithOrderNo(orderNo)
 	if err!=nil{
