@@ -7,8 +7,8 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/config"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"shopapi/api"
-	//"shopapi/task"
-	//"gitlab.qiyunxin.com/tangtao/utils/queue"
+	"shopapi/task"
+	"gitlab.qiyunxin.com/tangtao/utils/queue"
 )
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -46,10 +46,10 @@ func main() {
 		gin.SetMode(gin.TestMode)
 	}
 
-	//queue.SetupAMQP(config.GetValue("amqp_url").ToString())
+	queue.SetupAMQP(config.GetValue("amqp_url").ToString())
 
 	//开启定时器
-	//task.StartCron()
+	task.StartCron()
 
 	router := gin.Default()
 

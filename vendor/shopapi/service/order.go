@@ -543,12 +543,12 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 
 	tx,_ :=db.NewSession().Begin()
 
-	//defer func() {
-	//	if err :=recover();err!=nil{
-	//		log.Error(err)
-	//		tx.Rollback()
-	//	}
-	//}()
+	defer func() {
+		if err :=recover();err!=nil{
+			log.Error(err)
+			tx.Rollback()
+		}
+	}()
 	orderItem := dao.NewOrderItem()
 	orderItems,err :=orderItem.OrderItemWithOrderNo(orderNo)
 	if err!=nil{
@@ -565,11 +565,11 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	}
 
 	//商品累计销量增加
-	//err = ProdSoldNumAdd(orderItems,tx)
-	//if err!=nil{
-	//	tx.Rollback()
-	//	return err
-	//}
+	err = ProdSoldNumAdd(orderItems,tx)
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
 
 	//商户权重加1
 	err =MerchantWeightAdd(1,order.MerchantId,tx)
