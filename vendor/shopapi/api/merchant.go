@@ -36,6 +36,7 @@ type MerchantDetailParam struct  {
 	Name string `json:"name"`
 	OpenId string `json:"open_id"`
 	Json string `json:"json"`
+	Address string `json:"address"`
 	Id int64 `json:"id"`
 	//经度
 	Longitude float64 `json:"longitude"`
@@ -495,6 +496,7 @@ func merchantDetailParamToDll(param MerchantDetailParam)  *service.MerchantDetai
 	dll.Name = param.Name
 	dll.Json = param.Json
 	dll.AppId = param.AppId
+	dll.Address = param.Address
 	dll.CoverDistance = param.CoverDistance * 1000
 	dll.Latitude = param.Latitude
 	dll.Longitude = param.Longitude
@@ -536,6 +538,7 @@ func merchantToDto(model *dao.Merchant)  *MerchantDto {
 	dto.Id = model.Id
 	dto.OpenId = model.OpenId
 	dto.Weight = model.Weight
+	dto.Status = model.Status
 
 	if len(model.Mobile)==11 {
 		dto.Mobile =  strings.Replace(model.Mobile,model.Mobile[3:8],"*****",1)
