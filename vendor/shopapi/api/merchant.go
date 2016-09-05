@@ -482,7 +482,7 @@ func merchantDetailToDto(model *dao.MerchantDetail) *MerchantDetailDto  {
 	dto.Address = model.Address
 	dto.Weight = model.Weight
 	dto.Id = model.Id
-	dto.CoverDistance =  model.CoverDistance
+	dto.CoverDistance =  model.CoverDistance * 1000
 
 	return dto
 
@@ -495,7 +495,7 @@ func merchantDetailParamToDll(param MerchantDetailParam)  *service.MerchantDetai
 	dll.Name = param.Name
 	dll.Json = param.Json
 	dll.AppId = param.AppId
-	dll.CoverDistance = param.CoverDistance
+	dll.CoverDistance = param.CoverDistance * 1000
 	dll.Latitude = param.Latitude
 	dll.Longitude = param.Longitude
 	dll.Id = param.Id
@@ -529,7 +529,7 @@ func merchantToDto(model *dao.Merchant)  *MerchantDto {
 	dto.Json = model.Json
 	dto.Address = model.Address
 	dto.AppId = model.AppId
-	dto.CoverDistance = model.CoverDistance
+	dto.CoverDistance = model.CoverDistance * 1000
 	dto.Latitude=model.Latitude
 	dto.Longitude = model.Longitude
 	dto.Name = model.Name
