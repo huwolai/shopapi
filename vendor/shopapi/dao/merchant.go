@@ -39,6 +39,8 @@ type MerchantDetail struct  {
 	Latitude float64
 	//权重
 	Weight int
+	//覆盖范围
+	CoverDistance float64
 	//距离(单位米)
 	Distance float64
 
@@ -119,9 +121,9 @@ func (self *Merchant) IncrWeightWithIdTx(num int,id int64,tx *dbr.Tx) error {
 	return err
 }
 
-func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,appId string) ([]*MerchantDetail,error)  {
+func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,openId string,appId string) ([]*MerchantDetail,error)  {
 	var mdetails []*MerchantDetail
-	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance  from merchant mt where app_id = ? and mt.status = 1 order by distance",longitude,latitude,appId).LoadStructs(&mdetails)
+	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance  from merchant mt where app_id = ? and mt.status = 1 and mt.open_id<>? order by distance",longitude,latitude,appId,openId).LoadStructs(&mdetails)
 	return mdetails,err
 }
 

@@ -72,6 +72,7 @@ type MerchantDetailDto struct  {
 	Address string `json:"address"`
 	//权重
 	Weight int `json:"weight"`
+	CoverDistance float64 `json:"cover_distance"`
 	//距离(单位米)
 	Distance float64 `json:"distance"`
 
@@ -326,10 +327,11 @@ func MerchatNear(c *gin.Context)  {
 
 	longitude :=c.Query("longitude")
 	latitude :=c.Query("latitude")
+	openId := security.GetOpenId(c.Request)
 
 	flongitude,_ :=strconv.ParseFloat(longitude,20)
 	flatitude,_ :=strconv.ParseFloat(latitude,20)
-	mDetailList,err := service.MerchantNear(flongitude,flatitude,appId)
+	mDetailList,err := service.MerchantNear(flongitude,flatitude,openId,appId)
 	if err!=nil {
 		util.ResponseError400(c.Writer,err.Error())
 		return
@@ -480,6 +482,7 @@ func merchantDetailToDto(model *dao.MerchantDetail) *MerchantDetailDto  {
 	dto.Address = model.Address
 	dto.Weight = model.Weight
 	dto.Id = model.Id
+	dto.CoverDistance =  model.CoverDistance
 
 	return dto
 
