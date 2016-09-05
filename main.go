@@ -215,6 +215,7 @@ func main() {
 		admin :=v1.Group("/admin")
 		{
 			admin.GET("/merchants",api.MerchantWith)
+			admin.GET("/product/:prod_id/detail",api.ProdDetailWithProdId)
 		}
 	}
 

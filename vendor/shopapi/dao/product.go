@@ -32,6 +32,8 @@ type ProductDetail struct {
 	//商品ID
 	Id int64
 	AppId string
+	//分类ID
+	CategoryId int64
 	//商品标题
 	Title string
 	//商品价格
@@ -237,7 +239,7 @@ func FillProdImgs(appId string,prodList []*ProductDetail) error {
 
 func (self *Product) ProductDetailWithId(id int64) (*ProductDetail,error) {
 	var prodDetail *ProductDetail
-	_,err :=db.NewSession().SelectBySql("select pt.*,mt.`name` merchant_name,mt.id merchant_id from product pt,merchant_prod md,merchant mt WHERE pt.id=md.prod_id and md.merchant_id=mt.id and pt.id=?",id).LoadStructs(&prodDetail)
+	_,err :=db.NewSession().SelectBySql("select pt.*,mt.`name` merchant_name,mt.id merchant_id,pct.id category_id from product pt left join merchant_prod md on pt.id=md.prod_id LEFT JOIN merchant mt on md.merchant_id=mt.id left join prod_category pct on pct.prod_id=pt.id WHERE pt.id=md.prod_id and md.merchant_id=mt.id and pt.id=?",id).LoadStructs(&prodDetail)
 
 	return prodDetail,err
 }

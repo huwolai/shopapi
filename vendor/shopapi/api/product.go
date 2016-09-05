@@ -88,6 +88,7 @@ type ProductDetailDto struct {
 	DisPrice float64 `json:"dis_price"`
 	//商品状态
 	Status int `json:"status"`
+	CategoryId int64 `json:"category_id"`
 	//商户ID
 	MerchantId int64 `json:"merchant_id"`
 	//商户名称
@@ -543,6 +544,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.Title = model.Title
 	dto.AppId = model.AppId
 	dto.MerchantId = model.MerchantId
+	dto.CategoryId = model.CategoryId
 	dto.MerchantName = model.MerchantName
 	dto.Price = model.Price
 	dto.Status = model.Status
