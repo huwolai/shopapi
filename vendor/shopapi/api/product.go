@@ -163,7 +163,7 @@ func ProdSkuAdd(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"添加失败!")
 		return
 	}
-
+	prodSkuDto.SkuNo = prodSku.SkuNo
 	prodSkuDto.Id = prodSku.Id
 
 	c.JSON(http.StatusOK,prodSkuDto)

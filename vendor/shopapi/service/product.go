@@ -78,9 +78,10 @@ func ProdSkuAdd(prodSku *ProdSku) (*ProdSku,error)  {
 	pSku.SkuNo = util.GenerUUId()
 	pSku.Stock = prodSku.Stock
 	id,err :=pSku.Insert()
-	pSku.Id=id
 
-	return pSku,err
+	prodSku.Id=id
+
+	return prodSku,err
 }
 
 func ProdDetailListWith(flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*dao.ProductDetail,error)  {
