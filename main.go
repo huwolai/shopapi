@@ -126,6 +126,8 @@ func main() {
 			product.POST("/:prod_id/sku",api.ProductAndAttrAdd)
 			//通过属性key查询商品属性值
 			product.GET("/:prod_id/attr/:attr_key",api.ProductAttrValues)
+			//修改商品状态
+			product.PUT("/:prod_id/status/:status",api.ProductStatusUpdate)
 
 		}
 		merchants :=v1.Group("/merchants")

@@ -406,7 +406,28 @@ func ProductAndAttrAdd(c *gin.Context) {
 	c.JSON(http.StatusOK,dto)
 }
 
+func ProductStatusUpdate(c *gin.Context)  {
 
+	prodId :=c.Param("prod_id")
+	iprodId,err :=strconv.ParseInt(prodId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商品ID格式有误!")
+		return
+	}
+	status := c.Param("status")
+	istatus,err := strconv.Atoi(status)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商品状态有误!")
+		return
+	}
+	err =service.ProductStatusUpdate(istatus,iprodId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"修改失败!")
+		return
+	}
+	util.ResponseSuccess(c.Writer)
+}
 
 func ProductAttrValues(c *gin.Context)  {
 

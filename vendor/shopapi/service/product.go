@@ -192,6 +192,12 @@ func ProductSkuWithProdIdAndSymbolPath(prodId int64,symbolPath string) (*dao.Pro
 	return prodSku,err
 }
 
+func ProductStatusUpdate(status int,prodId int64) error  {
+
+	return dao.NewProduct().UpdateStatusWithProdId(status,prodId)
+
+}
+
 func ProductAndAttrAdd(dto *ProdAndAttrDto)  (*ProdAndAttrDto,error) {
 
 	product :=dao.NewProduct()

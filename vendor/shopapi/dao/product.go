@@ -251,3 +251,10 @@ func (self *Product) ProductWithId(id int64,appId string) (*Product,error)  {
 
 	return prod,err
 }
+
+func (self *Product) UpdateStatusWithProdId(status int,prodId int64) error  {
+
+	_,err :=db.NewSession().Update("product").Set("status",status).Where("id=?",prodId).Exec()
+
+	return err
+}
