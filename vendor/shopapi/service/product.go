@@ -42,6 +42,47 @@ type ProdAttrValueDto struct  {
 	Json string  `json:"json"`
 }
 
+type ProdSku struct  {
+	Id int64
+	SkuNo string
+	ProdId int64
+	AppId string
+	SoldNum int
+	Price float64
+	DisPrice float64
+	AttrSymbolPath string
+	Stock int
+	Json string
+}
+
+func ProdSkuAdd(prodSku *ProdSku) (*ProdSku,error)  {
+
+
+
+	pSku :=dao.NewProdSku()
+
+	pSku,err :=pSku.WithProdIdAndSymbolPath(prodSku.AttrSymbolPath,prodSku.ProdId)
+	if err!=nil{
+		return nil,err
+	}
+	if pSku!=nil{
+		return nil,errors.New("已存在sku!")
+	}
+
+	pSku.AppId = prodSku.AppId
+	pSku.AttrSymbolPath = prodSku.AttrSymbolPath
+	pSku.Price = prodSku.Price
+	pSku.DisPrice = prodSku.DisPrice
+	pSku.Json = prodSku.Json
+	pSku.ProdId = prodSku.ProdId
+	pSku.SkuNo = util.GenerUUId()
+	pSku.Stock = prodSku.Stock
+	id,err :=pSku.Insert()
+	pSku.Id=id
+
+	return pSku,err
+}
+
 func ProdDetailListWith(flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*dao.ProductDetail,error)  {
 
 	return dao.NewProductDetail().ProdDetailListWith(flags,noflags,isRecomm,orderBy,pageIndex,pageSize,appId)

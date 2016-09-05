@@ -28,11 +28,14 @@ func (self *ProdSku) InsertTx(tx *dbr.Tx) (error)  {
 	return err
 }
 
-func (self *ProdSku) Insert() (error)  {
+func (self *ProdSku) Insert() (int64,error)  {
 
-	_,err :=db.NewSession().InsertInto("prod_sku").Columns("sku_no","prod_id","app_id","sold_num","price","dis_price","attr_symbol_path","stock","json").Record(self).Exec()
-
-	return err
+	result,err :=db.NewSession().InsertInto("prod_sku").Columns("sku_no","prod_id","app_id","sold_num","price","dis_price","attr_symbol_path","stock","json").Record(self).Exec()
+	if err!=nil{
+		return int64(0),err
+	}
+	id,err :=result.LastInsertId()
+	return id,err
 }
 
 func (self *ProdSku) WithSkuNo(skuNo string) (*ProdSku,error)   {

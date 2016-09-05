@@ -109,12 +109,17 @@ func main() {
 			category.GET("/:category_id/products",api.ProductListWithCategory)
 		}
 
+		skus :=v1.Group("/skus")
+		{
+			skus.POST("/product/:prod_id",api.ProdSkuAdd)
+		}
 		//商品
 		products :=v1.Group("/products")
 		{
 			products.POST("/:merchant_id",api.ProductAdd)
 			products.GET("/",api.ProdDetailListWith)
 		}
+
 		//商品
 		product :=v1.Group("/product")
 		{

@@ -140,6 +140,36 @@ type ProdSkuDto struct  {
 	Json string `json:"json"`
 }
 
+func ProdSkuAdd(c *gin.Context)  {
+
+	var prodSkuDto *ProdSkuDto
+	err :=c.BindJSON(&prodSkuDto)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"数据格式有误!")
+		return
+	}
+
+	prodSku := &service.ProdSku{}
+	prodSku.Stock = prodSkuDto.Stock
+	prodSku.AppId = security.GetAppId2(c.Request)
+	prodSku.AttrSymbolPath = prodSkuDto.AttrSymbolPath
+	prodSku.DisPrice = prodSkuDto.DisPrice
+	prodSku.Price = prodSkuDto.Price
+	prodSku.ProdId = prodSkuDto.ProdId
+	prodSku.Json = prodSkuDto.Json
+	prodSku,err = service.ProdSkuAdd(prodSku)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"添加失败!")
+		return
+	}
+
+	prodSkuDto.Id = prodSku.Id
+
+	c.JSON(http.StatusOK,prodSkuDto)
+
+}
+
 func ProdDetailListWith(c *gin.Context)  {
 
 	flags :=c.Query("flags")
