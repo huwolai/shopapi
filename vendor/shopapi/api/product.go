@@ -545,6 +545,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.MerchantId = model.MerchantId
 	dto.MerchantName = model.MerchantName
 	dto.Price = model.Price
+	dto.Status = model.Status
 
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*ProdImgsDetailDto,0)

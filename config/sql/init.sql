@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS product(
   description VARCHAR(1000) DEFAULT '' COMMENT '描述',
   price NUMERIC(14,2) COMMENT '原价',
   dis_price NUMERIC(14,2) COMMENT '折扣价格',
-  status int COMMENT '商品状态',
+  status int COMMENT '商品状态 1.上架 0.下架',
   is_recom int COMMENT '是否推荐 1.推荐 0.不推荐',
   sold_num int COMMENT '已售数量',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
