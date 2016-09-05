@@ -69,6 +69,7 @@ func ProdSkuAdd(prodSku *ProdSku) (*ProdSku,error)  {
 		return nil,errors.New("已存在sku!")
 	}
 
+	pSku =dao.NewProdSku()
 	pSku.AppId = prodSku.AppId
 	pSku.AttrSymbolPath = prodSku.AttrSymbolPath
 	pSku.Price = prodSku.Price
