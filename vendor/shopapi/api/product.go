@@ -442,7 +442,7 @@ func ProductAndAttrAdd(c *gin.Context) {
 func ProductRecom(c *gin.Context)  {
 
 	prodId :=c.Param("prod_id")
-	iprodId,err := strconv.Atoi(prodId)
+	iprodId,err := strconv.ParseInt(prodId,10,64)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"商品ID格式有误!")
 		return
