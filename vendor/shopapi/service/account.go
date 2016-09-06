@@ -140,7 +140,7 @@ func LoginForSMS(mobile string,code string,appId string) (map[string]interface{}
 		account.Status =comm.ACCOUNT_STATUS_WAIT_BINDPAY //等待开通支付
 		err =account.Insert()
 		if err!=nil {
-
+			log.Error(err)
 			return nil,err
 		}
 	}

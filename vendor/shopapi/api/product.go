@@ -89,6 +89,8 @@ type ProductDetailDto struct {
 	//商品状态
 	Status int `json:"status"`
 	CategoryId int64 `json:"category_id"`
+	//是否推荐
+	IsRecom int `json:"is_recom"`
 	//商户ID
 	MerchantId int64 `json:"merchant_id"`
 	//商户名称
@@ -599,6 +601,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.MerchantName = model.MerchantName
 	dto.Price = model.Price
 	dto.Status = model.Status
+	dto.IsRecom = model.IsRecom
 
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*ProdImgsDetailDto,0)
