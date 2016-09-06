@@ -199,6 +199,7 @@ func ProdAttrValueAdd(dto *ProdAttrValueDto) (*ProdAttrValueDto,error)  {
 	return dto,err
 }
 
+//获取推荐列表
 func ProductListWithRecomm(appId string) ([]*dao.ProductDetail,error) {
 	productDetail :=dao.NewProductDetail()
 	prodList,err := productDetail.ProductListWithRecomm(appId)
@@ -209,6 +210,7 @@ func ProductListWithRecomm(appId string) ([]*dao.ProductDetail,error) {
 	return prodList,nil
 }
 
+//根据分类获取商品
 func ProductListWithCategory(appId string,categoryId int64) ([]*dao.ProductDetail,error)   {
 	productDetail :=dao.NewProductDetail()
 	prodList,err := productDetail.ProductListWithCategory(appId,categoryId)
@@ -235,10 +237,17 @@ func ProductSkuWithProdIdAndSymbolPath(prodId int64,symbolPath string) (*dao.Pro
 	return prodSku,err
 }
 
+//商品状态修改
 func ProductStatusUpdate(status int,prodId int64) error  {
 
 	return dao.NewProduct().UpdateStatusWithProdId(status,prodId)
 
+}
+
+//商品推荐
+func ProductRecom(isRecom int,prodId int64) error  {
+
+	return dao.NewProduct().UpdateRecomWithProdId(isRecom,prodId)
 }
 
 func ProductAndAttrAdd(dto *ProdAndAttrDto)  (*ProdAndAttrDto,error) {

@@ -258,3 +258,9 @@ func (self *Product) UpdateStatusWithProdId(status int,prodId int64) error  {
 
 	return err
 }
+
+func (self *Product) UpdateRecomWithProdId(isRecom int,prodId int64) error  {
+	_,err :=db.NewSession().Update("product").Set("is_recom",isRecom).Where("id=?",prodId).Exec()
+
+	return err
+}

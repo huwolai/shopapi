@@ -438,6 +438,33 @@ func ProductAndAttrAdd(c *gin.Context) {
 	c.JSON(http.StatusOK,dto)
 }
 
+//商品推荐
+func ProductRecom(c *gin.Context)  {
+
+	prodId :=c.Param("prod_id")
+	iprodId,err := strconv.Atoi(prodId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商品ID格式有误!")
+		return
+	}
+
+	isRecom :=c.Param("is_recom")
+	iisRecom,err := strconv.Atoi(isRecom)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"参数格式有误!")
+		return
+	}
+
+	err =service.ProductRecom(iisRecom,iprodId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"修改失败!")
+		return
+	}
+
+	util.ResponseSuccess(c.Writer)
+}
+
 func ProductStatusUpdate(c *gin.Context)  {
 
 	prodId :=c.Param("prod_id")

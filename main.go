@@ -134,6 +134,9 @@ func main() {
 			//修改商品状态
 			product.PUT("/:prod_id/status/:status",api.ProductStatusUpdate)
 
+			//设置商品推荐 0.取消推荐 1.推荐
+			product.PUT("/:prod_id/recom/:is_recom",api.ProductRecom)
+
 		}
 		merchants :=v1.Group("/merchants")
 		{
