@@ -391,6 +391,10 @@ CREATE TABLE IF NOT EXISTS suggest(
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 ) CHARACTER SET utf8mb4;
 
+# 添加平台默认商户
+#INSERT INTO merchant(name, app_id, open_id, mobile, longitude, latitude, address, cover_distance, weight, status, flag) VALUES ('默认商户','shopapi','75b3be97d0b749768bcb272e4684786a','',0,0,'',0,0,1,'default');
+
+# 添加分类
 # INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','家常用餐','家常菜','../static/area_1.png','home');
 # INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','系列套餐','私人订制','../static/area_2.png','home');
 # INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','私人订制','家常菜','../static/area_3.png','home');
@@ -398,7 +402,7 @@ CREATE TABLE IF NOT EXISTS suggest(
 # INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','优惠','优惠','../../static/mall-icon1.png','');
 # INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','促销','促销','../static/mall-icon2.png','');
 # INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','海鲜','海鲜','../static/mall-icon3.png','');
-# INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','食材','食材','../static/mall-icon4.png','');
+# INSERT INTO category(app_id, title, description, icon, flag) VALUES ('shopapi','食材','食材','../static/mall-icon4.PNG','');
 #
 # INSERT INTO product(app_id, title, description, price, dis_price, status, is_recom) VALUES ('shopapi','测试商品','测试商品',0.01,0.01,1,1);
 # INSERT INTO prod_attr_key(prod_id, attr_key, attr_name, status) VALUES (1,'time','时间',1);
