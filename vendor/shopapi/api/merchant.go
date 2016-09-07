@@ -254,6 +254,27 @@ func MerchantWithId(c *gin.Context)  {
 	util.ResponseError400(c.Writer,"没有找到信息!")
 }
 
+//是否是商户
+func MerchantIs(c *gin.Context)  {
+	appId :=security.GetAppId2(c.Request)
+	openId := c.Param("open_id")
+	merchant,err := service.MerchantWithOpenId(openId,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	if merchant!=nil{
+
+		c.JSON(http.StatusOK,gin.H{
+			"is_merchant": 1,
+		})
+	}else{
+		c.JSON(http.StatusOK,gin.H{
+			"is_merchant": 0,
+		})
+	}
+}
+
 
 func MerchantWithOpenId(c *gin.Context)  {
 

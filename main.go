@@ -96,6 +96,8 @@ func main() {
 			user.PUT("/:open_id/banks",api.UserBankUpdate)
 			//删除银行信息
 			user.DELETE("/:open_id/bank/:id",api.UserBankDel)
+			//是否是厨师
+			user.GET("/:open_id/ismerchant",api.MerchantIs)
 
 		}
 		//分类
