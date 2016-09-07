@@ -11,6 +11,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/security"
 	"strings"
 	"gitlab.qiyunxin.com/tangtao/utils/page"
+	"os"
 )
 
 
@@ -21,6 +22,7 @@ type MerchantDto struct {
 	OpenId string `json:"open_id"`
 	Status int `json:"status"`
 	Json string `json:"json"`
+	HasAvatar int `json:"has_avatar"`
 	Address string `json:"address"`
 	//权重
 	Weight int `json:"weight"`
@@ -264,7 +266,12 @@ func MerchantWithOpenId(c *gin.Context)  {
 		return
 	}
 	if merchant!=nil{
-		c.JSON(http.StatusOK,merchantToDto(merchant))
+		_,err :=os.Open(MERCHANT_IMG_PATH+"/"+merchant.OpenId)
+		dto :=merchantToDto(merchant)
+		if (os.IsNotExist(err)) {
+			dto.HasAvatar = 1
+		}
+		c.JSON(http.StatusOK,dto)
 		return
 	}
 

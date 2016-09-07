@@ -197,6 +197,10 @@ func AccountDetail(c *gin.Context)  {
 	c.JSON(http.StatusOK,accountDetailModelToDto(detailModel))
 }
 
+func AccountsGet(c *gin.Context)  {
+
+}
+
 func accountDetailModelToDto(model *service.AccountDetailModel) *AccountDetailDto {
 
 	dto :=&AccountDetailDto{}

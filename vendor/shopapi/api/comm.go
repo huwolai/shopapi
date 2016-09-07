@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+const MERCHANT_IMG_PATH  = "./config/upload/merchant"
 //在请求中获取AppId
 func GetQueryParamInRequest(key string,req *http.Request) string  {
 
