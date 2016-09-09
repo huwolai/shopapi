@@ -79,6 +79,8 @@ type ProductBaseDto struct  {
 type ProductDetailDto struct {
 	//商品ID
 	Id int64 `json:"id"`
+	//商品描述
+	Description string `json:"description"`
 	AppId string `json:"app_id"`
 	//商品标题
 	Title string `json:"title"`
@@ -629,6 +631,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.Price = model.Price
 	dto.Status = model.Status
 	dto.IsRecom = model.IsRecom
+	dto.Description = model.Description
 
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*ProdImgsDetailDto,0)

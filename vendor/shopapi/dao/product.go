@@ -32,6 +32,8 @@ type ProductDetail struct {
 	//商品ID
 	Id int64
 	AppId string
+	//商品描述
+	Description string
 	//分类ID
 	CategoryId int64
 	//商品标题
