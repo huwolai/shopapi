@@ -229,6 +229,10 @@ func main() {
 			admin.GET("/merchants",api.MerchantWith)
 			admin.GET("/product/:prod_id/detail",api.ProdDetailWithProdId)
 		}
+		flags :=v1.Group("/flags")
+		{
+			flags.GET("/",api.FlagsWithTypes)
+		}
 	}
 
 	router.Static("/upload","./config/upload")
