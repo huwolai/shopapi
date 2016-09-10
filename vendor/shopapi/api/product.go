@@ -30,6 +30,7 @@ type ProductParam struct  {
 	Imgs []ProductImgParam `json:"imgs"`
 	//商户ID
 	MerchantId int64 `json:"merchant_id"`
+	Flag string `json:"flag"`
 	//附加数据
 	Json  string `json:"json"`
 }
@@ -602,6 +603,7 @@ func productParamToBLL(param *ProductParam) *service.ProdBLL {
 	prodBll.Price = param.Price
 	prodBll.DisPrice = param.DisPrice
 	prodBll.Title = param.Title
+	prodBll.Flag = param.Flag
 	prodBll.Json  = param.Json
 
 	imgsparams  := param.Imgs
