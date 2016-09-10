@@ -144,7 +144,7 @@ func ProdAdd(prodbll *ProdBLL) (*ProdBLL,error)  {
 	prodbll.Id = prodId
 
 	//保存商品图片信息
-	if len(prodbll.Imgs)>0 {
+	if prodbll.Imgs!=nil&&len(prodbll.Imgs)>0 {
 		err := productImgSave(prodbll,prodId,tx)
 		if err!=nil{
 			tx.Rollback()

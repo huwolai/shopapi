@@ -299,14 +299,14 @@ func ProductAdd(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"请输入商品价格!")
 		return
 	}
-	if param.Imgs==nil {
-		util.ResponseError400(c.Writer,"请上传商品图片")
-		return
-	}
-	if param.Description==""{
-		util.ResponseError400(c.Writer,"请输入商品描述")
-		return
-	}
+	//if param.Imgs==nil {
+	//	util.ResponseError400(c.Writer,"请上传商品图片")
+	//	return
+	//}
+	//if param.Description==""{
+	//	util.ResponseError400(c.Writer,"请输入商品描述")
+	//	return
+	//}
 	mid,err := strconv.Atoi(midstr)
 	param.MerchantId = int64(mid)
 	param.AppId = security.GetAppId2(c.Request)
