@@ -32,6 +32,8 @@ type ProductDetail struct {
 	//商品ID
 	Id int64
 	AppId string
+	//商品描述
+	Description string
 	//分类ID
 	CategoryId int64
 	//商品标题
@@ -69,7 +71,7 @@ func NewProduct() *Product  {
 }
 
 //详情集合
-func (self *ProductDetail) ProdDetailListWith(flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*ProductDetail,error)  {
+func (self *ProductDetail) ProdDetailListWith(merchantId int64,flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*ProductDetail,error)  {
 	var prodList []*ProductDetail
 	buider :=db.NewSession().Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id")
 	if flags!=nil{
@@ -81,6 +83,9 @@ func (self *ProductDetail) ProdDetailListWith(flags []string,noflags []string,is
 	}
 	if isRecomm!="" {
 		buider = buider.Where("product.is_recomm=?",isRecomm)
+	}
+	if merchantId!=0{
+		buider = buider.Where("merchant.id=?",merchantId)
 	}
 	if orderBy!="" {
 		buider =buider.OrderDir(orderBy,false)

@@ -85,9 +85,9 @@ func ProdSkuAdd(prodSku *ProdSku) (*ProdSku,error)  {
 	return prodSku,err
 }
 
-func ProdDetailListWith(flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*dao.ProductDetail,error)  {
+func ProdDetailListWith(merchantId int64,flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*dao.ProductDetail,error)  {
 
-	return dao.NewProductDetail().ProdDetailListWith(flags,noflags,isRecomm,orderBy,pageIndex,pageSize,appId)
+	return dao.NewProductDetail().ProdDetailListWith(merchantId,flags,noflags,isRecomm,orderBy,pageIndex,pageSize,appId)
 }
 
 func ProdDetailListCountWith(flags []string,noflags []string,isRecomm string) (int64,error)  {
