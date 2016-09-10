@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS flags(
   name VARCHAR(100) DEFAULT '' COMMENT '标记名称',
   flag VARCHAR(100) DEFAULT '' COMMENT 'flag',
   type VARCHAR(20) COMMENT '类型',
+  status int COMMENT '状态 0.未启用 1.启用',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
   KEY flag (flag),

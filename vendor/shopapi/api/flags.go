@@ -8,20 +8,30 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"net/http"
+	"strings"
 )
 
 type Flags struct  {
-	AppId string
-	Name string
-	Flag string
-	Type string
+	AppId string `json:"app_id"`
+	Name string `json:"name"`
+	Flag string `json:"flag"`
+	Type string `json:"type"`
 }
 
 func FlagsWithTypes(c *gin.Context)  {
 
 	stypes := c.Query("types")
+	status :=c.Query("status")
 	appId :=security.GetAppId2(c.Request)
-	flags,err := service.FlagsWithTypes(stypes,appId)
+	var typesArray []string
+	var statusArray []string
+	if stypes!="" {
+		typesArray = strings.Split(stypes,",")
+	}
+	if status!="" {
+		statusArray = strings.Split(status,",")
+	}
+	flags,err := service.FlagsWithTypes(typesArray,statusArray,appId)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询失败!")

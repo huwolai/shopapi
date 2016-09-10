@@ -26,12 +26,15 @@ func (self *Flags) Insert() error {
 }
 
 //查询标记通过类型
-func (self *Flags) WithTypes(stype []string,appId string) ([]*Flags,error)  {
+func (self *Flags) WithTypes(stype []string,appId string,status []string) ([]*Flags,error)  {
 	log.Error("type:",stype,"app_id:",appId)
 	var flags []*Flags
 	builder :=db.NewSession().Select("*").From("flags").Where("app_id=?",appId)
 	if stype!=nil{
 		builder = builder.Where("type in ?",stype)
+	}
+	if status!=nil {
+		builder = builder.Where("status in ?",status)
 	}
 	_,err :=builder.LoadStructs(&flags)
 	return flags,err
