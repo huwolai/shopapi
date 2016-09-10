@@ -20,7 +20,6 @@ type Flags struct  {
 func FlagsWithTypes(c *gin.Context)  {
 
 	stypes := c.Query("types")
-
 	appId :=security.GetAppId2(c.Request)
 	flags,err := service.FlagsWithTypes(stypes,appId)
 	if err!=nil{
