@@ -90,9 +90,9 @@ func ProdDetailListWith(merchantId int64,flags []string,noflags []string,isRecom
 	return dao.NewProductDetail().ProdDetailListWith(merchantId,flags,noflags,isRecomm,orderBy,pageIndex,pageSize,appId)
 }
 
-func ProdDetailListCountWith(flags []string,noflags []string,isRecomm string) (int64,error)  {
+func ProdDetailListCountWith(merchantId int64,flags []string,noflags []string,isRecomm string) (int64,error)  {
 
-	return dao.NewProductDetail().ProdDetailListCountWith(flags,noflags,isRecomm)
+	return dao.NewProductDetail().ProdDetailListCountWith(merchantId,flags,noflags,isRecomm)
 }
 
 //商品详情
