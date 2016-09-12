@@ -53,9 +53,9 @@ func (self *Account) AccountUpdateStatus(status int,openId string,appId string) 
 }
 
 //查询用户
-func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,appId string) ([]*Account,error)  {
+func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string) ([]*Account,error)  {
 	var list []*Account
-	_,err :=db.NewSession().Select("*").From("account").Where("app_id=?",appId).Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&list)
+	_,err :=db.NewSession().Select("*").From("account").Where("app_id=?",appId).Where("mobile=?",mobile).Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&list)
 
 	return list,err
 }

@@ -12,6 +12,7 @@ import (
 	"strings"
 	"gitlab.qiyunxin.com/tangtao/utils/page"
 	"os"
+	"shopapi/comm"
 )
 
 
@@ -263,7 +264,7 @@ func MerchantIs(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-	if merchant!=nil{
+	if merchant!=nil&&merchant.Status==comm.MERCHANT_STATUS_NORMAL{
 
 		c.JSON(http.StatusOK,gin.H{
 			"is_merchant": 1,
@@ -289,7 +290,7 @@ func MerchantWithOpenId(c *gin.Context)  {
 	if merchant!=nil{
 		_,err :=os.Open(MERCHANT_IMG_PATH+"/"+merchant.OpenId)
 		dto :=merchantToDto(merchant)
-		if (os.IsNotExist(err)) {
+		if (!os.IsNotExist(err)) {
 			dto.HasAvatar = 1
 		}
 		c.JSON(http.StatusOK,dto)

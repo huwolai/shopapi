@@ -269,3 +269,9 @@ func loginSMSOfCommuser(mobile,code,appId string) ( map[string]interface{},error
 
 	return nil,errors.New("调用统一用户中心登录失败!")
 }
+
+func AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string) ([]*dao.Account,error)   {
+
+
+	return nil,nil
+}
