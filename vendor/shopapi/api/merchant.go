@@ -268,6 +268,7 @@ func MerchantIs(c *gin.Context)  {
 
 		c.JSON(http.StatusOK,gin.H{
 			"is_merchant": 1,
+			"merchant_id":merchant.Id,
 		})
 	}else{
 		c.JSON(http.StatusOK,gin.H{
