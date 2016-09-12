@@ -42,6 +42,7 @@ type OrderPrePayModel struct  {
 	AddressId int64
 	PayType int
 	AppId string
+	Json string
 	NotifyUrl string
 }
 
@@ -50,6 +51,7 @@ type OrderPrePayDto struct  {
 	CouponTokens []string `json:"coupon_tokens"`
 	OrderNo string `json:"order_no"`
 	AddressId int64 `json:"address_id"`
+	Json string `json:"json"`
 	//付款类型(1.支付宝 2.微信 3.现金支付 4.账户)
 	PayType int `json:"pay_type"`
 	AppId string `json:"app_id"`
@@ -130,10 +132,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		return nil,errors.New("计算订单金额失败!")
 	}
 
-	log.Error("model.PayType=",model.PayType,"order.PayStatus=",order.PayStatus)
-
 	if model.PayType == comm.Pay_Type_Account {//账户支付
-
 		code :=order.Code
 		if order.PayStatus==comm.ORDER_PAY_STATUS_NOPAY {
 			//请求预付款
@@ -144,7 +143,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 				return nil,err
 			}
 			code :=resultImprestMap["code"].(string)
-			err =order.OrderPayapiUpdateWithNoAndCodeTx("",address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId,tx)
+			err =order.OrderPayapiUpdateWithNoAndCodeTx("",address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.Json,order.AppId,tx)
 			if err!=nil{
 				log.Error(err)
 				tx.Rollback()
@@ -169,7 +168,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 			payapiNo :=resultPrepayMap["pay_no"].(string)
 			code :=resultPrepayMap["code"].(string)
 			//将payapi的订单号更新到订单数据里
-			err :=order.OrderPayapiUpdateWithNoAndCodeTx(payapiNo,address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.AppId,tx)
+			err :=order.OrderPayapiUpdateWithNoAndCodeTx(payapiNo,address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,order.Json,order.AppId,tx)
 			if err!=nil{
 				log.Error(err)
 				tx.Rollback()
@@ -948,6 +947,7 @@ func OrderPrePayDtoToModel(dto OrderPrePayDto ) *OrderPrePayModel  {
 	model.PayType = dto.PayType
 	model.AddressId = dto.AddressId
 	model.CouponTokens = dto.CouponTokens
+	model.Json = dto.Json
 	model.NotifyUrl = config.GetValue("notify_url").ToString()
 	return model
 }

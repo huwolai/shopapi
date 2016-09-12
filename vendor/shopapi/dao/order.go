@@ -228,8 +228,12 @@ func fillOrderItemDetail(orders []*OrderDetail)  error {
 	return nil
 }
 
-func (self *Order) OrderPayapiUpdateWithNoAndCodeTx(payapiNo string,addressId int64,address string,code string,orderStatus int,payStatus int,no string,appId string,tx *dbr.Tx) error  {
-	_,err :=tx.Update("order").Set("payapi_no",payapiNo).Set("address_id",addressId).Set("address",address).Set("code",code).Set("order_status",orderStatus).Set("pay_status",payStatus).Where("app_id=?",appId).Where("`no`=?",no).Exec()
+func (self *Order) OrderPayapiUpdateWithNoAndCodeTx(payapiNo string,addressId int64,address string,code string,orderStatus int,payStatus int,no string,json string,appId string,tx *dbr.Tx) error  {
+	builder :=tx.Update("order").Set("payapi_no",payapiNo).Set("address_id",addressId).Set("address",address).Set("code",code).Set("order_status",orderStatus).Set("pay_status",payStatus)
+	if json!="" {
+		builder = builder.Set("json",json)
+	}
+	_,err := builder.Where("app_id=?",appId).Where("`no`=?",no).Exec()
 	return err
 }
 
