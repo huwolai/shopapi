@@ -70,3 +70,9 @@ func (self *MerchantImgs) MerchantImgs(openId string,appId string) ([]*MerchantI
 	return merchantImgs,err
 }
 
+func (self *MerchantImgs) DeleteWithMerchantIdTx(merchantId int64,appId string,tx *dbr.Tx) error  {
+
+	_,err :=tx.DeleteFrom("merchant_imgs").Where("merchant_id=?",merchantId).Exec()
+
+	return err
+}

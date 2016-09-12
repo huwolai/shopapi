@@ -69,39 +69,27 @@ func MerchantUpdate(dll *MerchantDetailDLL) error  {
 		return err
 	}
 	imgs := dll.Imgs
-	if imgs!=nil{
+	if imgs!=nil&&len(imgs)>0{
+		err = dao.NewMerchantImgs().DeleteWithMerchantIdTx(merchant.Id,merchant.AppId,tx)
+		if err!=nil{
+			tx.Rollback()
+			return err
+		}
 		for _,img:=range imgs {
 
-			if img.Id!=0 {
-				merchantImg := dao.NewMerchantImgs()
-				merchantImg,err := merchantImg.MerchantImgsWithId(img.Id)
-				if err!=nil{
-					tx.Rollback()
-					return err
-				}
-
-				if merchantImg!=nil {
-					fillMerchantImg(merchantImg,&img)
-					err :=merchantImg.MerchantImgsUpdateTx(merchantImg,tx)
-					if err!=nil{
-						tx.Rollback()
-						return err
-					}
-				}
-			}else{
-				merchantImgs := dao.NewMerchantImgs()
-				merchantImgs.AppId = dll.AppId
-				merchantImgs.MerchantId = merchant.Id
-				merchantImgs.OpenId = dll.OpenId
-				merchantImgs.Json = img.Json
-				merchantImgs.Flag = img.Flag
-				merchantImgs.Url = img.Url
-				err :=merchantImgs.InsertTx(tx)
-				if err!=nil {
-					tx.Rollback()
-					return err
-				}
+			merchantImgs := dao.NewMerchantImgs()
+			merchantImgs.AppId = dll.AppId
+			merchantImgs.MerchantId = merchant.Id
+			merchantImgs.OpenId = dll.OpenId
+			merchantImgs.Json = img.Json
+			merchantImgs.Flag = img.Flag
+			merchantImgs.Url = img.Url
+			err :=merchantImgs.InsertTx(tx)
+			if err!=nil {
+				tx.Rollback()
+				return err
 			}
+
 		}
 	}
 	err =tx.Commit()
