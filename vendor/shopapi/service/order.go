@@ -149,7 +149,6 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 				tx.Rollback()
 				return nil,err
 			}
-
 		}
 		resultMap := map[string]interface{}{
 			"open_id": order.OpenId,
