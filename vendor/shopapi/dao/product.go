@@ -199,7 +199,7 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 		builder = builder.Where("product.flag in ?",flags)
 	}
 	if noflags!=nil&&len(noflags) >0 {
-		builder = builder.Where("product.flag not in ?",flags)
+		builder = builder.Where("product.flag not in ?",noflags)
 	}
 	err := builder.LoadStruct(&prodList)
 	if err!=nil{
