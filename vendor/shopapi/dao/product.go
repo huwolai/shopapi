@@ -205,8 +205,10 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 	if err!=nil{
 		return nil,err
 	}
+	if prodList!=nil&&len(prodList)>0 {
+		err = FillProdImgs(appId,prodList)
+	}
 
-	err = FillProdImgs(appId,prodList)
 
 	return prodList,err
 }
