@@ -194,6 +194,8 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 	session := db.NewSession()
 	var prodList []*ProductDetail
 	builder :=session.Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.app_id=?",appId)
+	log.Error(flags)
+	log.Error(noflags)
 	if flags!=nil&&len(flags)>0{
 
 		builder = builder.Where("flag in ?",flags)
