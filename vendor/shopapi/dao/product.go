@@ -190,10 +190,18 @@ func (self *ProductDetail) ProductListWithMerchant(merchantId int64,appId string
 	return prodList,err
 }
 
-func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64) ([]*ProductDetail,error)  {
+func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64,flags []string,noflags []string) ([]*ProductDetail,error)  {
 	session := db.NewSession()
 	var prodList []*ProductDetail
-	_,err :=session.SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json from merchant_prod md,merchant mt,prod_category pc,product pt where pt.status=1 and md.app_id=pc.app_id and md.prod_id=pc.prod_id and md.merchant_id=mt.id and pc.app_id=pt.app_id and pc.prod_id=pt.id and pc.category_id=? and pt.app_id=?",categoryId,appId).LoadStructs(&prodList)
+	builder :=session.Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.app_id=?",appId)
+	if flags!=nil&&len(flags)>0{
+
+		builder = builder.Where("flag in ?",flags)
+	}
+	if noflags!=nil&&len(noflags) >0 {
+		builder = builder.Where("flag not in ?",flags)
+	}
+	err := builder.LoadStruct(&prodList)
 	if err!=nil{
 		return nil,err
 	}

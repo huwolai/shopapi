@@ -211,9 +211,9 @@ func ProductListWithRecomm(appId string) ([]*dao.ProductDetail,error) {
 }
 
 //根据分类获取商品
-func ProductListWithCategory(appId string,categoryId int64) ([]*dao.ProductDetail,error)   {
+func ProductListWithCategory(appId string,categoryId int64,flags []string,noflags []string) ([]*dao.ProductDetail,error)   {
 	productDetail :=dao.NewProductDetail()
-	prodList,err := productDetail.ProductListWithCategory(appId,categoryId)
+	prodList,err := productDetail.ProductListWithCategory(appId,categoryId,flags,noflags)
 	if err!=nil {
 		return nil,err
 	}

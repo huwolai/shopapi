@@ -348,9 +348,14 @@ func ProductListWithRecomm(c *gin.Context)  {
 func ProductListWithCategory(c *gin.Context)  {
 	categoryId :=c.Param("category_id")
 
+	 flags :=c.Query("flags")
+	 noflags := c.Query("noflags")
+
+	flagsArray,noflagsArray := GetFlagsAndNoFlags(flags,noflags)
+
 	icategoryId,_ := strconv.Atoi(categoryId)
 	appId := security.GetAppId2(c.Request)
-	prodList,err := service.ProductListWithCategory(appId,int64(icategoryId))
+	prodList,err := service.ProductListWithCategory(appId,int64(icategoryId),flagsArray,noflagsArray)
 	if err!=nil {
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询失败!")
