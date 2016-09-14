@@ -10,5 +10,6 @@
   "notify_url": "http://shopapi.qiyunxin.svc.cluster.local:8080/v1/pay/payapi/callback",
   "redis_address":"redis.databases.svc.cluster.local:6379",
   "amqp_url":"amqp://guest:guest@rabbitmq-service.databases.svc.cluster.local:5672/",
-  "publickey_path": "config/couponkeys/rsa_public_key.pem"
+  "publickey_path": "config/couponkeys/rsa_public_key.pem",
+  "upload_root_dir": "/data/config/imageserver/images"
 }

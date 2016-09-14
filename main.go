@@ -9,6 +9,8 @@ import (
 	"shopapi/api"
 	"shopapi/task"
 	"gitlab.qiyunxin.com/tangtao/utils/queue"
+	"gitlab.qiyunxin.com/tangtao/utils/security"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -23,6 +25,30 @@ func CORSMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		c.Next()
+	}
+}
+
+//认证中间件
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token :=security.GetParamInRequest("Authorization",c.Request)
+		if token=="" {
+			log.Error("没有认证信息!")
+			c.AbortWithStatus(401)
+			return
+		}
+		jwttoken,err :=security.InitJWTAuthenticationBackend().FetchToken(token)
+		if err!=nil{
+			log.Error(err)
+			c.AbortWithStatus(401)
+			return
+		}
+		if !jwttoken.Valid {
+			log.Error("认证信息无效!")
+			c.AbortWithStatus(401)
+			return
+		}
 		c.Next()
 	}
 }
@@ -235,6 +261,12 @@ func main() {
 		}
 	}
 
-	router.Static("/upload","./config/upload")
+	//设置上传目录
+	uploadRootDir :=config.GetValue("upload_root_dir").ToString()
+	if uploadRootDir=="" {
+		uploadRootDir = "./config/upload"
+	}
+
+	router.Static("/upload",uploadRootDir)
 	router.Run(":8080")
 }
