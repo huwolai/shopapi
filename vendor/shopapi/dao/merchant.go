@@ -122,9 +122,8 @@ func (self *Merchant) IncrWeightWithIdTx(num int,id int64,tx *dbr.Tx) error {
 }
 
 func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,openId string,appId string, pageSize int64, page int64) ([]*MerchantDetail,error)  {
-	var mdetails []*MerchantDetail
-	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance  from merchant mt limit ?,?",longitude,latitude,(page-1)*pageSize,pageSize).LoadStructs(&mdetails)
-	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance  from merchant mt where app_id = ? and mt.status = 1 and mt.open_id<>? and mt.flag<>'default' order by distance",longitude,latitude,appId,openId).LoadStructs(&mdetails)
+	var mdetails []*MerchantDetail	
+	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance  from merchant mt where app_id = ? and mt.status = 1 and mt.open_id<>? and mt.flag<>'default' order by distance limit ?,?",longitude,latitude,appId,openId,(page-1)*pageSize,pageSize).LoadStructs(&mdetails)
 	return mdetails,err
 }
 
