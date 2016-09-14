@@ -359,10 +359,17 @@ func MerchatNear(c *gin.Context)  {
 	longitude :=c.Query("longitude")
 	latitude :=c.Query("latitude")
 	openId := security.GetOpenId(c.Request)
+	
+	
+	
+	pageSize,_	:=strconv.ParseInt (c.Query("pageSize"),10,64)
+	page,_		:=strconv.ParseInt (c.Query("page"),10,64)
+	
 
 	flongitude,_ :=strconv.ParseFloat(longitude,20)
-	flatitude,_ :=strconv.ParseFloat(latitude,20)
-	mDetailList,err := service.MerchantNear(flongitude,flatitude,openId,appId)
+	flatitude,_  :=strconv.ParseFloat(latitude,20)
+	
+	mDetailList,err := service.MerchantNear(flongitude,flatitude,openId,appId,pageSize,page)
 	if err!=nil {
 		util.ResponseError400(c.Writer,err.Error())
 		return
