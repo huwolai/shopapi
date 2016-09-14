@@ -9,6 +9,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"io"
 	"time"
+	"gitlab.qiyunxin.com/tangtao/utils/config"
 )
 
 const MERCHANT_IMG_PATH  = "./config/upload/merchant"
@@ -82,8 +83,11 @@ func ImageUpload(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-
-	rootDir :="./config/upload"
+	//设置上传目录
+	rootDir :=config.GetValue("upload_root_dir").ToString()
+	if rootDir=="" {
+		rootDir = "./config/upload"
+	}
 
 	typeS := c.Query("type")
 	uploadTime := time.Now().Format("200601")
