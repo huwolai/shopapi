@@ -313,9 +313,9 @@ func MerchantServiceTimeAdd(merchantId int64,stimes []string) error  {
 
 }
 
-func  MerchantNear(longitude float64,latitude float64,openId string,appId string, pageSize int64, page int64) ([]*dao.MerchantDetail,error)   {
+func  MerchantNear(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64) ([]*dao.MerchantDetail,error)   {
 	mDetail :=dao.NewMerchantDetail()
-	mDetailList,err := mDetail.MerchantNear(longitude,latitude,openId,appId,pageSize,page)
+	mDetailList,err := mDetail.MerchantNear(longitude,latitude,openId,appId,pageIndex,pageSize)
 
 	return mDetailList,err
 }

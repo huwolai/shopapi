@@ -362,14 +362,13 @@ func MerchatNear(c *gin.Context)  {
 	
 	
 	
-	pageSize,_	:=strconv.ParseInt (c.Query("pageSize"),10,64)
-	page,_		:=strconv.ParseInt (c.Query("page"),10,64)
+	 pIndex,pSize := page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 	
 
 	flongitude,_ :=strconv.ParseFloat(longitude,20)
 	flatitude,_  :=strconv.ParseFloat(latitude,20)
 	
-	mDetailList,err := service.MerchantNear(flongitude,flatitude,openId,appId,pageSize,page)
+	mDetailList,err := service.MerchantNear(flongitude,flatitude,openId,appId,pIndex,pSize)
 	if err!=nil {
 		util.ResponseError400(c.Writer,err.Error())
 		return
