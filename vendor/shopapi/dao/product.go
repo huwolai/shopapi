@@ -73,7 +73,7 @@ func NewProduct() *Product  {
 //详情集合
 func (self *ProductDetail) ProdDetailListWith(merchantId int64,flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*ProductDetail,error)  {
 	var prodList []*ProductDetail
-	buider :=db.NewSession().Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id")
+	buider :=db.NewSession().Select("product.*,IFNULL(merchant.id,0) merchant_id,IFNULL(merchant.name,'') merchant_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id")
 	if flags!=nil{
 		buider = buider.Where("product.flag in ?",flags)
 	}
