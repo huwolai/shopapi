@@ -130,7 +130,7 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	
 	builder = builder.Where("app_id = ?",appId)
 	builder = builder.Where("mt.status = ?",1)
-	builder = builder.Where("mt.open_id <>",openId)
+	builder = builder.Where("mt.open_id <> ?",openId)
 	builder = builder.Where("mt.flag <> ?","default")
 	builder = builder.Where("getDistance(mt.longitude,latitude,?,?)<cover_distance",longitude,latitude)
 	
