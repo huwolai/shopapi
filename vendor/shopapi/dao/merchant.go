@@ -3,7 +3,6 @@ package dao
 import (
 	"github.com/gocraft/dbr"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
-	"fmt"
 )
 
 type Merchant struct  {
