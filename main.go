@@ -170,6 +170,8 @@ func main() {
 		{
 			//附近商户
 			merchants.GET("/nearby",api.MerchatNear)
+			//附近商户搜索 可提供服务的厨师
+			merchants.GET("/nearbySearch",api.MerchatNearSearch)
 			//商户图片
 			merchants.GET("/user/:open_id/imgs",api.MerchantImgWithFlag)
 		}
