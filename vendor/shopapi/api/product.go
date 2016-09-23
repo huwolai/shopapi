@@ -36,10 +36,10 @@ type ProductParam struct  {
 }
 
 type ProductImgParam struct {
-	Flag string
-	Url string
-	Json string
-	ProdId int64
+	Flag string `json:"flag"`
+	Url string `json:"url"`
+	Json string `json:"json"`
+	ProdId int64 `json:"prod_id"`
 }
 
 
