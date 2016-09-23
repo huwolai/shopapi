@@ -201,7 +201,7 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 	if noflags!=nil&&len(noflags) >0 {
 		builder = builder.Where("product.flag not in ?",noflags)
 	}
-	err := builder.LoadStruct(&prodList)
+	_,err := builder.LoadStructs(&prodList)
 	if err!=nil{
 		return nil,err
 	}
