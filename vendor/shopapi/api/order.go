@@ -180,7 +180,8 @@ func OrderPrePay(c *gin.Context)  {
 //账户余额付款
 func OrderPayForAccount(c *gin.Context)  {
 	//获取用户openid
-	openId,err :=CheckUserAuth(c)
+
+	user,err := security.GetAuthUser(c.Request)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
@@ -203,7 +204,7 @@ func OrderPayForAccount(c *gin.Context)  {
 		return
 	}
 	appId :=security.GetAppId2(c.Request)
-	err =service.OrderPayForAccount(openId,orderNo,payToken.(string),appId)
+	err =service.OrderPayForAccount(user.OpenId,orderNo,payToken.(string),appId)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return
@@ -213,7 +214,7 @@ func OrderPayForAccount(c *gin.Context)  {
 
 //取消订单
 func OrderCancel(c *gin.Context)  {
-	_,err := security.CheckUserAuth(c.Request)
+	_,err := security.GetAuthUser(c.Request)
 	if err!=nil{
 		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
 		return

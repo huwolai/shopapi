@@ -18,6 +18,8 @@ type ProductParam struct  {
 	AppId string `json:"app_id"`
 	//商品标题
 	Title string `json:"title"`
+	//子标题
+	SubTitle string `json:"sub_title"`
 	//描述
 	Description string `json:"description"`
 	//类别ID
@@ -47,6 +49,8 @@ type ProductListDto struct  {
 	Id int64 `json:"id"`
 	//商品标题
 	Title string `json:"title"`
+	//子标题
+	SubTitle string `json:"sub_title"`
 	//描述
 	Description string `json:"description"`
 	//商品价格
@@ -62,6 +66,8 @@ type ProductBaseDto struct  {
 	AppId string `json:"app_id"`
 	//商品标题
 	Title string `json:"title"`
+	//子标题
+	SubTitle string `json:"sub_title"`
 	//商品描述
 	Description string `json:"description"`
 	//商品价格
@@ -85,6 +91,8 @@ type ProductDetailDto struct {
 	AppId string `json:"app_id"`
 	//商品标题
 	Title string `json:"title"`
+	//子标题
+	SubTitle string `json:"sub_title"`
 	//商品价格
 	Price float64 `json:"price"`
 	//折扣价格
@@ -608,6 +616,7 @@ func productParamToBLL(param *ProductParam) *service.ProdBLL {
 	prodBll.Price = param.Price
 	prodBll.DisPrice = param.DisPrice
 	prodBll.Title = param.Title
+	prodBll.SubTitle = param.SubTitle
 	prodBll.Flag = param.Flag
 	prodBll.Json  = param.Json
 
@@ -641,6 +650,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.Json = model.Json
 	dto.Flag = model.Flag
 	dto.Title = model.Title
+	dto.SubTitle = model.SubTitle
 	dto.AppId = model.AppId
 	dto.MerchantId = model.MerchantId
 	dto.CategoryId = model.CategoryId
@@ -685,6 +695,7 @@ func productToDto(model *dao.Product) *ProductBaseDto {
 	dto.Price = model.Price
 	dto.Status = model.Status
 	dto.Title = model.Title
+	dto.SubTitle = model.SubTitle
 
 	return dto
 }

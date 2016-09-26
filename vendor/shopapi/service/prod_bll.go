@@ -6,6 +6,8 @@ type ProdBLL struct {
 	AppId string
 	//商品标题
 	Title string
+	//子标题
+	SubTitle string
 	//商户ID
 	MerchantId int64
 	//描述

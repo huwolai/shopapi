@@ -404,6 +404,7 @@ func productImgSave(prodbll *ProdBLL,prodId int64,tx *dbr.Tx) error  {
 func productBaseSave(prodbll *ProdBLL,tx *dbr.Tx) (int64,error)  {
 	prod := dao.NewProduct()
 	prod.Title = prodbll.Title
+	prod.SubTitle = prodbll.SubTitle
 	prod.AppId = prodbll.AppId
 	prod.Description = prodbll.Description
 	prod.DisPrice = prodbll.DisPrice
