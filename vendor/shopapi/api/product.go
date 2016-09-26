@@ -100,6 +100,8 @@ type ProductDetailDto struct {
 	//商品状态
 	Status int `json:"status"`
 	CategoryId int64 `json:"category_id"`
+	//分类名
+	CategoryName int64 `json:"category_name"`
 	//是否推荐
 	IsRecom int `json:"is_recom"`
 	//商户ID
@@ -654,6 +656,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.AppId = model.AppId
 	dto.MerchantId = model.MerchantId
 	dto.CategoryId = model.CategoryId
+	dto.CategoryName = model.CategoryName
 	dto.MerchantName = model.MerchantName
 	dto.Price = model.Price
 	dto.Status = model.Status
