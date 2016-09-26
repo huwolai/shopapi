@@ -101,7 +101,7 @@ type ProductDetailDto struct {
 	Status int `json:"status"`
 	CategoryId int64 `json:"category_id"`
 	//分类名
-	CategoryName int64 `json:"category_name"`
+	CategoryName string `json:"category_name"`
 	//是否推荐
 	IsRecom int `json:"is_recom"`
 	//商户ID
