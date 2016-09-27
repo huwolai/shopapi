@@ -45,6 +45,25 @@ func DistributionProductAdd(distributionId int64,openId string,appId string) (*d
 	return userDistribution,nil
 }
 
+func ProductJoinDistribution(prodId int64,csnRate float64,appId string) error  {
+
+	merchantProd,err := dao.NewMerchantProd().WithProdId(prodId,appId)
+	if err!=nil{
+		return err
+	}
+	if merchantProd==nil{
+		return errors.New("商品没有关联商户!")
+	}
+
+	distributionProduct := dao.NewDistributionProduct()
+	distributionProduct.ProdId = prodId
+	distributionProduct.MerchantId = merchantProd.MerchantId
+	distributionProduct.CsnRate = csnRate
+	distributionProduct.AppId = appId
+
+	return  distributionProduct.Insert()
+}
+
 func DistributionProductCancel(distributionId int64,openId,appId string) error  {
 
 	return dao.NewUserDistribution().DeleteWithDistributionId(distributionId,openId,appId)

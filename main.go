@@ -245,6 +245,9 @@ func main() {
 			distributions.GET("/",api.DistributionWith)
 			//参与分销的商品
 			distributions.GET("/products",api.DistributionProducts)
+
+			//添加分销
+			distributions.POST("/",api.ProductJoinDistribution)
 		}
 		//建议
 		suggests := v1.Group("/suggests")

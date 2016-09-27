@@ -65,6 +65,15 @@ type DistributionProductDetail2 struct {
 	CreateTime string `json:"create_time"`
 }
 
+type DistributionProduct struct {
+	Id int64 `json:"id"`
+	AppId string `json:"app_id"`
+	ProdId int64 `json:"prod_id"`
+	MerchantId int64 `json:"merchant_id"`
+	//佣金比例
+	CsnRate float64 `json:"csn_rate"`
+}
+
 type DisProdImgsDetailDto struct  {
 	//产品ID
 	ProdId int64 `json:"prod_id"`
@@ -142,6 +151,25 @@ func DistributionProductAdd(c *gin.Context)  {
 	c.JSON(http.StatusOK,gin.H{
 		"code":ud.Code,
 	})
+}
+
+func ProductJoinDistribution(c *gin.Context)  {
+	var param *DistributionProduct
+	err :=c.BindJSON(&param)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"参数有误!")
+		return
+	}
+	appId :=security.GetAppId2(c.Request)
+	err = service.ProductJoinDistribution(param.ProdId,param.CsnRate,appId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"添加失败!")
+		return
+	}
+
+	util.ResponseSuccess(c.Writer)
 }
 
 //取消分销

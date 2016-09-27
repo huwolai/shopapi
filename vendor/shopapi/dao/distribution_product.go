@@ -80,6 +80,13 @@ func NewDistributionProductDetail() *DistributionProductDetail  {
 	return &DistributionProductDetail{}
 }
 
+func (self *DistributionProduct) Insert() error  {
+
+	_,err :=db.NewSession().InsertInto("distribution_product").Columns("app_id","prod_id","merchant_id","csn_rate").Record(self).Exec()
+
+	return err
+}
+
 func (self *DistributionProduct) WithId(id int64) (*DistributionProduct,error) {
 	var model *DistributionProduct
 	_,err :=db.NewSession().Select("*").From("distribution_product").Where("id=?",id).LoadStructs(&model)

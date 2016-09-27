@@ -1,6 +1,9 @@
 package dao
 
-import "github.com/gocraft/dbr"
+import (
+	"github.com/gocraft/dbr"
+	"gitlab.qiyunxin.com/tangtao/utils/db"
+)
 
 type MerchantProd struct  {
 	MerchantId int64
@@ -21,4 +24,12 @@ func (self *MerchantProd) InsertTx(tx *dbr.Tx) error  {
 	_,err :=tx.InsertInto("merchant_prod").Columns("app_id","merchant_id","prod_id","json").Record(self).Exec()
 
 	return err
+}
+
+//根据商品ID查询
+func (self *MerchantProd) WithProdId(prodId int64,appId string) (*MerchantProd,error)  {
+	var model *MerchantProd
+	_,err :=db.NewSession().Select("*").From("merchant_prod").Where("prod_id=?",prodId).Where("app_id=?",appId).LoadStructs(&model)
+
+	return model,err
 }
