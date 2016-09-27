@@ -112,6 +112,8 @@ type ProductDetailDto struct {
 	Json string `json:"json"`
 	//商品图片集合
 	ProdImgs []*ProdImgsDetailDto `json:"prod_imgs"`
+	//商品售出数量
+	SoldNum int `json:"sold_num"`
 }
 
 type ProdImgsDetailDto struct  {
@@ -662,7 +664,8 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.Status = model.Status
 	dto.IsRecom = model.IsRecom
 	dto.Description = model.Description
-
+	dto.SoldNum 	= model.SoldNum
+	
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*ProdImgsDetailDto,0)
 
