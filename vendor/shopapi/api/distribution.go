@@ -235,7 +235,6 @@ func distributionProductDetail2ToA(model *dao.DistributionProductDetail2) *Distr
 	a.AppId = model.AppId
 	a.CreateTime = qtime.ToyyyyMMddHHmm(model.CreateTime)
 	a.CsnRate = model.CsnRate
-	a.DbnNo = model.DbnNo
 	a.DisPrice=model.DisPrice
 	a.Price = model.Price
 	a.ProdId =model.ProdId
