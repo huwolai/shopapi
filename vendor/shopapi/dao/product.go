@@ -157,7 +157,7 @@ func (self *Product) WithFlag(flag string,merchantId int64)  ([]*Product,error) 
 func (self *ProductDetail) ProductListWithRecomm(appId string) ([]*ProductDetail,error)  {
 	session := db.NewSession()
 	var prodList []*ProductDetail
-	_,err :=session.SelectBySql("select * from product  where is_recom=1 and app_id=?",appId).LoadStructs(&prodList)
+	_,err :=session.SelectBySql("select * from product  where is_recom=1 and status=1 and app_id=?",appId).LoadStructs(&prodList)
 	if err!=nil{
 		log.Debug("----err",err)
 		return nil,err
@@ -199,7 +199,7 @@ func (self *ProductDetail) ProductListWithMerchant(merchantId int64,appId string
 func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64,flags []string,noflags []string) ([]*ProductDetail,error)  {
 	session := db.NewSession()
 	var prodList []*ProductDetail
-	builder :=session.Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.app_id=?",appId)
+	builder :=session.Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.status=?",1).Where("product.app_id=?",appId)
 	if flags!=nil&&len(flags)>0{
 
 		builder = builder.Where("product.flag in ?",flags)

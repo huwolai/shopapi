@@ -241,6 +241,8 @@ func main() {
 		//分销
 		distributions := v1.Group("/distributions")
 		{
+			//分销的商品
+			distributions.GET("/",api.DistributionWith)
 			//参与分销的商品
 			distributions.GET("/products",api.DistributionProducts)
 		}

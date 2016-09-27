@@ -21,7 +21,6 @@ func NewDistributionProduct() *DistributionProduct  {
 
 
 type DistributionProductDetail struct {
-	//商品ID
 	Id int64
 	AppId string
 	//商品标题
@@ -48,6 +47,32 @@ type DistributionProductDetail struct {
 	Json string
 	//商品图片集合
 	ProdImgs []*ProdImgsDetail
+}
+
+//分销商品详情
+type DistributionProductDetail2 struct {
+	Id int64
+	AppId string
+	//商品ID
+	ProdId int64
+	//商品标题
+	Title string
+	//商品价格
+	Price float64
+	//折扣价格
+	DisPrice float64
+	//佣金比例
+	CsnRate float64
+	//分销编号
+	DbnNo string
+
+	BaseDModel
+
+}
+
+func NewDistributionProductDetail2()  *DistributionProductDetail2 {
+
+	return &DistributionProductDetail2{}
 }
 
 func NewDistributionProductDetail() *DistributionProductDetail  {
@@ -91,6 +116,41 @@ func (self *DistributionProductDetail) DetailWithAppId(added string,openId strin
 	err := FillDistributionProdImgs(appId,prodList)
 
 	return prodList,err
+}
+
+func (self *DistributionProductDetail2) With(keyword string,pageIndex,pageSize uint64,noflags []string,flags []string) ([]*DistributionProductDetail2,error) {
+	builder :=db.NewSession().Select("distribution_product.*,product.title").From("distribution_product").Join("product","distribution_product.prod_id=product.id")
+	if (noflags!=nil){
+		builder = builder.Where("product.flag not in ?",noflags)
+	}
+	if (flags!=nil) {
+		builder = builder.Where("product.flag in ?",flags)
+	}
+	if keyword!=""{
+		builder = builder.Where("product.title like ?",keyword)
+	}
+	var details []*DistributionProductDetail2
+	_,err :=builder.Offset((pageIndex-1)*pageSize).Limit(pageSize).LoadStructs(&details)
+
+	return details,err
+
+}
+
+func (self *DistributionProductDetail2) WithCount(keyword string,noflags []string,flags []string) (int64,error) {
+	builder :=db.NewSession().Select("distribution_product.*,product.title").From("distribution_product").Join("product","distribution_product.prod_id=product.id")
+	if (noflags!=nil){
+		builder = builder.Where("product.flag not in ?",noflags)
+	}
+	if (flags!=nil) {
+		builder = builder.Where("product.flag in ?",flags)
+	}
+	if keyword!=""{
+		builder = builder.Where("product.title like ?",keyword)
+	}
+	var count int64
+	err :=builder.LoadValue(&count)
+
+	return count,err
 }
 
 //填充商品图片数据

@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"strconv"
+	"gitlab.qiyunxin.com/tangtao/utils/page"
+	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 )
 
 
@@ -42,6 +44,25 @@ type DistributionProductDetail struct {
 	Json string `json:"json"`
 	//商品图片集合
 	ProdImgs []*DisProdImgsDetailDto `json:"prod_imgs"`
+}
+
+//分销商品详情
+type DistributionProductDetail2 struct {
+	Id int64 `json:"id"`
+	AppId string `json:"app_id"`
+	//商品ID
+	ProdId int64 `json:"prod_id"`
+	//商品标题
+	Title string `json:"title"`
+	//商品价格
+	Price float64 `json:"price"`
+	//折扣价格
+	DisPrice float64 `json:"dis_price"`
+	//佣金比例
+	CsnRate float64 `json:"csn_rate"`
+	//分销编号
+	DbnNo string `json:"dbn_no"`
+	CreateTime string `json:"create_time"`
 }
 
 type DisProdImgsDetailDto struct  {
@@ -141,6 +162,53 @@ func DistributionProductCancel(c *gin.Context) {
 	}
 
 	util.ResponseSuccess(c.Writer)
+}
+
+func DistributionWith(c *gin.Context)  {
+
+	keyword :=c.Query("keyword")
+	flags,noflags := GetFlagsAndNoFlags(c.Query("flags"),c.Query("noflags"))
+	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+
+	items,err :=service.DistributionWith(keyword,pIndex,pSize,noflags,flags)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询失败!")
+		return
+	}
+
+	results := make([]*DistributionProductDetail2,0)
+	var total int64
+	if items!=nil&&len(items)>0{
+		for _,item :=range items {
+			results = append(results,distributionProductDetail2ToA(item))
+		}
+
+		total,err = service.DistributionWithCount(keyword,noflags,flags)
+		if err!=nil{
+			log.Error(err)
+			util.ResponseError400(c.Writer,"查询数量失败!")
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),results))
+
+}
+
+func distributionProductDetail2ToA(model *dao.DistributionProductDetail2) *DistributionProductDetail2  {
+
+	a :=&DistributionProductDetail2{}
+	a.AppId = model.AppId
+	a.CreateTime = qtime.ToyyyyMMddHHmm(model.CreateTime)
+	a.CsnRate = model.CsnRate
+	a.DbnNo = model.DbnNo
+	a.DisPrice=model.DisPrice
+	a.Price = model.Price
+	a.ProdId =model.ProdId
+	a.Title = model.Title
+
+	return a
 }
 
 func distributionProductDetailToA(model *dao.DistributionProductDetail) *DistributionProductDetail  {

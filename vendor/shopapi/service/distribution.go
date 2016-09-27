@@ -49,3 +49,13 @@ func DistributionProductCancel(distributionId int64,openId,appId string) error  
 
 	return dao.NewUserDistribution().DeleteWithDistributionId(distributionId,openId,appId)
 }
+
+func DistributionWith(keyword string,pageIndex,pageSize uint64,noflags []string,flags []string) ([]*dao.DistributionProductDetail2,error)  {
+
+	return dao.NewDistributionProductDetail2().With(keyword,pageIndex,pageSize,noflags,flags)
+}
+
+func DistributionWithCount(keyword string,noflags []string,flags []string) (int64,error)  {
+
+	return dao.NewDistributionProductDetail2().WithCount(keyword,noflags,flags)
+}
