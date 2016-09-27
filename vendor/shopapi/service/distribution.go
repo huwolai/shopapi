@@ -55,6 +55,15 @@ func ProductJoinDistribution(prodId int64,csnRate float64,appId string) error  {
 		return errors.New("商品没有关联商户!")
 	}
 
+	distrib,err := dao.NewDistributionProduct().WithProdId(prodId)
+	if err!=nil{
+		return err
+	}
+	if distrib!=nil{
+
+		return errors.New("商品已经加入分销!")
+	}
+
 	distributionProduct := dao.NewDistributionProduct()
 	distributionProduct.ProdId = prodId
 	distributionProduct.MerchantId = merchantProd.MerchantId
