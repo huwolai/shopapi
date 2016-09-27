@@ -45,6 +45,11 @@ func DistributionProductAdd(distributionId int64,openId string,appId string) (*d
 	return userDistribution,nil
 }
 
+func ProductUpdateDistribution(distributionId int64,csnRate float64,appId string) error  {
+
+	return dao.NewDistributionProduct().UpdateWithId(distributionId,csnRate,appId)
+}
+
 func ProductJoinDistribution(prodId int64,csnRate float64,appId string) error  {
 
 	merchantProd,err := dao.NewMerchantProd().WithProdId(prodId,appId)

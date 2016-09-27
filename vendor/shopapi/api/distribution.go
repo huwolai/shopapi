@@ -153,7 +153,7 @@ func DistributionProductAdd(c *gin.Context)  {
 	})
 }
 
-func ProductJoinDistribution(c *gin.Context)  {
+func ProductJoinOrUpdateDistribution(c *gin.Context)  {
 	var param *DistributionProduct
 	err :=c.BindJSON(&param)
 	if err!=nil{
@@ -162,10 +162,15 @@ func ProductJoinDistribution(c *gin.Context)  {
 		return
 	}
 	appId :=security.GetAppId2(c.Request)
-	err = service.ProductJoinDistribution(param.ProdId,param.CsnRate,appId)
+	if param.Id!=0 {
+		err = service.ProductUpdateDistribution(param.Id,param.CsnRate,appId)
+	}else{
+		err = service.ProductJoinDistribution(param.ProdId,param.CsnRate,appId)
+
+	}
 	if err!=nil{
 		log.Error(err)
-		util.ResponseError400(c.Writer,"添加失败!")
+		util.ResponseError400(c.Writer,"添加或修改失败!")
 		return
 	}
 

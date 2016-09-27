@@ -63,8 +63,6 @@ type DistributionProductDetail2 struct {
 	DisPrice float64
 	//佣金比例
 	CsnRate float64
-	//分销编号
-	DbnNo string
 
 	BaseDModel
 
@@ -102,6 +100,14 @@ func (self *DistributionProduct) WithProdId(prodId int64) (*DistributionProduct,
 	return model,err
 }
 
+//通过ID修改
+func (self *DistributionProduct) UpdateWithId(id int64,csnRate float64,appId string) error {
+
+	_,err :=db.NewSession().Update("distribution_product").Set("csn_rate",csnRate).Where("id=?",id).Where("app_id=?",appId).Exec()
+
+	return err
+}
+
 func (self *DistributionProductDetail) DistributionWithMerchant(merchantId int64,appId string) ([]*DistributionProductDetail,error)  {
 	var prodList []*DistributionProductDetail
 	_,err :=db.NewSession().SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json,dp.csn_rate,dp.id distribution_id,ud.`code` dbn_no from merchant mt,product pt,distribution_product dp, user_distribution ud  where   dp.prod_id = ud.prod_id and dp.prod_id = pt.id and ud.open_id = mt.open_id and mt.id = ? and pt.status=1 and dp.app_id=?",merchantId,appId).LoadStructs(&prodList)
@@ -134,7 +140,7 @@ func (self *DistributionProductDetail) DetailWithAppId(added string,openId strin
 }
 
 func (self *DistributionProductDetail2) With(keyword string,pageIndex,pageSize uint64,noflags []string,flags []string) ([]*DistributionProductDetail2,error) {
-	builder :=db.NewSession().Select("distribution_product.*,product.title").From("distribution_product").Join("product","distribution_product.prod_id=product.id")
+	builder :=db.NewSession().Select("distribution_product.*,product.title,product.price,product.dis_price").From("distribution_product").Join("product","distribution_product.prod_id=product.id")
 	if (noflags!=nil){
 		builder = builder.Where("product.flag not in ?",noflags)
 	}
@@ -152,7 +158,7 @@ func (self *DistributionProductDetail2) With(keyword string,pageIndex,pageSize u
 }
 
 func (self *DistributionProductDetail2) WithCount(keyword string,noflags []string,flags []string) (int64,error) {
-	builder :=db.NewSession().Select("distribution_product.*,product.title").From("distribution_product").Join("product","distribution_product.prod_id=product.id")
+	builder :=db.NewSession().Select("count(*)").From("distribution_product").Join("product","distribution_product.prod_id=product.id")
 	if (noflags!=nil){
 		builder = builder.Where("product.flag not in ?",noflags)
 	}
