@@ -239,6 +239,7 @@ func distributionProductDetail2ToA(model *dao.DistributionProductDetail2) *Distr
 	a.Price = model.Price
 	a.ProdId =model.ProdId
 	a.Title = model.Title
+	a.Id = model.Id
 
 	return a
 }
