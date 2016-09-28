@@ -399,13 +399,21 @@ func MerchatNearSearch(c *gin.Context)  {
 	
 	
 	serviceTime :=c.Query("service_time")
+	serviceHour :=c.Query("service_hour")
 	//搜索不能为空
 	if serviceTime=="" {
 		util.ResponseError400(c.Writer,"服务时间不能为空!")
 		return
 	}
+	if serviceHour=="" {
+		util.ResponseError400(c.Writer,"服务时间不能为空!")
+		return
+	}
 	
-	mDetailList,err := service.MerchantNearSearch(flongitude,flatitude,openId,appId,pIndex,pSize,serviceTime)
+	serviceHourUInt,_ :=strconv.ParseUint(serviceHour,10,64)
+	serviceHourUInt++
+	
+	mDetailList,err := service.MerchantNearSearch(flongitude,flatitude,openId,appId,pIndex,pSize,serviceTime,serviceHourUInt)
 	if err!=nil {
 		util.ResponseError400(c.Writer,err.Error())
 		return
