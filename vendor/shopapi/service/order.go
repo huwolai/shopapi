@@ -596,7 +596,29 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		return errors.New("数据提交失败!")
 	}
 
+	err =PublishOrderEvent(order)
+	if err!=nil{
+		log.Warn("发送订单事件失败=" + err)
+	}
+
+
 	return nil
+}
+
+func PublishOrderEvent(order *dao.Order) error {
+	orderEvent := queue.NewOrderEvent()
+	//订单已付款
+	orderEvent.EventKey = queue.ORDER_EVENT_PAID
+	orderEvent.EventName="订单已付款事件"
+
+	orderEventContent :=queue.NewOrderEventContent()
+	orderEventContent.OpenId = order.OpenId
+	orderEventContent.Amount = order.RealPrice
+	orderEventContent.OrderNo = order.No
+	orderEventContent.Title = order.Title
+
+	orderEvent.Content = orderEventContent
+	return queue.PublishOrderEvent(orderEvent)
 }
 
 //通知优惠服务

@@ -42,7 +42,7 @@ type CallbackDto struct  {
 
 func CallbackForPayapi(c *gin.Context)  {
 
-	log.Debug("支付回调....")
+	log.Info("支付回调....")
 
 	var params CallbackDto
 	err :=c.BindJSON(&params)

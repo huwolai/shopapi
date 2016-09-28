@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 	"gitlab.qiyunxin.com/tangtao/utils/security"
+	"gitlab.qiyunxin.com/tangtao/utils/queue"
 )
 
 type OrderDto struct  {
@@ -209,6 +210,7 @@ func OrderPayForAccount(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
+
 	util.ResponseSuccess(c.Writer)
 }
 
