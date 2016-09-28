@@ -85,7 +85,7 @@ func (self *ProductDetail) ProdDetailListWith(keyword string,merchantId int64,fl
 	}
 
 	if keyword!="" {
-		builder = builder.Where("product.title like ","%"+keyword+"%")
+		buider = buider.Where("product.title like ","%"+keyword+"%")
 	}
 
 	if noflags!=nil {
@@ -123,7 +123,7 @@ func (self *ProductDetail) ProdDetailListCountWith(keyword string,merchantId int
 	}
 
 	if keyword!="" {
-		builder = builder.Where("product.title like ","%"+keyword+"%")
+		buider = buider.Where("product.title like ","%"+keyword+"%")
 	}
 
 	if isRecomm!="" {
