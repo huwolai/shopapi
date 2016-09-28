@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 	"gitlab.qiyunxin.com/tangtao/utils/security"
-	"gitlab.qiyunxin.com/tangtao/utils/queue"
 )
 
 type OrderDto struct  {

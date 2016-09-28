@@ -598,7 +598,7 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 
 	err =PublishOrderEvent(order)
 	if err!=nil{
-		log.Warn("发送订单事件失败=" + err)
+		log.Warn("发送订单事件失败:", err)
 	}
 
 
