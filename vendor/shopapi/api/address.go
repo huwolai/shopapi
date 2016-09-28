@@ -25,7 +25,7 @@ func AddressWithRecom(c *gin.Context) {
 		return
 	}
 	if address==nil {
-		util.ResponseError400(c.Writer,"没有地址!")
+		util.ResponseError400(c.Writer,"请先完善用餐地址!")
 		return
 	}
 
