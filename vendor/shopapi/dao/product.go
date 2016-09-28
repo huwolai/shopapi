@@ -77,11 +77,15 @@ func NewProduct() *Product  {
 }
 
 //详情集合
-func (self *ProductDetail) ProdDetailListWith(merchantId int64,flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*ProductDetail,error)  {
+func (self *ProductDetail) ProdDetailListWith(keyword string,merchantId int64,flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*ProductDetail,error)  {
 	var prodList []*ProductDetail
 	buider :=db.NewSession().Select("product.*,IFNULL(merchant.id,0) merchant_id,IFNULL(merchant.name,'') merchant_name,IFNULL(category.id,0) category_id,IFNULL(category.title,'') category_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id").LeftJoin("prod_category","prod_category.prod_id=product.id").LeftJoin("category","prod_category.category_id=category.id")
 	if flags!=nil{
 		buider = buider.Where("product.flag in ?",flags)
+	}
+
+	if keyword!="" {
+		builder = builder.Where("product.title like ","%"+keyword+"%")
 	}
 
 	if noflags!=nil {
@@ -105,9 +109,11 @@ func (self *ProductDetail) ProdDetailListWith(merchantId int64,flags []string,no
 	return prodList,err
 }
 
-func (self *ProductDetail) ProdDetailListCountWith(merchantId int64,flags []string,noflags []string,isRecomm string)  (int64,error) {
+func (self *ProductDetail) ProdDetailListCountWith(keyword string,merchantId int64,flags []string,noflags []string,isRecomm string)  (int64,error) {
 	var count int64
 	buider :=db.NewSession().Select("count(*)").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id")
+
+
 	if flags!=nil{
 		buider = buider.Where("product.flag in ?",flags)
 	}
@@ -115,6 +121,11 @@ func (self *ProductDetail) ProdDetailListCountWith(merchantId int64,flags []stri
 	if noflags!=nil {
 		buider = buider.Where("product.flag not in ?",noflags)
 	}
+
+	if keyword!="" {
+		builder = builder.Where("product.title like ","%"+keyword+"%")
+	}
+
 	if isRecomm!="" {
 		buider = buider.Where("product.is_recomm=?",isRecomm)
 	}

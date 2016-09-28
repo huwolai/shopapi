@@ -85,14 +85,14 @@ func ProdSkuAdd(prodSku *ProdSku) (*ProdSku,error)  {
 	return prodSku,err
 }
 
-func ProdDetailListWith(merchantId int64,flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*dao.ProductDetail,error)  {
+func ProdDetailListWith(keyword string,merchantId int64,flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*dao.ProductDetail,error)  {
 
-	return dao.NewProductDetail().ProdDetailListWith(merchantId,flags,noflags,isRecomm,orderBy,pageIndex,pageSize,appId)
+	return dao.NewProductDetail().ProdDetailListWith(keyword,merchantId,flags,noflags,isRecomm,orderBy,pageIndex,pageSize,appId)
 }
 
-func ProdDetailListCountWith(merchantId int64,flags []string,noflags []string,isRecomm string) (int64,error)  {
+func ProdDetailListCountWith(keyword string,merchantId int64,flags []string,noflags []string,isRecomm string) (int64,error)  {
 
-	return dao.NewProductDetail().ProdDetailListCountWith(merchantId,flags,noflags,isRecomm)
+	return dao.NewProductDetail().ProdDetailListCountWith(keyword,merchantId,flags,noflags,isRecomm)
 }
 
 //商品详情

@@ -193,6 +193,7 @@ func ProdDetailListWith(c *gin.Context)  {
 	noflags :=c.Query("noflags")
 	isRecomm :=c.Query("is_recomm")
 	merchantId := c.Query("merchant_id")
+	keyword :=c.Query("keyword")
 	var imerchantId int64
 	var err error
 	if merchantId!="" {
@@ -206,13 +207,13 @@ func ProdDetailListWith(c *gin.Context)  {
 	appId :=security.GetOpenId(c.Request)
 	pindex,psize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 	flagsArray,noflagsArray :=GetFlagsAndNoFlags(flags,noflags)
-	prodList,err :=service.ProdDetailListWith(imerchantId,flagsArray,noflagsArray,isRecomm,orderBy,pindex,psize,appId)
+	prodList,err :=service.ProdDetailListWith(keyword,imerchantId,flagsArray,noflagsArray,isRecomm,orderBy,pindex,psize,appId)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询商品失败!")
 		return
 	}
-	count,err :=service.ProdDetailListCountWith(imerchantId,flagsArray,noflagsArray,isRecomm)
+	count,err :=service.ProdDetailListCountWith(keyword,imerchantId,flagsArray,noflagsArray,isRecomm)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询商品数量失败!")
