@@ -322,6 +322,7 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 			oItem.CouponAmount = comm.Floor(couponAmount, 2)
 			oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
 			oItem.OmitMoney = 0
+			log.Info("oItem.BuyTotalPrice",oItem.BuyTotalPrice,"oItem.CouponAmount", oItem.CouponAmount,"oItem.DbnAmount",oItem.DbnAmount)
 			err = oItem.UpdateAmountWithIdTx(oItem.DbnAmount, oItem.OmitMoney, oItem.CouponAmount, oItem.MerchantAmount, oItem.Id, tx)
 			if err != nil {
 				log.Error(err)
