@@ -89,7 +89,6 @@ func (self *OrderItem) OrderItemWithOrderNo(orderNo string) ([]*OrderItem,error)
 }
 
 func (self *OrderItem) UpdateAmountWithIdTx(dbnAmount float64,omitMoney float64,couponAmount float64,merchantAmount float64,id int64,tx *dbr.Tx)  error {
-	log.Info("dbnAmount",dbnAmount,"omitMoney",omitMoney,"couponAmount",couponAmount,"merchantAmount",merchantAmount,"id",id,"tx",tx)
 	_,err :=tx.Update("order_item").Set("dbn_amount",dbnAmount).Set("omit_money",omitMoney).Set("coupon_amount",couponAmount).Set("merchant_amount",merchantAmount).Where("id=?",id).Exec()
 
 	return err

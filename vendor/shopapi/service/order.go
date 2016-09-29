@@ -318,12 +318,14 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 				oItem.DbnAmount = comm.Floor(dbnAmount, 2)
 
 			}
-			couponAmount := (oItem.BuyTotalPrice / order.RealPrice) * couponTotalAmount
-			log.Info("couponAmount",couponAmount,"oItem.BuyTotalPrice",oItem.BuyTotalPrice,"order.RealPrice",order.RealPrice,"oItem.BuyTotalPrice / order.RealPrice",oItem.BuyTotalPrice / order.RealPrice,"couponTotalAmount",couponTotalAmount)
+			var couponAmount float64 = 0
+			if order.RealPrice!=0 {
+				couponAmount = (oItem.BuyTotalPrice / order.RealPrice) * couponTotalAmount
+
+			}
 			oItem.CouponAmount = comm.Floor(couponAmount, 2)
 			oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
 			oItem.OmitMoney = 0
-			log.Info("oItem.BuyTotalPrice",oItem.BuyTotalPrice,"oItem.CouponAmount", oItem.CouponAmount,"oItem.DbnAmount",oItem.DbnAmount)
 			err = oItem.UpdateAmountWithIdTx(oItem.DbnAmount, oItem.OmitMoney, oItem.CouponAmount, oItem.MerchantAmount, oItem.Id, tx)
 			if err != nil {
 				log.Error(err)
@@ -399,8 +401,8 @@ func HandleCoupon(order *dao.Order,coupotokens []string,tx *dbr.Tx) (float64,err
 	//凭证校验
 	var couponTotalAmount float64
 	for _,couponToken :=range ncoupontokens {
-		jwtAuth := comm.InitJWTAuthenticationBackend()
-		cpToken,err :=jwtAuth.FetchToken(couponToken)
+		jwtAuth := comm.InitJWTCouponBackend()
+		cpToken,err :=jwtAuth.FetchCouponToken(couponToken)
 		if err!=nil{
 			return 0.0,err
 		}

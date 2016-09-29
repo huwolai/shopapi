@@ -184,7 +184,7 @@ func OrderPayForAccount(c *gin.Context)  {
 	user,err := security.GetAuthUser(c.Request)
 	if err!=nil{
 		log.Error(err)
-		util.ResponseError400(c.Writer,err.Error())
+		util.ResponseErrorS(c.Writer,http.StatusUnauthorized,err.Error())
 		return
 	}
 	orderNo := c.Param("order_no")

@@ -13,32 +13,31 @@ import (
 )
 
 
-type JWTAuthenticationBackend struct {
+type JWTCouponBackend struct {
 	PublicKey  *rsa.PublicKey
 }
 
 const (
-	tokenDuration = 72
-	expireOffset  = 3600
+	expireOffset  = 600 //10分钟
 )
 
-var authBackendInstance *JWTAuthenticationBackend = nil
+var couponBackendInstance *JWTCouponBackend = nil
 
-func InitJWTAuthenticationBackend() *JWTAuthenticationBackend {
-	if authBackendInstance == nil {
-		authBackendInstance = &JWTAuthenticationBackend{
-			PublicKey:  getPublicKey(),
+func InitJWTCouponBackend() *JWTCouponBackend {
+	if couponBackendInstance == nil {
+		couponBackendInstance = &JWTCouponBackend{
+			PublicKey:  getCouponPublicKey(),
 		}
 	}
 
-	return authBackendInstance
+	return couponBackendInstance
 }
 
 
 
 
 
-func (backend *JWTAuthenticationBackend) getTokenRemainingValidity(timestamp interface{}) int {
+func (backend *JWTCouponBackend) getCouponTokenRemainingValidity(timestamp interface{}) int {
 	if validity, ok := timestamp.(float64); ok {
 		tm := time.Unix(int64(validity), 0)
 		remainer := tm.Sub(time.Now())
@@ -49,8 +48,8 @@ func (backend *JWTAuthenticationBackend) getTokenRemainingValidity(timestamp int
 	return expireOffset
 }
 
-func (backend *JWTAuthenticationBackend)  FetchToken(authorization string) (token *jwt.Token,err error){
-	token, err =jwt.Parse(authorization, func(token *jwt.Token)(interface{}, error) {
+func (backend *JWTCouponBackend)  FetchCouponToken(couponToken string) (token *jwt.Token,err error){
+	token, err =jwt.Parse(couponToken, func(token *jwt.Token)(interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
@@ -62,8 +61,8 @@ func (backend *JWTAuthenticationBackend)  FetchToken(authorization string) (toke
 
 
 
-func getPublicKey() *rsa.PublicKey {
-	publicKeyFile, err := os.Open(config.GetValue("publickey_path").ToString())
+func getCouponPublicKey() *rsa.PublicKey {
+	publicKeyFile, err := os.Open(config.GetValue("coupon_publickey_path").ToString())
 	if err != nil {
 		panic(err)
 	}
