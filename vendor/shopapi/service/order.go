@@ -10,6 +10,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"gitlab.qiyunxin.com/tangtao/utils/queue"
 	"time"
+	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 )
 
 type OrderModel struct  {
@@ -637,6 +638,7 @@ func PublishOrderPaidEvent(order *dao.Order) error {
 	orderEventContent.OpenId = order.OpenId
 	orderEventContent.Amount = order.RealPrice
 	orderEventContent.OrderNo = order.No
+	orderEventContent.CreateTime = qtime.ToyyyyMMddHHmm(order.CreateTime)
 	orderEventContent.Title = order.Title
 	orderEventContent.ExtData = map[string]interface{}{
 		"m_mobile":merchant.Mobile,
