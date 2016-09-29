@@ -108,7 +108,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		}
 	}()
 
-	var couponTotalAmount float64
+	var couponTotalAmount float64 = 0
 	//存在优惠信息
 	if model.CouponTokens!=nil&&len(model.CouponTokens) >0 {
 		couponTotalAmount,err =HandleCoupon(order,model.CouponTokens,tx)
@@ -319,6 +319,7 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 
 			}
 			couponAmount := (oItem.BuyTotalPrice / order.RealPrice) * couponTotalAmount
+			log.Info("couponAmount",couponAmount,"oItem.BuyTotalPrice / order.RealPrice",oItem.BuyTotalPrice / order.RealPrice,"couponTotalAmount",couponTotalAmount)
 			oItem.CouponAmount = comm.Floor(couponAmount, 2)
 			oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
 			oItem.OmitMoney = 0
