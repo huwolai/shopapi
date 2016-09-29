@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"math/rand"
 	"time"
+	"shopapi/setting"
 )
 
 type AccountPreRechargeDto struct  {
@@ -88,15 +89,14 @@ func PayPwdUpdateSMS(c *gin.Context)  {
 	}
 
 	code :=GetRandCode()
-	code = "1111"
 	redis.SetAndExpire(comm.CODE_PAYPWD_PREFIX+mobile,code,comm.CODE_PAYPWD_EXPIRE)
-
-	//err =service.SendCodeSMS(mobile,code)
-	//if err!=nil{
-	//	log.Error(err)
-	//	util.ResponseError400(c.Writer,"短信发送失败!")
-	//	return
-	//}
+	configMap :=setting.GetYunTongXunSetting()
+	err =service.SendSMSOfYunTongXun(mobile,configMap["paypwdcode_template_id"],[]string{code})
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"短信发送失败!")
+		return
+	}
 
 	util.ResponseSuccess(c.Writer)
 }

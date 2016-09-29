@@ -596,16 +596,34 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		return errors.New("数据提交失败!")
 	}
 
-	err =PublishOrderEvent(order)
-	if err!=nil{
-		log.Warn("发送订单事件失败:", err)
-	}
+	//发布事件
+	go func(){
+		err =PublishOrderPaidEvent(order)
+		if err!=nil{
+			log.Warn("发送订单事件失败:", err)
+		}
+	}()
 
 
 	return nil
 }
 
-func PublishOrderEvent(order *dao.Order) error {
+/**
+  发布订单支付事件
+ */
+func PublishOrderPaidEvent(order *dao.Order) error {
+
+	merchant,err := dao.NewMerchant().MerchantWithId(order.MerchantId)
+	if err!=nil{
+		return err
+	}
+	if merchant==nil{
+
+		return  errors.New("商户信息未找到！")
+	}
+	if merchant.Mobile=="" {
+		return errors.New("商户没有填写手机号！")
+	}
 	orderEvent := queue.NewOrderEvent()
 	//订单已付款
 	orderEvent.EventKey = queue.ORDER_EVENT_PAID
@@ -616,6 +634,9 @@ func PublishOrderEvent(order *dao.Order) error {
 	orderEventContent.Amount = order.RealPrice
 	orderEventContent.OrderNo = order.No
 	orderEventContent.Title = order.Title
+	orderEventContent.ExtData = map[string]interface{}{
+		"m_mobile":merchant.Mobile,
+	}
 
 	orderEvent.Content = orderEventContent
 	return queue.PublishOrderEvent(orderEvent)

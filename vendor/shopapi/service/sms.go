@@ -11,17 +11,18 @@ import (
 	"errors"
 	"encoding/hex"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
+	"shopapi/setting"
 )
 
 const SMS_BASE_URL  = "https://app.cloopen.com:8883"
 
 //发送验证码短信
-func SendCodeSMS(mobile string,code string) (error) {
+func SendSMSOfYunTongXun(mobile string,templateId string,datas []string) (error) {
+	configMap :=setting.GetYunTongXunSetting()
 
-
-	accountSid := "aaf98f8950f4a62c0151061744fd43b8"
-	accountToken :="834b696ff4954450b751a8a4590f1fe0"
-	appId :="aaf98f89512446e2015128f0802e0d4e"
+	accountSid := configMap["account_sid"]
+	accountToken :=configMap["account_token"]
+	appId := configMap["app_id"]
 	date  :=time.Now()
 	dateStr :=date.Format("20060102150405")
 	log.Info(dateStr)
@@ -40,8 +41,8 @@ func SendCodeSMS(mobile string,code string) (error) {
 	param :=map[string]interface{}{
 		"to":mobile,
 		"appId":appId,
-		"templateId":"51954",
-		"datas":[]string{code,"qiyunxin"},
+		"templateId":templateId,
+		"datas":datas,
 	}
 
 
