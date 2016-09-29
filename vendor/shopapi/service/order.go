@@ -319,7 +319,7 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 
 			}
 			couponAmount := (oItem.BuyTotalPrice / order.RealPrice) * couponTotalAmount
-			log.Info("couponAmount",couponAmount,"oItem.BuyTotalPrice / order.RealPrice",oItem.BuyTotalPrice / order.RealPrice,"couponTotalAmount",couponTotalAmount)
+			log.Info("couponAmount",couponAmount,"oItem.BuyTotalPrice",oItem.BuyTotalPrice,"order.RealPrice",order.RealPrice,"oItem.BuyTotalPrice / order.RealPrice",oItem.BuyTotalPrice / order.RealPrice,"couponTotalAmount",couponTotalAmount)
 			oItem.CouponAmount = comm.Floor(couponAmount, 2)
 			oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
 			oItem.OmitMoney = 0
