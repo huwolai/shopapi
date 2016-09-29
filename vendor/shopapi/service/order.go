@@ -325,6 +325,7 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 			err = oItem.UpdateAmountWithIdTx(oItem.DbnAmount, oItem.OmitMoney, oItem.CouponAmount, oItem.MerchantAmount, oItem.Id, tx)
 			if err != nil {
 				log.Error(err)
+				panic(err)
 				return errors.New("更新订单详情失败!")
 			}
 			totaldbnAmount += oItem.DbnAmount
