@@ -4,6 +4,8 @@
     <list default="true" id="b60f5e34-3b1c-496a-91d0-4527505fa0da" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/gitlab.qiyunxin.com/tangtao/utils" afterPath="$PROJECT_DIR$/vendor/gitlab.qiyunxin.com/tangtao/utils" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/shopapi/api/product.go" afterPath="$PROJECT_DIR$/vendor/shopapi/api/product.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/shopapi/dao/product.go" afterPath="$PROJECT_DIR$/vendor/shopapi/dao/product.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/shopapi/service/product.go" afterPath="$PROJECT_DIR$/vendor/shopapi/service/product.go" />
     </list>
     <ignored path="shopapi.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -27,8 +29,8 @@
       <file leaf-file-name="main.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="410">
-              <caret line="156" column="65" selection-start-line="156" selection-start-column="65" selection-end-line="156" selection-end-column="65" />
+            <state relative-caret-position="282">
+              <caret line="144" column="65" selection-start-line="144" selection-start-column="65" selection-end-line="144" selection-end-column="65" />
               <folding />
             </state>
           </provider>
@@ -37,8 +39,8 @@
       <file leaf-file-name="product.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/product.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-109">
-              <caret line="473" column="37" selection-start-line="473" selection-start-column="37" selection-end-line="473" selection-end-column="37" />
+            <state relative-caret-position="565">
+              <caret line="328" column="35" selection-start-line="328" selection-start-column="35" selection-end-line="328" selection-end-column="35" />
               <folding />
             </state>
           </provider>
@@ -47,8 +49,8 @@
       <file leaf-file-name="product.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vendor/shopapi/service/product.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="245">
-              <caret line="194" column="5" selection-start-line="194" selection-start-column="5" selection-end-line="194" selection-end-column="5" />
+            <state relative-caret-position="421">
+              <caret line="414" column="30" selection-start-line="414" selection-start-column="30" selection-end-line="414" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -77,28 +79,28 @@
       <file leaf-file-name="order.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vendor/shopapi/service/order.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="576">
-              <caret line="674" column="35" selection-start-line="674" selection-start-column="35" selection-end-line="674" selection-end-column="35" />
+            <state relative-caret-position="8512">
+              <caret line="655" column="25" selection-start-line="655" selection-start-column="25" selection-end-line="655" selection-end-column="25" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="order.go" pinned="false" current-in-tab="true">
+      <file leaf-file-name="order.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vendor/gitlab.qiyunxin.com/tangtao/utils/queue/order.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="50" column="17" selection-start-line="50" selection-start-column="17" selection-end-line="50" selection-end-column="17" />
+            <state relative-caret-position="192">
+              <caret line="40" column="25" selection-start-line="40" selection-start-column="25" selection-end-line="40" selection-end-column="25" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="product.go" pinned="false" current-in-tab="false">
+      <file leaf-file-name="product.go" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/vendor/shopapi/dao/product.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="464">
-              <caret line="33" column="14" selection-start-line="33" selection-start-column="14" selection-end-line="33" selection-end-column="14" />
+            <state relative-caret-position="350">
+              <caret line="154" column="9" selection-start-line="154" selection-start-column="9" selection-end-line="154" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -135,10 +137,11 @@
         <option value="$PROJECT_DIR$/config/prod.json" />
         <option value="$PROJECT_DIR$/vendor/shopapi/api/order.go" />
         <option value="$PROJECT_DIR$/vendor/gitlab.qiyunxin.com/tangtao/utils/security/jwt_backend.go" />
-        <option value="$PROJECT_DIR$/vendor/shopapi/dao/product.go" />
         <option value="$PROJECT_DIR$/vendor/shopapi/api/product.go" />
         <option value="$PROJECT_DIR$/vendor/shopapi/service/order.go" />
         <option value="$PROJECT_DIR$/vendor/gitlab.qiyunxin.com/tangtao/utils/queue/order.go" />
+        <option value="$PROJECT_DIR$/vendor/shopapi/service/product.go" />
+        <option value="$PROJECT_DIR$/vendor/shopapi/dao/product.go" />
       </list>
     </option>
   </component>
@@ -149,8 +152,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1339" />
-    <option name="y" value="58" />
+    <option name="x" value="1573" />
+    <option name="y" value="57" />
     <option name="width" value="1280" />
     <option name="height" value="882" />
   </component>
@@ -825,15 +828,15 @@
       <workItem from="1475120859213" duration="11192000" />
       <workItem from="1475144984509" duration="133000" />
       <workItem from="1475204282790" duration="305000" />
-      <workItem from="1475208849759" duration="4019000" />
+      <workItem from="1475208849759" duration="4349000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="15715000" />
+    <option name="totallyTimeSpent" value="16045000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1339" y="58" width="1280" height="882" extended-state="0" />
+    <frame x="1573" y="57" width="1280" height="882" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1218,14 +1221,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/shopapi/dao/product.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="464">
-          <caret line="33" column="14" selection-start-line="33" selection-start-column="14" selection-end-line="33" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vendor/shopapi/dao/order_item.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1392">
@@ -1242,42 +1237,50 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.go">
+    <entry file="file://$PROJECT_DIR$/vendor/gitlab.qiyunxin.com/tangtao/utils/queue/order.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="410">
-          <caret line="156" column="65" selection-start-line="156" selection-start-column="65" selection-end-line="156" selection-end-column="65" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/shopapi/service/product.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="245">
-          <caret line="194" column="5" selection-start-line="194" selection-start-column="5" selection-end-line="194" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/product.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-109">
-          <caret line="473" column="37" selection-start-line="473" selection-start-column="37" selection-end-line="473" selection-end-column="37" />
+        <state relative-caret-position="192">
+          <caret line="40" column="25" selection-start-line="40" selection-start-column="25" selection-end-line="40" selection-end-column="25" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/vendor/shopapi/service/order.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="576">
-          <caret line="674" column="35" selection-start-line="674" selection-start-column="35" selection-end-line="674" selection-end-column="35" />
+        <state relative-caret-position="8512">
+          <caret line="655" column="25" selection-start-line="655" selection-start-column="25" selection-end-line="655" selection-end-column="25" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/gitlab.qiyunxin.com/tangtao/utils/queue/order.go">
+    <entry file="file://$PROJECT_DIR$/main.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="50" column="17" selection-start-line="50" selection-start-column="17" selection-end-line="50" selection-end-column="17" />
+        <state relative-caret-position="282">
+          <caret line="144" column="65" selection-start-line="144" selection-start-column="65" selection-end-line="144" selection-end-column="65" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/product.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="565">
+          <caret line="328" column="35" selection-start-line="328" selection-start-column="35" selection-end-line="328" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/shopapi/service/product.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="421">
+          <caret line="414" column="30" selection-start-line="414" selection-start-column="30" selection-end-line="414" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/shopapi/dao/product.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="350">
+          <caret line="154" column="9" selection-start-line="154" selection-start-column="9" selection-end-line="154" selection-end-column="9" />
           <folding />
         </state>
       </provider>
