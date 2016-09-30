@@ -197,6 +197,26 @@ func DistributionProductCancel(c *gin.Context) {
 	util.ResponseSuccess(c.Writer)
 }
 
+/**
+ 查询分销商品信息
+ */
+func DistributionProductWithId(c *gin.Context)  {
+	sid :=c.Param("id")
+	id ,err :=strconv.ParseInt(sid,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"参数有误！")
+		return
+	}
+	result,err := service.DistributionProductWithId(id)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询失败！")
+		return
+	}
+
+	c.JSON(http.StatusOK,distributionProductToA(result))
+}
+
 func DistributionWith(c *gin.Context)  {
 
 	keyword :=c.Query("keyword")
@@ -227,6 +247,18 @@ func DistributionWith(c *gin.Context)  {
 
 	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),results))
 
+}
+
+func distributionProductToA(model *dao.DistributionProduct) *DistributionProduct  {
+
+	a:=&DistributionProduct{}
+	a.AppId = model.AppId
+	a.CsnRate = model.CsnRate
+	a.Id = model.Id
+	a.MerchantId = model.MerchantId
+	a.ProdId = model.ProdId
+
+	return a
 }
 
 func distributionProductDetail2ToA(model *dao.DistributionProductDetail2) *DistributionProductDetail2  {
@@ -283,5 +315,4 @@ func prodImgsDetailToA(model *dao.ProdImgsDetail) *DisProdImgsDetailDto  {
 
 	return dto
 }
-
 

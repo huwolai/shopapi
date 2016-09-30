@@ -92,3 +92,9 @@ func DistributionWithCount(keyword string,noflags []string,flags []string) (int6
 
 	return dao.NewDistributionProductDetail2().WithCount(keyword,noflags,flags)
 }
+
+//根据ID查询分销商品
+func DistributionProductWithId(id int64) (*dao.DistributionProduct,error)  {
+
+	return dao.NewDistributionProduct().WithId(id)
+}

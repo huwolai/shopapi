@@ -249,6 +249,12 @@ func main() {
 			//添加或修改分销(有ID为修改 无ID为添加)
 			distributions.POST("/",api.ProductJoinOrUpdateDistribution)
 		}
+		distribution := v1.Group("/distribution")
+		{
+			//分销商品信息
+			distribution.GET("/:id",api.DistributionProductWithId)
+
+		}
 		//建议
 		suggests := v1.Group("/suggests")
 		{
