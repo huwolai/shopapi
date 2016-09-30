@@ -227,6 +227,8 @@ CREATE TABLE IF NOT EXISTS `order` (
   code VARCHAR(255) DEFAULT '' COMMENT '预付款编号',
   address_id VARCHAR(255) DEFAULT '' COMMENT '地址ID',
   address VARCHAR(255) DEFAULT '' COMMENT '配送地址',
+  address_mobile VARCHAR(100) DEFAULT '' COMMENT '配送联系电话',
+  address_name VARCHAR(100) DEFAULT '' COMMENT '联系人名字',
   payapi_no VARCHAR(255) DEFAULT '' COMMENT '支付中心的订单号',
   coupon_amount NUMERIC(10,2) COMMENT '优惠掉的金额',
   dbn_amount NUMERIC(10,2) COMMENT '佣金',

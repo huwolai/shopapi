@@ -24,6 +24,8 @@ type Order struct  {
 	AppId string
 	AddressId int64
 	Address string
+	AddressMobile string
+	AddressName string
 	Title string
 	Price float64
 	RealPrice float64
@@ -93,7 +95,7 @@ func (self *Order) OrderWithNoPayAndLTTime(time string) ([]*Order,error) {
 }
 
 func (self *Order) InsertTx(tx *dbr.Tx) (int64,error)  {
-	result,err :=tx.InsertInto("order").Columns("no","prepay_no","address_id","address","merchant_id","merchant_name","m_open_id","payapi_no","code","open_id","app_id","title","coupon_amount","dbn_amount","merchant_amount","real_price","pay_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
+	result,err :=tx.InsertInto("order").Columns("no","prepay_no","address_id","address","address_name","address_mobile","merchant_id","merchant_name","m_open_id","payapi_no","code","open_id","app_id","title","coupon_amount","dbn_amount","merchant_amount","real_price","pay_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
@@ -228,8 +230,8 @@ func fillOrderItemDetail(orders []*OrderDetail)  error {
 	return nil
 }
 
-func (self *Order) OrderPayapiUpdateWithNoAndCodeTx(payapiNo string,addressId int64,address string,code string,orderStatus int,payStatus int,no string,json string,appId string,tx *dbr.Tx) error  {
-	builder :=tx.Update("order").Set("payapi_no",payapiNo).Set("address_id",addressId).Set("address",address).Set("code",code).Set("order_status",orderStatus).Set("pay_status",payStatus)
+func (self *Order) OrderPayapiUpdateWithNoAndCodeTx(payapiNo string,addressId int64,address string,addressName string,addressMobile string,code string,orderStatus int,payStatus int,no string,json string,appId string,tx *dbr.Tx) error  {
+	builder :=tx.Update("order").Set("payapi_no",payapiNo).Set("address_id",addressId).Set("address_name",addressName).Set("address",address).Set("address_mobile",addressMobile).Set("code",code).Set("order_status",orderStatus).Set("pay_status",payStatus)
 	if json!="" {
 		builder = builder.Set("json",json)
 	}

@@ -144,7 +144,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 				return nil,err
 			}
 			code :=resultImprestMap["code"].(string)
-			err =order.OrderPayapiUpdateWithNoAndCodeTx("",address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,model.Json,order.AppId,tx)
+			err =order.OrderPayapiUpdateWithNoAndCodeTx("",address.Id,address.Address,address.Name,address.Mobile,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,model.Json,order.AppId,tx)
 			if err!=nil{
 				log.Error(err)
 				tx.Rollback()
@@ -168,7 +168,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 			payapiNo :=resultPrepayMap["pay_no"].(string)
 			code :=resultPrepayMap["code"].(string)
 			//将payapi的订单号更新到订单数据里
-			err :=order.OrderPayapiUpdateWithNoAndCodeTx(payapiNo,address.Id,address.Address,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,model.Json,order.AppId,tx)
+			err :=order.OrderPayapiUpdateWithNoAndCodeTx(payapiNo,address.Id,address.Address,address.Name,address.Mobile,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,model.Json,order.AppId,tx)
 			if err!=nil{
 				log.Error(err)
 				tx.Rollback()
@@ -640,8 +640,17 @@ func PublishOrderPaidEvent(order *dao.Order) error {
 	orderEventContent.OrderNo = order.No
 	orderEventContent.CreateTime = qtime.ToyyyyMMddHHmm(order.CreateTime)
 	orderEventContent.Title = order.Title
+	orderEventContent.Json = order.Json
+	orderEventContent.Flag = order.Flag
 	orderEventContent.ExtData = map[string]interface{}{
+		// 商户手机号
 		"m_mobile":merchant.Mobile,
+		// 用户配送地址
+		"address":order.Address,
+		// 联系人名字
+		"name": order.AddressName,
+		// 联系人手机号
+		"mobile": order.AddressMobile,
 	}
 
 	orderEvent.Content = orderEventContent
