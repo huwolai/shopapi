@@ -154,6 +154,10 @@ func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 		return 0,err
 	}
 	pid,err :=  result.LastInsertId()
+	
+	_,_ :=db.NewSession().Update("product").Set("order",pid).Where("id=?",pid).Exec()
+	
+	
 	return pid,err
 }
 
