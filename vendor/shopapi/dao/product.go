@@ -155,7 +155,7 @@ func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 	}
 	pid,err :=  result.LastInsertId()
 	
-	_,_ :=db.NewSession().Update("product").Set("order",pid).Where("id=?",pid).Exec()
+	_,err =db.NewSession().Update("product").Set("order",pid).Where("id=?",pid).Exec()
 	
 	
 	return pid,err
