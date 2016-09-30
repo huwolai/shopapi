@@ -58,6 +58,40 @@ type OrderPrePayDto struct  {
 	AppId string `json:"app_id"`
 }
 
+type OrderCouponDto struct  {
+	AppId string `json:"app_id"`
+	//订单号
+	OrderNo string `json:"order_no"`
+	//商户ID
+	MerchantId int64 `json:"merchant_id"`
+	//商户open_id
+	MOpenId string `json:"m_open_id"`
+	//下单用户
+	OpenId string `json:"open_id"`
+	//订单标题
+	Title string `json:"title"`
+	//付款方式
+	PayMethod int `json:"pay_method"`
+	Flag string `json:"flag"`
+	Json string `json:"json"`
+	//订单实际金额(此金额为实际付款金额)
+	ActPrice float64 `json:"act_price"`
+	//订单价格
+	Price float64 `json:"price"`
+}
+
+type OrderItemCouponDto struct {
+	//订单号
+	OrderNo string `json:"order_no"`
+	ProdId int64 `json:"prod_id"`
+	SkuNo string `json:"sku_no"`
+	Num int `json:"num"`
+	Flag string `json:"flag"`
+	Json string `json:"json"`
+	BuyTotalPrice float64 `json:"buy_total_price"`
+
+}
+
 func OrderAdd(model *OrderModel) (*dao.Order,error)  {
 	sess :=db.NewSession()
 	tx,_ := sess.Begin()
@@ -481,39 +515,7 @@ func OrderDetailWithNo(orderNo string,appId string) (*dao.OrderDetail,error)  {
 	return orderDetail,err
 }
 
-type OrderCouponDto struct  {
-	AppId string `json:"app_id"`
-	//订单号
-	OrderNo string `json:"order_no"`
-	//商户ID
-	MerchantId int64 `json:"merchant_id"`
-	//商户open_id
-	MOpenId string `json:"m_open_id"`
-	//下单用户
-	OpenId string `json:"open_id"`
-	//订单标题
-	Title string `json:"title"`
-	//付款方式
-	PayMethod int `json:"pay_method"`
-	Flag string `json:"flag"`
-	Json string `json:"json"`
-	//订单实际金额(此金额为实际付款金额)
-	ActPrice float64 `json:"act_price"`
-	//订单价格
-	Price float64 `json:"price"`
-}
 
-type OrderItemCouponDto struct {
-	//订单号
-	OrderNo string `json:"order_no"`
-	ProdId int64 `json:"prod_id"`
-	SkuNo string `json:"sku_no"`
-	Num int `json:"num"`
-	Flag string `json:"flag"`
-	Json string `json:"json"`
-	BuyTotalPrice float64 `json:"buy_total_price"`
-
-}
 
 func OrderPayForAccount(openId string,orderNo string,payToken string,appId string) error  {
 
@@ -603,7 +605,7 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 
 	//发布事件
 	go func(){
-		err =PublishOrderPaidEvent(order)
+		err =PublishOrderPaidEvent(orderItems,order)
 		if err!=nil{
 			log.Warn("发送订单事件失败:", err)
 		}
@@ -616,7 +618,7 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 /**
   发布订单支付事件
  */
-func PublishOrderPaidEvent(order *dao.Order) error {
+func PublishOrderPaidEvent(items []*dao.OrderItem,order *dao.Order) error {
 
 	merchant,err := dao.NewMerchant().MerchantWithId(order.MerchantId)
 	if err!=nil{
@@ -645,12 +647,28 @@ func PublishOrderPaidEvent(order *dao.Order) error {
 	orderEventContent.ExtData = map[string]interface{}{
 		// 商户手机号
 		"m_mobile":merchant.Mobile,
-		// 用户配送地址
-		"address":order.Address,
+		// 商户名称
+		"m_name":merchant.Name,
 		// 联系人名字
 		"name": order.AddressName,
+		// 用户配送地址
+		"address":order.Address,
 		// 联系人手机号
 		"mobile": order.AddressMobile,
+	}
+	if items!=nil&&len(items)>0 {
+		orderEventItems := make([]*queue.OrderEventItem,0)
+		for _,oitem :=range items {
+			eventItem :=queue.NewOrderEventItem()
+			eventItem.Json = oitem.Json
+			eventItem.Num = oitem.Num
+			eventItem.OrderNo = oitem.No
+			eventItem.Price = oitem.BuyUnitPrice
+			eventItem.TotalPrice = oitem.BuyTotalPrice
+
+			orderEventItems = append(orderEventItems,eventItem)
+		}
+		orderEventContent.Items = orderEventItems
 	}
 
 	orderEvent.Content = orderEventContent

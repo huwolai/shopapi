@@ -469,6 +469,23 @@ func ProductAndAttrAdd(c *gin.Context) {
 	c.JSON(http.StatusOK,dto)
 }
 
+//添加商品属性
+func ProdAttrValueAdd(c *gin.Context) {
+	var param *service.ProdAttrValueDto
+	err :=c.Bind(&param)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"参数有误!")
+		return
+	}
+	dto,err :=service.ProdAttrValueAdd(param)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"添加失败！")
+		return
+	}
+	c.JSON(http.StatusOK,dto)
+}
+
 //商品推荐
 func ProductRecom(c *gin.Context)  {
 
