@@ -140,7 +140,7 @@ func (self *DistributionProductDetail) DetailWithAppId(added string,openId strin
 }
 
 func (self *DistributionProductDetail2) With(keyword string,pageIndex,pageSize uint64,noflags []string,flags []string) ([]*DistributionProductDetail2,error) {
-	builder :=db.NewSession().Select("distribution_product.*,product.title,product.price,product.dis_price").From("distribution_product").Join("product","distribution_product.prod_id=product.id")
+	builder :=db.NewSession().Select("distribution_product.*,product.title,product.price,product.dis_price").From("distribution_product").Join("product","distribution_product.prod_id=product.id").OrderDir("create_time",false)
 	if (noflags!=nil){
 		builder = builder.Where("product.flag not in ?",noflags)
 	}
