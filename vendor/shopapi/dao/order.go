@@ -15,7 +15,9 @@ type Order struct  {
 	PrepayNo string
 	PayapiNo string
 	DbnAmount float64
+	//商户应得金额
 	MerchantAmount float64
+	//优惠金额
 	CouponAmount float64
 	OpenId string
 	MerchantId int64
@@ -84,6 +86,13 @@ func (self *Order) OrderWithStatusLTTime(payStatus int,orderStatus int,time stri
 
 	return orders,err
 
+}
+
+func (self *Order) With(pageIndex uint64,pageSize uint64,appId string) ([]*Order,error)  {
+	var orders []*Order
+	_,err :=db.NewSession().Select("*").From("`order`").Where("app_id=?",appId).Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&orders)
+
+	return orders,err
 }
 
 //查询没有付款的订单 并且时间小于某个时间的

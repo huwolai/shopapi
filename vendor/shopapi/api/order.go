@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 	"gitlab.qiyunxin.com/tangtao/utils/security"
+	"gitlab.qiyunxin.com/tangtao/utils/page"
 )
 
 type OrderDto struct  {
@@ -412,6 +413,19 @@ func OrderDetailWithNo(c *gin.Context)  {
 	}
 }
 
+func OrdersGet(c *gin.Context)  {
+
+	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+	appId :=security.GetAppId2(c.Request)
+	orders,err :=service.OrdersGet(pIndex,pSize,appId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询失败！");
+		return
+	}
+	c.JSON(http.StatusOK,comm.ToArray(orders,orderToA))
+}
+
 func MerchantOrders(c *gin.Context)  {
 	_,err :=CheckUserAuth(c)
 	if err!=nil{
@@ -542,8 +556,22 @@ func orderItemDetailToDto(model *dao.OrderItemDetail) *OrderItemDetailDto  {
 	return dto
 }
 
+func orderToA(order *dao.Order) *OrderDto {
+	a :=&OrderDto{}
+	a.AddressId = order.AddressId
+	a.AppId = order.AppId
+	a.CancelReason = order.CancelReason
+	a.Json = order.Json
+	a.MerchantId = order.MerchantId
+	a.MOpenId = order.MOpenId
+	a.OpenId = order.OpenId
+	a.OrderNo = order.No
+	a.Title = order.Title
+	a.PayStatus = order.PayStatus
+	a.OrderStatus = order.OrderStatus
 
-
+	return a
+}
 
 func orderDtoToModel(dto OrderDto) *service.OrderModel  {
 

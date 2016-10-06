@@ -931,6 +931,10 @@ func OrderCancel(orderNo string,reason string,appId string) error {
 	return nil
 }
 
+func OrdersGet(pageIndex uint64,pageSize uint64,appId string)([]*dao.Order,error) {
+
+	return dao.NewOrder().With(pageIndex,pageSize,appId)
+}
 
 
 func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {

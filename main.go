@@ -61,6 +61,7 @@ func main() {
 	err :=config.Init(false)
 	util.CheckErr(err)
 	err = startup.InitDBData()
+	util.CheckErr(err)
 	env := os.Getenv("GO_ENV")
 	if env=="tests" {
 		gin.SetMode(gin.DebugMode)
@@ -203,6 +204,7 @@ func main() {
 			//商品推荐列表
 			recom.GET("/products",api.ProductListWithRecomm)
 		}
+
 		//订单
 		order := v1.Group("/order")
 		{
@@ -263,6 +265,7 @@ func main() {
 
 		admin :=v1.Group("/admin")
 		{
+			admin.GET("/orders",api.OrdersGet)
 			admin.GET("/merchants",api.MerchantWith)
 			admin.GET("/product/:prod_id/detail",api.ProdDetailWithProdId)
 		}
