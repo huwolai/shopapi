@@ -136,7 +136,7 @@ func cal(order *dao.Order, calMoney float64, openId string, mark string) error {
 
 //订单自动取消
 func OrderAutoCancel() {
-	log.Info("开始扫描待需求的订单！")
+	log.Info("开始查询待取消的订单！")
 	order := dao.NewOrder()
 	tm := time.Now().Add(-time.Minute * ORDER_AUTO_CANCEL_TIME)
 	stm := qtime.ToyyyyMMddHHmm(tm)

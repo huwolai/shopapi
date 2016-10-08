@@ -783,7 +783,7 @@ func OrderAutoCancel(orderNo string,appId string)error  {
 		return err
 	}
 
-	if order.PayStatus!=comm.ORDER_PAY_STATUS_NOPAY ||
+	if order.PayStatus!=comm.ORDER_PAY_STATUS_NOPAY &&
 	    order.PayStatus!=comm.ORDER_PAY_STATUS_PAYING {
 		return nil
 	}
