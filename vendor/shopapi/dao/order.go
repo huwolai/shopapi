@@ -107,7 +107,7 @@ func (self *Order) With(pageIndex uint64,pageSize uint64,appId string) ([]*Order
 //查询没有付款的订单 并且时间小于某个时间的
 func (self *Order) OrderWithNoPayAndLTTime(time string) ([]*Order,error) {
 	var orders []*Order
-	_,err :=db.NewSession().Select("*").From("`order`").Where("pay_status=? or pay_status=?",comm.ORDER_PAY_STATUS_NOPAY,comm.ORDER_PAY_STATUS_PAYING).Where("update_time<=?",time).LoadStructs(&orders)
+	_,err :=db.NewSession().Select("*").From("`order`").Where("pay_status=? or pay_status=?",comm.ORDER_PAY_STATUS_NOPAY,comm.ORDER_PAY_STATUS_PAYING).Where("update_time<=?",time).Where("order_status=?",comm.ORDER_STATUS_WAIT_SURE).LoadStructs(&orders)
 
 	return orders,err
 }

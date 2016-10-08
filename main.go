@@ -74,7 +74,7 @@ func main() {
 	queue.SetupAMQP(config.GetValue("amqp_url").ToString())
 
 	//开启定时器
-	task.StartCron()
+	task.StartCron ()
 
 	router := gin.Default()
 
