@@ -93,6 +93,11 @@ type OrderItemDto struct  {
 
 }
 
+type OrderCountWithUserAndStatus struct {
+	Count int64 `json:"count"`
+	Status string `json:"status"`
+}
+
 //添加订单
 func OrderAdd(c *gin.Context)  {
 	appId,err :=CheckAppAuth(c)
@@ -386,6 +391,56 @@ func OrderWithUserAndStatus(c *gin.Context)  {
 
 	c.JSON(http.StatusOK,orderDetailDtos)
 }
+
+//获取用户指定状态订单数量
+func OrderWithUserAndStatusCount(c *gin.Context)  {
+	appId,err :=CheckAppAuth(c)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+	
+	//获取用户openid
+	openId,err :=CheckUserAuth(c)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	
+	stat,err :=strconv.Atoi(c.Param("status"))
+	/* if err!=nil {
+		util.ResponseError(c.Writer,http.StatusBadRequest,"状态不是数字!")
+		return
+	} */
+	
+	//订单状态
+	iorderStatusArray :=make([]int,0)
+	iorderStatusArray = append(iorderStatusArray,stat)
+	
+	//订单支付状态
+	ipayStatusArray	  :=make([]int,0)
+	
+	
+	orderCount,err := service.OrderWithUserAndStatusCount(openId,iorderStatusArray,ipayStatusArray,appId)
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
+		return
+	}
+	
+	count :=&OrderCountWithUserAndStatus{}
+	count.Count=orderCount.Count
+	if orderCount.Count>0 {
+		count.Status="true"
+	}else{
+		count.Status="false"
+	}
+
+	c.JSON(http.StatusOK,count)
+}
+
 
 func OrderDetailWithNo(c *gin.Context)  {
 

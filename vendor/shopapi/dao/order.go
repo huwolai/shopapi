@@ -70,6 +70,10 @@ type OrderDetail struct  {
 	BaseDModel
 }
 
+type OrderCount struct  {
+	Count int64
+}
+
 func NewOrder() *Order {
 
 	return &Order{}
@@ -78,6 +82,11 @@ func NewOrder() *Order {
 func NewOrderDetail() *OrderDetail  {
 
 	return &OrderDetail{}
+}
+
+func NewOrderCount() *OrderCount  {
+
+	return &OrderCount{}
 }
 
 func (self *Order) OrderWithStatusLTTime(payStatus int,orderStatus int,time string) ([]*Order,error)  {
@@ -201,6 +210,36 @@ func (self *OrderDetail) OrderDetailWithUser(openId string,orderStatus []int,pay
 		return nil,err
 	}
 
+
+	return orders,err
+}
+
+//获取用户指定状态订单数量
+func (self *OrderCount) OrderWithUserAndStatusCount(openId string,orderStatus []int,payStatus []int,appId string) (*OrderCount,error)  {
+
+	sess := db.NewSession()
+	var orders *OrderCount
+
+	//builder :=sess.Select("count(id) as count").From("`order`").Where("open_id=?",openId).Where("app_id=?",appId)
+	builder :=sess.Select("count(id) as count").From("`order`")
+
+	if orderStatus!=nil&&len(orderStatus)>0{
+		builder =builder.Where("order_status in ?",orderStatus)
+	}
+
+	if payStatus!=nil&&len(payStatus) >0 {
+		builder =builder.Where("pay_status in ?",payStatus)
+	}
+	
+	//log.Error(builder.ToSql())
+	
+	_,err :=builder.LoadStructs(&orders)
+	if err!=nil{
+		return nil,err
+	}
+	if orders==nil{
+		return nil,nil
+	}
 
 	return orders,err
 }

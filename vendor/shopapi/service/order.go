@@ -501,6 +501,15 @@ func OrderByUser(openId string,orderStatus []int,payStatus []int,appId string)  
 	return orderDetails,err
 }
 
+//获取用户指定状态订单数量
+func OrderWithUserAndStatusCount(openId string,orderStatus []int,payStatus []int,appId string)  (*dao.OrderCount,error)  {
+
+	orderCount :=dao.NewOrderCount()
+	orderCount,err := orderCount.OrderWithUserAndStatusCount(openId,orderStatus,payStatus,appId)
+
+	return orderCount,err
+}
+
 //查询订单信息通过商户ID
 func OrderDetailWithMerchantId(merchantId int64,orderStatus []int,payStatus []int,appId string) ([]*dao.OrderDetail,error) {
 	orderDetail :=dao.NewOrderDetail()
