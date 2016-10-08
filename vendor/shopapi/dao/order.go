@@ -220,8 +220,8 @@ func (self *OrderCount) OrderWithUserAndStatusCount(openId string,orderStatus []
 	sess := db.NewSession()
 	var orders *OrderCount
 
-	//builder :=sess.Select("count(id) as count").From("`order`").Where("open_id=?",openId).Where("app_id=?",appId)
-	builder :=sess.Select("count(id) as count").From("`order`")
+	builder :=sess.Select("count(id) as count").From("`order`").Where("open_id=?",openId).Where("app_id=?",appId)
+	//builder :=sess.Select("count(id) as count").From("`order`")
 
 	if orderStatus!=nil&&len(orderStatus)>0{
 		builder =builder.Where("order_status in ?",orderStatus)
