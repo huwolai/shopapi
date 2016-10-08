@@ -423,7 +423,14 @@ func OrdersGet(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"查询失败！");
 		return
 	}
-	c.JSON(http.StatusOK,comm.ToArray(orders,orderToA))
+
+	results :=make([]*OrderDto,0)
+	if orders!=nil&&len(orders) > 0 {
+		for _,od :=range orders {
+			results = append(results,orderToA(od))
+		}
+	}
+	c.JSON(http.StatusOK,results)
 }
 
 func MerchantOrders(c *gin.Context)  {
