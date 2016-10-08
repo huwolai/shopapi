@@ -12,13 +12,20 @@ import (
 	"strconv"
 )
 
-func StartCron() {
+const (
+	//订单自动取消时间
+	ORDER_AUTO_CANCEL_TIME = 5 //单位分钟
+	//订单结算时间
+	ORDER_CAL_MAX_TIME = 30 //单位分钟
+)
+
+func  StartCron() {
 
 	c := cron.New()
 
 	c.AddFunc("0 0/6 * * * ?", OrderFetchMoney)
 
-	c.AddFunc("0 0/5 * * * ?", OrderAutoCancel)
+	c.AddFunc("0 0/2 * * * ?", OrderAutoCancel)
 
 	c.Start()
 }
@@ -27,7 +34,7 @@ func StartCron() {
 func OrderFetchMoney() {
 
 	order := dao.NewOrder()
-	tm := time.Now().Add(-time.Minute * 30)
+	tm := time.Now().Add(-time.Minute * ORDER_CAL_MAX_TIME)
 	stm := qtime.ToyyyyMMddHHmm(tm)
 	log.Info("-----------时间--------", stm)
 	orders, err := order.OrderWithStatusLTTime(comm.ORDER_PAY_STATUS_SUCCESS, comm.ORDER_STATUS_WAIT_SURE, stm)
@@ -129,9 +136,9 @@ func cal(order *dao.Order, calMoney float64, openId string, mark string) error {
 
 //订单自动取消
 func OrderAutoCancel() {
-
+	log.Info("开始扫描待需求的订单！")
 	order := dao.NewOrder()
-	tm := time.Now().Add(-time.Minute * 30)
+	tm := time.Now().Add(-time.Minute * ORDER_AUTO_CANCEL_TIME)
 	stm := qtime.ToyyyyMMddHHmm(tm)
 	orders, err := order.OrderWithNoPayAndLTTime(stm)
 	if err != nil {
@@ -140,13 +147,15 @@ func OrderAutoCancel() {
 	}
 
 	if orders != nil && len(orders) > 0 {
+
 		for _, order := range orders {
-			err := service.OrderCancel(order.No, "", order.AppId)
+			err := service.OrderAutoCancel(order.No, order.AppId)
 			if err != nil {
 				log.Error(err)
 				continue
 			}
 		}
+		log.Info("取消订单数:",len(orders))
 	} else {
 		log.Warn("没有需要取消的订单")
 	}
