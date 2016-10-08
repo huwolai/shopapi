@@ -411,10 +411,10 @@ func OrderWithUserAndStatusCount(c *gin.Context)  {
 	
 	
 	stat,err :=strconv.Atoi(c.Param("status"))
-	/* if err!=nil {
+	if err!=nil {
 		util.ResponseError(c.Writer,http.StatusBadRequest,"状态不是数字!")
 		return
-	} */
+	}
 	
 	//订单状态
 	iorderStatusArray :=make([]int,0)
