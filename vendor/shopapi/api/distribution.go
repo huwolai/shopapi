@@ -197,6 +197,24 @@ func DistributionProductCancel(c *gin.Context) {
 	util.ResponseSuccess(c.Writer)
 }
 
+func DistributionProductDelete(c *gin.Context)  {
+	sid :=c.Param("id")
+	id,err :=strconv.ParseInt(sid,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"id格式有误")
+		return
+	}
+
+	err =service.DistributionProductDelete(id)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"删除失败!")
+		return
+	}
+
+	util.ResponseSuccess(c.Writer)
+}
+
 /**
  查询分销商品信息
  */

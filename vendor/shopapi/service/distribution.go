@@ -83,6 +83,11 @@ func DistributionProductCancel(distributionId int64,openId,appId string) error  
 	return dao.NewUserDistribution().DeleteWithDistributionId(distributionId,openId,appId)
 }
 
+func DistributionProductDelete(id int64) error  {
+
+	return dao.NewDistributionProduct().DeleteWithId(id)
+}
+
 func DistributionWith(keyword string,pageIndex,pageSize uint64,noflags []string,flags []string) ([]*dao.DistributionProductDetail2,error)  {
 
 	return dao.NewDistributionProductDetail2().With(keyword,pageIndex,pageSize,noflags,flags)

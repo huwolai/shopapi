@@ -129,6 +129,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 	address := dao.NewAddress()
 	address,err = address.WithId(model.AddressId)
 	if err!=nil{
+		log.Error(err)
 		return nil,errors.New("查询地址失败!")
 	}
 	if address==nil{

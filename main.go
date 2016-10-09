@@ -259,6 +259,7 @@ func main() {
 		{
 			//分销商品信息
 			distribution.GET("/:id", api.DistributionProductWithId)
+			distribution.DELETE("/:id", api.DistributionProductDelete)
 
 		}
 		//建议
