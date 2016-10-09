@@ -19,6 +19,7 @@ type MerchantDetailDLL struct  {
 	//维度
 	Latitude float64
 	Address string
+	AddressId int64
 	Mobile string
 	//覆盖距离
 	CoverDistance float64
@@ -61,6 +62,18 @@ func MerchantUpdate(dll *MerchantDetailDLL) error  {
 	}
 	if merchant==nil {
 		return errors.New("商户没找到!")
+	}
+
+	//如果选择了地址 将地址信息填充到商户信息里
+	if merchant.AddressId!=0 {
+		address,err :=dao.NewAddress().WithId(merchant.AddressId)
+		if err!=nil{
+			log.Error("查询地址错误！")
+			return err
+		}
+		merchant.Address = address.Address
+		merchant.Latitude = address.Latitude
+		merchant.Longitude = address.Longitude
 	}
 	fillMerchant(merchant,dll)
 	err =merchant.MerchantUpdateTx(merchant,tx)
@@ -134,6 +147,9 @@ func fillMerchant(merchant *dao.Merchant,dll *MerchantDetailDLL)  {
 	if dll.Address!="" {
 		merchant.Address = dll.Address
 	}
+	if dll.AddressId!=0 {
+		merchant.AddressId = dll.AddressId
+	}
 	if dll.CoverDistance!=0 {
 		merchant.CoverDistance = dll.CoverDistance
 	}
@@ -174,6 +190,22 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 		}
 	}()
 
+	//如果有地址ID 将以地址ID对应的信息为准
+	if dll.AddressId!=0 {
+		address,err :=dao.NewAddress().WithId(dll.AddressId)
+		if err!=nil {
+			log.Error("地址查询失败！")
+			return nil,err
+		}
+		if address==nil{
+			log.Error("地址查询没有找到！")
+			return nil,errors.New("地址没有找到！")
+		}
+		dll.Longitude = address.Longitude
+		dll.Latitude = address.Latitude
+		dll.Address = address.Address
+	}
+
 	merchant = dao.NewMerchant()
 	merchant.Json=dll.Json
 	merchant.Name = dll.Name
@@ -184,6 +216,7 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 	merchant.Longitude = dll.Longitude
 	merchant.Latitude = dll.Latitude
 	merchant.Address = dll.Address
+	merchant.AddressId = dll.AddressId
 	merchant.CoverDistance = dll.CoverDistance
 	mid,err := merchant.InsertTx(tx)
 	if err!=nil{

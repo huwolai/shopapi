@@ -110,7 +110,7 @@ func (self*Merchant) MerchantExistWithOpenId(openId string,appId string) (bool,e
 }
 
 func (self *Merchant) MerchantUpdateTx(merchant *Merchant,tx *dbr.Tx) error  {
-	_,err :=tx.Update("merchant").Set("name",merchant.Name).Set("address",merchant.Address).Set("longitude",merchant.Longitude).Set("latitude",merchant.Latitude).Set("json",merchant.Json).Where("id=?",merchant.Id).Exec()
+	_,err :=tx.Update("merchant").Set("name",merchant.Name).Set("address",merchant.Address).Set("address_id",merchant.AddressId).Set("longitude",merchant.Longitude).Set("latitude",merchant.Latitude).Set("json",merchant.Json).Where("id=?",merchant.Id).Exec()
 	return err
 }
 

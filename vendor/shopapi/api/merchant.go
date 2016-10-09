@@ -24,6 +24,7 @@ type MerchantDto struct {
 	Status int `json:"status"`
 	Json string `json:"json"`
 	HasAvatar int `json:"has_avatar"`
+	AddressId int64 `json:"address_id"`
 	Address string `json:"address"`
 	//权重
 	Weight int `json:"weight"`
@@ -41,7 +42,7 @@ type MerchantDetailParam struct  {
 	Json string `json:"json"`
 	Address string `json:"address"`
 	//地址ID
-	AddressId string `json:"address_id"`
+	AddressId int64 `json:"address_id"`
 	Id int64 `json:"id"`
 	//经度
 	Longitude float64 `json:"longitude"`
@@ -74,6 +75,8 @@ type MerchantDetailDto struct  {
 	OpenId string `json:"open_id"`
 	Status int `json:"status"`
 	Json string `json:"json"`
+	//地址ID
+	AddressId int64 `json:"address_id"`
 	//商户地址
 	Address string `json:"address"`
 	//权重
@@ -580,6 +583,7 @@ func merchantDetailParamToDll(param MerchantDetailParam)  *service.MerchantDetai
 	dll.Json = param.Json
 	dll.AppId = param.AppId
 	dll.Address = param.Address
+	dll.AddressId = param.AddressId
 	dll.CoverDistance = param.CoverDistance * 1000
 	dll.Latitude = param.Latitude
 	dll.Longitude = param.Longitude
