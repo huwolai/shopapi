@@ -3,7 +3,7 @@ package dao
 import (
 	"github.com/gocraft/dbr"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
-	"fmt"
+	//"fmt"
 	//"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
