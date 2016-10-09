@@ -107,7 +107,7 @@ func (self *Order) With(pageIndex uint64,pageSize uint64,appId string) ([]*Order
 func (self *Order) WithCount(appId string) (int64,error)  {
 
 	var count int64
-	err :=db.NewSession().Select("count(*)").From(`order`).Where("app_id=?",appId).LoadValue(&count)
+	err :=db.NewSession().Select("count(*)").From("`order`").Where("app_id=?",appId).LoadValue(&count)
 
 	return count,err
 }
