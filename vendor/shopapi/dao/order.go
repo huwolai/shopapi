@@ -99,7 +99,7 @@ func (self *Order) OrderWithStatusLTTime(payStatus int,orderStatus int,time stri
 
 func (self *Order) With(pageIndex uint64,pageSize uint64,appId string) ([]*Order,error)  {
 	var orders []*Order
-	_,err :=db.NewSession().Select("*").From("`order`").Where("app_id=?",appId).Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&orders)
+	_,err :=db.NewSession().Select("*").From("`order`").Where("app_id=?",appId).Limit(pageSize).Offset((pageIndex-1)*pageSize).OrderDir("create_time",false).LoadStructs(&orders)
 
 	return orders,err
 }

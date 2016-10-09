@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS account_recharge(
 )CHARACTER SET utf8mb4;
 
 
--- 商户
+-- 商户主要信息
 CREATE TABLE IF NOT EXISTS merchant(
 
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -71,17 +71,17 @@ CREATE TABLE IF NOT EXISTS merchant(
 
 
 -- 商户营业时间
-CREATE TABLE IF NOT EXISTS merchant_open(
-  id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
-  merchant_id INT NOT NULL unique COMMENT '商户ID',
-  is_open int COMMENT '是否营业',
-  open_time_start VARCHAR(30) DEFAULT '' COMMENT '营业开始时间',
-  open_time_end VARCHAR(30) DEFAULT '' COMMENT '营业结束时间',
-  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
-
-)CHARACTER SET utf8mb4;
+# CREATE TABLE IF NOT EXISTS merchant_open(
+#   id BIGINT PRIMARY KEY AUTO_INCREMENT,
+#   app_id VARCHAR(255) DEFAULT '' COMMENT 'APPID',
+#   merchant_id INT NOT NULL unique COMMENT '商户ID',
+#   is_open int COMMENT '是否营业',
+#   open_time_start VARCHAR(30) DEFAULT '' COMMENT '营业开始时间',
+#   open_time_end VARCHAR(30) DEFAULT '' COMMENT '营业结束时间',
+#   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+#   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
+#
+# )CHARACTER SET utf8mb4;
 
 -- 商户每天服务时间(特殊表,不是标准电商表)
 CREATE TABLE IF NOT EXISTS merchant_service_time(

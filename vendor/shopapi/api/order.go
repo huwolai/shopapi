@@ -23,6 +23,7 @@ type OrderDto struct  {
 	MOpenId string
 	//商户ID
 	MerchantId int64 `json:"merchant_id"`
+	MerchantName string `json:"merchant_name"`
 	AddressId int64 `json:"address_id"`
 	Title string `json:"title"`
 	OrderNo string `json:"order_no"`
@@ -30,6 +31,9 @@ type OrderDto struct  {
 	CancelReason string `json:"cancel_reason"`
 	OrderStatus int `json:"order_status"`
 	PayStatus int `json:"pay_status"`
+	CouponAmount float64 `json:"coupon_amount"`
+	RealPrice float64 `json:"real_price"`
+	PayPrice float64 `json:"pay_price"`
 }
 
 type OrderDetailDto struct  {
@@ -625,12 +629,15 @@ func orderToA(order *dao.Order) *OrderDto {
 	a.CancelReason = order.CancelReason
 	a.Json = order.Json
 	a.MerchantId = order.MerchantId
+	a.MerchantName = order.MerchantName
 	a.MOpenId = order.MOpenId
 	a.OpenId = order.OpenId
 	a.OrderNo = order.No
 	a.Title = order.Title
 	a.PayStatus = order.PayStatus
 	a.OrderStatus = order.OrderStatus
+	a.RealPrice = order.RealPrice
+	a.PayPrice = order.PayPrice
 
 	return a
 }
