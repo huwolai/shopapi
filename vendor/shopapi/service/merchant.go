@@ -374,4 +374,9 @@ func MerchantOnline(openId string,appId string)  (*dao.MerchantOnline,error)  {
 
 	return online,err
 }
+//用户在线状态更改
+func MerchantOnlineAndChange(openId string,appId string,status int) error  {
+	merchant :=dao.NewMerchant()
+	return merchant.MerchantOnlineAndChange(openId,appId,status)
+}
 

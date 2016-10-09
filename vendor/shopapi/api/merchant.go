@@ -678,3 +678,34 @@ func MerchantOnline(c *gin.Context)  {
 
 	c.JSON(http.StatusOK,online)
 }
+//用户在线状态更改
+func MerchantOnlineAndChange(c *gin.Context)  {
+	appId,err :=CheckAppAuth(c)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+	
+	//获取用户openid
+	openId,err :=CheckUserAuth(c)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	stat,err :=strconv.Atoi(c.Param("status"))
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusBadRequest,"状态不是数字!")
+		return
+	}
+
+	err = service.MerchantOnlineAndChange(openId,appId,stat)
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
+		return
+	}
+	
+	util.ResponseSuccess(c.Writer)
+}

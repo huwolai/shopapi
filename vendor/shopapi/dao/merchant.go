@@ -225,4 +225,9 @@ func (self *MerchantOnline) MerchantOnline(openId string,appId string) (*Merchan
 
 	return online,err
 }
+//用户在线状态更改
+func (self *Merchant) MerchantOnlineAndChange(openId string,appId string,status int) error {
+	_,err :=db.NewSession().Update("merchant").Set("online",status).Where("open_id=?",openId).Where("app_id=?",appId).Exec()
+	return err
+}
 
