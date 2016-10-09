@@ -652,3 +652,29 @@ func merchantServiceTimesToDto(models []*dao.MerchantServiceTime,merchantId int6
 
 	return dto
 }
+
+//用户在线状态
+func MerchantOnline(c *gin.Context)  {
+	appId,err :=CheckAppAuth(c)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+	
+	//获取用户openid
+	openId,err :=CheckUserAuth(c)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}		
+	
+	online,err := service.MerchantOnline(openId,appId)
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK,online)
+}

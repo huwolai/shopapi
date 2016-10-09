@@ -104,6 +104,8 @@ func main() {
 			//用户订单
 			user.GET("/:open_id/orders", api.OrderWithUserAndStatus)
 			user.GET("/:open_id/orders/status/:status",api.OrderWithUserAndStatusCount)
+			//用户在线状态
+			user.GET("/:open_id/merchant/online", api.MerchantOnline)
 			//用户收藏
 			user.POST("/:open_id/favorites", api.FavoritesAdd)
 			user.GET("/:open_id/favorites", api.FavoritesGet)
