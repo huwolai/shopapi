@@ -104,6 +104,14 @@ func (self *Order) With(pageIndex uint64,pageSize uint64,appId string) ([]*Order
 	return orders,err
 }
 
+func (self *Order) WithCount(appId string) (int64,error)  {
+
+	var count int64
+	err :=db.NewSession().Select("count(*)").From(`order`).Where("app_id=?",appId).LoadValue(&count)
+
+	return count,err
+}
+
 //查询没有付款的订单 并且时间小于某个时间的
 func (self *Order) OrderWithNoPayAndLTTime(time string) ([]*Order,error) {
 	var orders []*Order

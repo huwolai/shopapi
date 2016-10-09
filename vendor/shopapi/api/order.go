@@ -483,13 +483,20 @@ func OrdersGet(c *gin.Context)  {
 		return
 	}
 
+	total,err :=service.OrdersGetCount(appId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询订单总数量失败！")
+		return
+	}
+
 	results :=make([]*OrderDto,0)
 	if orders!=nil&&len(orders) > 0 {
 		for _,od :=range orders {
 			results = append(results,orderToA(od))
 		}
 	}
-	c.JSON(http.StatusOK,results)
+	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),results))
 }
 
 func MerchantOrders(c *gin.Context)  {

@@ -945,6 +945,10 @@ func OrdersGet(pageIndex uint64,pageSize uint64,appId string)([]*dao.Order,error
 
 	return dao.NewOrder().With(pageIndex,pageSize,appId)
 }
+func OrdersGetCount(appId string)(int64,error) {
+
+	return dao.NewOrder().WithCount(appId)
+}
 
 
 func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
