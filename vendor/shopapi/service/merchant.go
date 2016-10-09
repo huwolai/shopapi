@@ -402,8 +402,8 @@ func MerchantOpenWithMerchantId(merchantId int64)  (*dao.MerchantOpen,error)  {
 //用户在线状态
 func MerchantOnline(openId string,appId string)  (*dao.MerchantOnline,error)  {
 
-	online :=dao.NewMerchantOnline()
-	online,err := online.MerchantOnline(openId,appId)
+	MerchantOnline :=dao.NewMerchantOnline()
+	online,err := MerchantOnline.MerchantOnline(openId,appId)
 
 	return online,err
 }
