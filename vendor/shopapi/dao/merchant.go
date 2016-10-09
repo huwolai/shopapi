@@ -50,6 +50,10 @@ type MerchantDetail struct  {
 
 }
 
+type MerchantOnline struct  {
+	Online int
+}
+
 func NewMerchantDetail() *MerchantDetail  {
 
 	return &MerchantDetail{}
@@ -58,6 +62,11 @@ func NewMerchantDetail() *MerchantDetail  {
 func NewMerchant() *Merchant  {
 
 	return &Merchant{}
+}
+
+func NewMerchantOnline() *MerchantOnline  {
+
+	return &MerchantOnline{}
 }
 
 func (self *Merchant) InsertTx(tx *dbr.Tx) (int64,error) {
@@ -196,5 +205,31 @@ func (self *Merchant) CountWith(flags []string,noflags []string,status string,ap
 	return count,err
 }
 
+//用户在线状态
+func (self *MerchantOnline) MerchantOnline(openId string,appId string) (*MerchantOnline,error)  {
 
+	sess := db.NewSession()
+	var online *MerchantOnline
+
+	builder :=sess.Select("online").From("`merchant`")
+	builder = builder.Where("open_id=?",openId)
+	builder = builder.Where("app_id=?",appId)
+	
+	//log.Error(builder.ToSql())
+	
+	_,err :=builder.LoadStructs(&online)
+	if err!=nil{
+		return nil,err
+	}
+	if online==nil{
+		return nil,nil
+	}
+
+	return online,err
+}
+//用户在线状态更改
+func (self *Merchant) MerchantOnlineAndChange(openId string,appId string,status int) error {
+	_,err :=db.NewSession().Update("merchant").Set("online",status).Where("open_id=?",openId).Where("app_id=?",appId).Exec()
+	return err
+}
 

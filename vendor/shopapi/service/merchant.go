@@ -366,3 +366,17 @@ func MerchantOpenWithMerchantId(merchantId int64)  (*dao.MerchantOpen,error)  {
 	return merchantOpen,err
 }
 
+//用户在线状态
+func MerchantOnline(openId string,appId string)  (*dao.MerchantOnline,error)  {
+
+	online :=dao.NewMerchantOnline()
+	online,err := online.MerchantOnline(openId,appId)
+
+	return online,err
+}
+//用户在线状态更改
+func MerchantOnlineAndChange(openId string,appId string,status int) error  {
+	merchant :=dao.NewMerchant()
+	return merchant.MerchantOnlineAndChange(openId,appId,status)
+}
+
