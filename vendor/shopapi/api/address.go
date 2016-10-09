@@ -65,9 +65,13 @@ func AddressWithOpenId(c *gin.Context)  {
 		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证有误!")
 		return
 	}
+	flagsStr :=c.Query("flags")
+	noflagsStr :=c.Query("noflags")
+
+	flags,noflags :=GetFlagsAndNoFlags(flagsStr,noflagsStr)
 	appId := security.GetAppId2(c.Request)
 
-	addresses,err := service.AddressWithOpenId(openId,appId)
+	addresses,err := service.AddressWithOpenId(openId,flags,noflags,appId)
 	if err!=nil {
 		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
 		return

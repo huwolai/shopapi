@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS merchant(
   longitude NUMERIC(14,10)  COMMENT '经度',
   latitude NUMERIC(14,10) COMMENT '维度',
   address VARCHAR(255) DEFAULT '' COMMENT '商户地址',
+  address_id BIGINT COMMENT '地址ID',
   cover_distance INT COMMENT '覆盖距离 单位米',
   weight int COMMENT '商户权重',
   status INT COMMENT '商户状态 1.正常 0.关闭',
@@ -67,6 +68,7 @@ CREATE TABLE IF NOT EXISTS merchant(
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'
 )CHARACTER SET utf8mb4;
+
 
 -- 商户营业时间
 CREATE TABLE IF NOT EXISTS merchant_open(

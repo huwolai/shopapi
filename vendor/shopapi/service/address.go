@@ -16,6 +16,7 @@ type AddressDto struct  {
 	Address string `json:"address"`
 	Weight int `json:"weight"`
 	Json string `json:"json"`
+	Flag  string `json:"flag"`
 	AppId string `json:"app_id"`
 
 }
@@ -33,9 +34,9 @@ func AddressWithRecom(openId string,appId string) (*dao.Address,error) {
 	return address,err
 }
 
-func AddressWithOpenId(openId,appId string) ([]*dao.Address,error)  {
+func AddressWithOpenId(openId string,flags,noflags []string,appId string) ([]*dao.Address,error)  {
 	address :=dao.NewAddress()
-	addressList,err := address.AddressWithOpenId(openId,appId)
+	addressList,err := address.AddressWithOpenId(openId,flags,noflags,appId)
 	return addressList,err
 }
 
@@ -121,5 +122,6 @@ func AddressDtoToModel(dto *AddressDto) *dao.Address {
 	model.Name = dto.Name
 	model.Mobile = dto.Mobile
 	model.Id = dto.Id
+	model.Flag = dto.Flag
 	return model
 }

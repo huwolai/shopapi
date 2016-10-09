@@ -16,6 +16,7 @@ type Address struct  {
 	Address string
 	Weight int
 	Json string
+	Flag string
 }
 
 func NewAddress() *Address  {
@@ -74,8 +75,16 @@ func (self *Address) AddressWithRecom(openId string,appId string) (*Address,erro
 	return address,err
 }
 
-func (self *Address) AddressWithOpenId(openId string,appId string) ([]*Address,error)  {
+func (self *Address) AddressWithOpenId(openId string,flags []string,noflags []string,appId string) ([]*Address,error)  {
 	var address []*Address
-	_,err :=db.NewSession().Select("*").From("address").Where("open_id=?",openId).Where("app_id=?",appId).OrderDir("weight",false).LoadStructs(&address)
+	builder :=db.NewSession().Select("*").From("address").Where("open_id=?",openId).Where("app_id=?",appId).OrderDir("weight",false)
+	if flags!=nil&&len(flags)>0{
+		builder = builder.Where("flag in ?",flags)
+	}
+
+	if noflags!=nil&&len(noflags) >0 {
+		builder = builder.Where("flag not in ?",noflags)
+	}
+	_,err := builder.LoadStructs(&address)
 	return address,err
 }

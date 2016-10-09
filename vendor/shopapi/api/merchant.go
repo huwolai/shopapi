@@ -40,6 +40,8 @@ type MerchantDetailParam struct  {
 	OpenId string `json:"open_id"`
 	Json string `json:"json"`
 	Address string `json:"address"`
+	//地址ID
+	AddressId string `json:"address_id"`
 	Id int64 `json:"id"`
 	//经度
 	Longitude float64 `json:"longitude"`
