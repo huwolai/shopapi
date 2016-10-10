@@ -12,9 +12,18 @@ type Account struct  {
 	Status int
 }
 
+type GetOnKey struct  {
+	Status int
+}
+
 func NewAccount() *Account  {
 
 	return &Account{}
+}
+
+func NewGetOnKey() *GetOnKey  {
+
+	return &GetOnKey{}
 }
 
 func (self *Account) Insert() error {
@@ -58,4 +67,17 @@ func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,mobile string
 	_,err :=db.NewSession().Select("*").From("account").Where("app_id=?",appId).Where("mobile=?",mobile).Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&list)
 
 	return list,err
+}
+//配置登入界面
+func (self *GetOnKey) GetOnKey() (*GetOnKey,error) {
+	var GetOnKey *GetOnKey
+	
+	builder :=db.NewSession().Select("status").From("flags")
+	
+	builder = builder.Where("flag = ?","login_type")
+	builder = builder.Where("type = ?","ACCOUNT")
+	
+	_,err :=builder.LoadStructs(&GetOnKey)	
+
+	return GetOnKey,err
 }
