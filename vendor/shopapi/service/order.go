@@ -670,6 +670,7 @@ func PublishOrderPaidEvent(items []*dao.OrderItem,order *dao.Order) error {
 		orderEventItems := make([]*queue.OrderEventItem,0)
 		for _,oitem :=range items {
 			eventItem :=queue.NewOrderEventItem()
+			eventItem.Title = oitem.Title
 			eventItem.Json = oitem.Json
 			eventItem.Num = oitem.Num
 			eventItem.OrderNo = oitem.No
@@ -984,21 +985,21 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	totalActPrice := 0.0
 	totalPrice :=0.0
 	for _,item :=range items  {
-		prodSku := dao.NewProdSku()
-		prodSku,err :=prodSku.WithSkuNo(item.SkuNo)
+		prodSkuDetail := dao.NewProdSkuDetail()
+		prodSkuDetail,err :=prodSkuDetail.WithSkuNo(item.SkuNo)
 		if err!=nil{
 			return nil,err
 		}
-		if prodSku==nil{
+		if prodSkuDetail==nil{
 			return nil,errors.New("没有找到此商品")
 		}
 
-		if prodSku.Stock<=0 {
+		if prodSkuDetail.Stock<=0 {
 			return nil,errors.New("此商品已没有库存!")
 		}
-		totalActPrice+=prodSku.DisPrice*float64(item.Num)
-		totalPrice += prodSku.Price*float64(item.Num)
-		err =orderItemSave(prodSku,item,order.No,tx)
+		totalActPrice+=prodSkuDetail.DisPrice*float64(item.Num)
+		totalPrice += prodSkuDetail.Price*float64(item.Num)
+		err =orderItemSave(prodSkuDetail,item,order.No,tx)
 		if err!=nil{
 			return nil,err
 		}
@@ -1016,18 +1017,19 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	return order,err
 }
 
-func orderItemSave(prodSku *dao.ProdSku,item OrderItemModel,orderNo string,tx *dbr.Tx) error  {
+func orderItemSave(prodSkuDetail *dao.ProdSkuDetail,item OrderItemModel,orderNo string,tx *dbr.Tx) error  {
 	orderItem :=dao.NewOrderItem()
 	orderItem.No = orderNo
-	orderItem.ProdId = prodSku.ProdId
-	orderItem.SkuNo = prodSku.SkuNo
+	orderItem.Title = prodSkuDetail.Title
+	orderItem.ProdId = prodSkuDetail.ProdId
+	orderItem.SkuNo = prodSkuDetail.SkuNo
 	orderItem.DbnNo = item.DbnNo
-	orderItem.AppId = prodSku.AppId
+	orderItem.AppId = prodSkuDetail.AppId
 	orderItem.Num = item.Num
-	orderItem.OfferUnitPrice = prodSku.Price
-	orderItem.OfferTotalPrice = prodSku.Price*float64(item.Num)
-	orderItem.BuyUnitPrice = prodSku.DisPrice
-	orderItem.BuyTotalPrice = prodSku.DisPrice*float64(item.Num)
+	orderItem.OfferUnitPrice = prodSkuDetail.Price
+	orderItem.OfferTotalPrice = prodSkuDetail.Price*float64(item.Num)
+	orderItem.BuyUnitPrice = prodSkuDetail.DisPrice
+	orderItem.BuyTotalPrice = prodSkuDetail.DisPrice*float64(item.Num)
 	orderItem.Json = item.Json
 	return  orderItem.InsertTx(tx)
 }

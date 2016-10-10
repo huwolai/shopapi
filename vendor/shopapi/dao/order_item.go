@@ -9,6 +9,7 @@ import (
 type OrderItem struct  {
 	Id int64
 	No string
+	Title string
 	AppId string
 	OpenId string
 	ProdId int64
@@ -34,6 +35,7 @@ type OrderItem struct  {
 type OrderItemDetail struct  {
 	Id int64
 	No string
+	Title string
 	AppId string
 	OpenId string
 	//商户名称
@@ -75,7 +77,7 @@ func NewOrderItemDetail() *OrderItemDetail {
 	return &OrderItemDetail{}
 }
 func (self* OrderItem) InsertTx(tx *dbr.Tx) error {
-	_,err :=tx.InsertInto("order_item").Columns("no","dbn_no","coupon_amount","omit_money","dbn_amount","merchant_amount","app_id","prod_id","sku_no","num","offer_unit_price","offer_total_price","buy_unit_price","buy_total_price","json").Record(self).Exec()
+	_,err :=tx.InsertInto("order_item").Columns("no","title","dbn_no","coupon_amount","omit_money","dbn_amount","merchant_amount","app_id","prod_id","sku_no","num","offer_unit_price","offer_total_price","buy_unit_price","buy_total_price","json").Record(self).Exec()
 
 	return err
 }

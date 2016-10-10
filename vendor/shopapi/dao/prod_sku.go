@@ -18,6 +18,26 @@ type ProdSku struct  {
 	Json string
 }
 
+type ProdSkuDetail struct  {
+	Id int64
+	SkuNo string
+	//商品标题
+	Title string
+	ProdId int64
+	AppId string
+	SoldNum int
+	Price float64
+	DisPrice float64
+	AttrSymbolPath string
+	Stock int
+	Json string
+}
+
+func NewProdSkuDetail() *ProdSkuDetail  {
+
+	return &ProdSkuDetail{}
+}
+
 func NewProdSku() *ProdSku  {
 
 	return &ProdSku{}
@@ -43,6 +63,13 @@ func (self *ProdSku) WithSkuNo(skuNo string) (*ProdSku,error)   {
 	_,err :=db.NewSession().Select("*").From("prod_sku").Where("sku_no=?",skuNo).LoadStructs(&prodSku)
 
 	return prodSku,err
+}
+
+func (self *ProdSkuDetail) WithSkuNo(skuNo string) (*ProdSkuDetail,error)  {
+	var prodSkuDetail *ProdSkuDetail
+	_,err :=db.NewSession().Select("prod_sku.*,product.title").From("prod_sku").Join("product","prod_sku.prod_id=product.id").Where("sku_no=?",skuNo).LoadStructs(&prodSkuDetail)
+
+	return prodSkuDetail,err
 }
 
 func (self *ProdSku) SoldNumInc(num int,skuNo string,appId string,tx *dbr.Tx) error  {
