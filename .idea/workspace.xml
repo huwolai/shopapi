@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3fa3985d-bc96-4be5-a639-bbb07332a7f3" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/sql/init.sql" afterPath="$PROJECT_DIR$/config/sql/init.sql" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/shopapi/dao/order_item.go" afterPath="$PROJECT_DIR$/vendor/shopapi/dao/order_item.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/shopapi/dao/prod_sku.go" afterPath="$PROJECT_DIR$/vendor/shopapi/dao/prod_sku.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/shopapi/service/order.go" afterPath="$PROJECT_DIR$/vendor/shopapi/service/order.go" />
-    </list>
+    <list default="true" id="3fa3985d-bc96-4be5-a639-bbb07332a7f3" name="Default" comment="" />
     <ignored path="shopapi.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -175,8 +169,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1544" />
-    <option name="y" value="83" />
+    <option name="x" value="1546" />
+    <option name="y" value="180" />
     <option name="width" value="1276" />
     <option name="height" value="777" />
   </component>
@@ -867,15 +861,15 @@
       <option name="presentableId" value="Default" />
       <updated>1475893952268</updated>
       <workItem from="1475893957105" duration="119000" />
-      <workItem from="1475894077951" duration="28509000" />
+      <workItem from="1475894077951" duration="29104000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="28628000" />
+    <option name="totallyTimeSpent" value="29223000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1544" y="83" width="1276" height="777" extended-state="0" />
+    <frame x="1546" y="180" width="1276" height="777" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
