@@ -280,6 +280,13 @@ func main() {
 		{
 			flags.GET("/", api.FlagsWithTypes)
 		}
+		
+		//数据初始化
+		init := v1.Group("/init")
+		{
+			//商品初始化售出数量
+			init.GET("/product", api.ProductInitNum)
+		}
 	}
 
 	//设置上传目录
