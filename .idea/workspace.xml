@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3fa3985d-bc96-4be5-a639-bbb07332a7f3" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.go" afterPath="$PROJECT_DIR$/main.go" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/shopapi/api/account.go" afterPath="$PROJECT_DIR$/vendor/shopapi/api/account.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/shopapi/dao/account.go" afterPath="$PROJECT_DIR$/vendor/shopapi/dao/account.go" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/shopapi/service/account.go" afterPath="$PROJECT_DIR$/vendor/shopapi/service/account.go" />
     </list>
     <ignored path="shopapi.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -27,21 +23,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="account.go" pinned="false" current-in-tab="false">
+      <file leaf-file-name="account.go" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/account.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="226" column="58" selection-start-line="226" selection-start-column="58" selection-end-line="226" selection-end-column="58" />
+            <state relative-caret-position="414">
+              <caret line="237" column="29" selection-start-line="237" selection-start-column="29" selection-end-line="237" selection-end-column="29" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.go" pinned="false" current-in-tab="true">
+      <file leaf-file-name="main.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="26">
-              <caret line="75" column="15" selection-start-line="75" selection-start-column="15" selection-end-line="75" selection-end-column="15" />
+            <state relative-caret-position="346">
+              <caret line="95" column="49" selection-start-line="95" selection-start-column="49" selection-end-line="95" selection-end-column="49" />
               <folding />
             </state>
           </provider>
@@ -165,8 +161,8 @@
         <option value="$PROJECT_DIR$/vendor/shopapi/api/order.go" />
         <option value="$PROJECT_DIR$/vendor/shopapi/dao/account.go" />
         <option value="$PROJECT_DIR$/vendor/shopapi/service/account.go" />
-        <option value="$PROJECT_DIR$/vendor/shopapi/api/account.go" />
         <option value="$PROJECT_DIR$/main.go" />
+        <option value="$PROJECT_DIR$/vendor/shopapi/api/account.go" />
       </list>
     </option>
   </component>
@@ -177,8 +173,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1483" />
-    <option name="y" value="74" />
+    <option name="x" value="1453" />
+    <option name="y" value="66" />
     <option name="width" value="1425" />
     <option name="height" value="865" />
   </component>
@@ -869,15 +865,15 @@
       <option name="presentableId" value="Default" />
       <updated>1475893952268</updated>
       <workItem from="1475893957105" duration="119000" />
-      <workItem from="1475894077951" duration="36925000" />
+      <workItem from="1475894077951" duration="37750000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="37044000" />
+    <option name="totallyTimeSpent" value="37869000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1483" y="74" width="1425" height="865" extended-state="0" />
+    <frame x="1453" y="66" width="1425" height="865" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1171,18 +1167,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/account.go">
+    <entry file="file://$PROJECT_DIR$/main.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="226" column="58" selection-start-line="226" selection-start-column="58" selection-end-line="226" selection-end-column="58" />
+        <state relative-caret-position="346">
+          <caret line="95" column="49" selection-start-line="95" selection-start-column="49" selection-end-line="95" selection-end-column="49" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.go">
+    <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/account.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="26">
-          <caret line="75" column="15" selection-start-line="75" selection-start-column="15" selection-end-line="75" selection-end-column="15" />
+        <state relative-caret-position="414">
+          <caret line="237" column="29" selection-start-line="237" selection-start-column="29" selection-end-line="237" selection-end-column="29" />
           <folding />
         </state>
       </provider>

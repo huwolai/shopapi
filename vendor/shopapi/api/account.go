@@ -240,6 +240,7 @@ func accountToA(model *dao.Account) *Account  {
 	a.Mobile = model.Mobile
 	a.Money = model.Money
 	a.Status = model.Status
+	a.OpenId = model.OpenId
 
 	return a
 }
