@@ -64,9 +64,24 @@ func (self *Account) AccountUpdateStatus(status int,openId string,appId string) 
 //查询用户
 func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string) ([]*Account,error)  {
 	var list []*Account
-	_,err :=db.NewSession().Select("*").From("account").Where("app_id=?",appId).Where("mobile=?",mobile).Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&list)
+	builder :=db.NewSession().Select("*").From("account").Where("app_id=?",appId).OrderDir("create_time",false)
+	if mobile!=""{
+		builder = builder.Where("mobile like ?",mobile + "%")
+	}
 
+	_,err :=builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&list)
 	return list,err
+}
+
+func (self *Account) AccountsWithCount(mobile string,appId string) (int64,error) {
+	builder :=db.NewSession().Select("count(*)").From("account").Where("app_id=?",appId)
+	if mobile!=""{
+		builder = builder.Where("mobile like ?",mobile + "%")
+	}
+	var count int64
+	_,err :=builder.Load(&count)
+
+	return count,err
 }
 //配置登入界面
 func (self *GetOnKey) GetOnKey() (*GetOnKey,error) {
