@@ -275,3 +275,9 @@ func AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string) (
 
 	return nil,nil
 }
+//配置登入界面
+func GetOnKey() (*dao.GetOnKey,error)   {
+	GetOnKey :=dao.NewGetOnKey()
+	GetOnKey,err :=GetOnKey.GetOnKey()
+	return GetOnKey,err
+}

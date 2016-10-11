@@ -211,3 +211,17 @@ func accountDetailModelToDto(model *service.AccountDetailModel) *AccountDetailDt
 	dto.CashoutAmount = float64(model.CashoutAmount/100.0)
 	return dto
 }
+//配置登入界面
+func GetOnKey(c *gin.Context)  {
+	GetOnKey,err :=service.GetOnKey()
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	param :=map[string]interface{}{
+		"res":GetOnKey.Status,
+	}
+	
+	c.JSON(http.StatusOK,param)
+}

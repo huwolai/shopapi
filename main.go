@@ -90,6 +90,8 @@ func main() {
 		users := v1.Group("/users")
 		{
 			users.POST("/loginSMS", api.LoginForSMS)
+			//配置登入界面
+			users.GET("/getonkey", api.GetOnKey)
 		}
 		user := v1.Group("/user")
 		{
@@ -126,7 +128,7 @@ func main() {
 			//删除银行信息
 			user.DELETE("/:open_id/bank/:id", api.UserBankDel)
 			//是否是厨师
-			user.GET("/:open_id/ismerchant", api.MerchantIs)
+			user.GET("/:open_id/ismerchant", api.MerchantIs)			
 
 		}
 		//分类
