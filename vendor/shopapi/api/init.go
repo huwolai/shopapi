@@ -14,3 +14,12 @@ func ProductInitNum(c *gin.Context)  {
 	}	
 	util.ResponseSuccess(c.Writer)
 }
+//商品 售出数量 定时增加
+func ProductAddNum(c *gin.Context)  {
+	err :=service.ProductAddNum()
+	if err!=nil {
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}	
+	util.ResponseSuccess(c.Writer)
+}
