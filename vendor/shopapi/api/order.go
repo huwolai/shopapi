@@ -34,6 +34,7 @@ type OrderDto struct  {
 	CouponAmount float64 `json:"coupon_amount"`
 	RealPrice float64 `json:"real_price"`
 	PayPrice float64 `json:"pay_price"`
+	CreateTime string `json:"create_time"`
 }
 
 type OrderDetailDto struct  {
@@ -645,6 +646,8 @@ func orderToA(order *dao.Order) *OrderDto {
 	a.OrderStatus = order.OrderStatus
 	a.RealPrice = order.RealPrice
 	a.PayPrice = order.PayPrice
+	a.CreateTime = qtime.ToyyyyMMddHHmm(order.CreateTime)
+	
 
 	return a
 }

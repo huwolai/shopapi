@@ -273,7 +273,12 @@ func loginSMSOfCommuser(mobile,code,appId string) ( map[string]interface{},error
 func AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string) ([]*dao.Account,error)   {
 
 
-	return nil,nil
+	return dao.NewAccount().AccountsWith(pageIndex,pageSize,mobile,appId)
+}
+
+func AccountsWithCount(mobile string,appId string) (int64,error) {
+
+	return dao.NewAccount().AccountsWithCount(mobile,appId)
 }
 //配置登入界面
 func GetOnKey() (*dao.GetOnKey,error)   {

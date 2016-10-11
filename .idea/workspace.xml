@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3fa3985d-bc96-4be5-a639-bbb07332a7f3" name="Default" comment="" />
+    <list default="true" id="3fa3985d-bc96-4be5-a639-bbb07332a7f3" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/shopapi/api/account.go" afterPath="$PROJECT_DIR$/vendor/shopapi/api/account.go" />
+    </list>
     <ignored path="shopapi.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -21,65 +23,41 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="account.go" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/account.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="414">
+              <caret line="237" column="29" selection-start-line="237" selection-start-column="29" selection-end-line="237" selection-end-column="29" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="main.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="243" column="64" selection-start-line="243" selection-start-column="64" selection-end-line="243" selection-end-column="64" />
+            <state relative-caret-position="346">
+              <caret line="95" column="49" selection-start-line="95" selection-start-column="49" selection-end-line="95" selection-end-column="49" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="order.go" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/vendor/shopapi/service/order.go">
+      <file leaf-file-name="account.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/shopapi/dao/account.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="128">
-              <caret line="669" column="29" selection-start-line="669" selection-start-column="29" selection-end-line="669" selection-end-column="29" />
+            <state relative-caret-position="64">
+              <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="12" selection-end-column="1" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="order.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vendor/gitlab.qiyunxin.com/tangtao/utils/queue/order.go">
+      <file leaf-file-name="account.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/shopapi/service/account.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="98">
-              <caret line="63" column="1" selection-start-line="63" selection-start-column="1" selection-end-line="63" selection-end-column="1" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="order_item.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vendor/shopapi/dao/order_item.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1152">
-              <caret line="76" column="33" selection-start-line="76" selection-start-column="33" selection-end-line="76" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="init.sql" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/config/sql/init.sql">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="141">
-              <caret line="299" column="14" selection-start-line="299" selection-start-column="14" selection-end-line="299" selection-end-column="14" />
-              <folding>
-                <marker date="1476068215000" expanded="true" signature="2048:2895" ph="CREATE TABLE... merchant" />
-                <marker date="1476068215000" expanded="true" signature="2911:3459" ph="CREATE TABLE... merchant_open" />
-                <marker date="1476068215000" expanded="true" signature="11715:12859" ph="CREATE TABLE... order_item" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="prod_sku.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vendor/shopapi/dao/prod_sku.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="28" column="8" selection-start-line="28" selection-start-column="8" selection-end-line="28" selection-end-column="8" />
+            <state relative-caret-position="362">
+              <caret line="280" column="23" selection-start-line="280" selection-start-column="23" selection-end-line="280" selection-end-column="23" />
               <folding />
             </state>
           </provider>
@@ -95,22 +73,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="address.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vendor/shopapi/service/address.go">
+      <file leaf-file-name="order.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/shopapi/service/order.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="214">
-              <caret line="32" column="39" selection-start-line="32" selection-start-column="39" selection-end-line="32" selection-end-column="39" />
+            <state relative-caret-position="-427">
+              <caret line="529" column="5" selection-start-line="529" selection-start-column="5" selection-end-line="529" selection-end-column="5" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="address.go" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vendor/shopapi/dao/address.go">
+      <file leaf-file-name="init.sql" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/config/sql/init.sql">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="166">
-              <caret line="71" column="21" selection-start-line="71" selection-start-column="21" selection-end-line="71" selection-end-column="21" />
-              <folding />
+            <state relative-caret-position="224">
+              <caret line="14" column="30" selection-start-line="14" selection-start-column="30" selection-end-line="14" selection-end-column="30" />
+              <folding>
+                <marker date="1476068215000" expanded="true" signature="2048:2895" ph="CREATE TABLE... merchant" />
+                <marker date="1476068215000" expanded="true" signature="2911:3459" ph="CREATE TABLE... merchant_open" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -118,11 +99,31 @@
       <file leaf-file-name="order.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/order.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="352">
-              <caret line="216" column="37" selection-start-line="216" selection-start-column="37" selection-end-line="216" selection-end-column="37" />
+            <state relative-caret-position="279">
+              <caret line="478" column="45" selection-start-line="477" selection-start-column="8" selection-end-line="478" selection-end-column="45" />
               <folding>
-                <marker date="1476007375000" expanded="true" signature="9508:9596" ph="/*...*/" />
+                <marker date="1476154227000" expanded="true" signature="9548:9636" ph="/*...*/" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="constant.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/shopapi/comm/constant.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="327">
+              <caret line="32" column="12" selection-start-line="32" selection-start-column="12" selection-end-line="32" selection-end-column="12" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="order.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/shopapi/dao/order.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="304">
+              <caret line="109" column="63" selection-start-line="109" selection-start-column="63" selection-end-line="109" selection-end-column="63" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -151,14 +152,17 @@
         <option value="$PROJECT_DIR$/vendor/shopapi/dao/distribution_product.go" />
         <option value="$PROJECT_DIR$/vendor/shopapi/service/distribution.go" />
         <option value="$PROJECT_DIR$/vendor/shopapi/api/distribution.go" />
-        <option value="$PROJECT_DIR$/main.go" />
-        <option value="$PROJECT_DIR$/vendor/shopapi/api/order.go" />
         <option value="$PROJECT_DIR$/vendor/shopapi/dao/order.go" />
         <option value="$PROJECT_DIR$/vendor/shopapi/dao/prod_sku.go" />
         <option value="$PROJECT_DIR$/vendor/shopapi/dao/order_item.go" />
         <option value="$PROJECT_DIR$/config/sql/init.sql" />
         <option value="$PROJECT_DIR$/vendor/gitlab.qiyunxin.com/tangtao/utils/queue/order.go" />
         <option value="$PROJECT_DIR$/vendor/shopapi/service/order.go" />
+        <option value="$PROJECT_DIR$/vendor/shopapi/api/order.go" />
+        <option value="$PROJECT_DIR$/vendor/shopapi/dao/account.go" />
+        <option value="$PROJECT_DIR$/vendor/shopapi/service/account.go" />
+        <option value="$PROJECT_DIR$/main.go" />
+        <option value="$PROJECT_DIR$/vendor/shopapi/api/account.go" />
       </list>
     </option>
   </component>
@@ -169,10 +173,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1546" />
-    <option name="y" value="180" />
-    <option name="width" value="1276" />
-    <option name="height" value="777" />
+    <option name="x" value="1453" />
+    <option name="y" value="66" />
+    <option name="width" value="1425" />
+    <option name="height" value="865" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -861,15 +865,15 @@
       <option name="presentableId" value="Default" />
       <updated>1475893952268</updated>
       <workItem from="1475893957105" duration="119000" />
-      <workItem from="1475894077951" duration="29104000" />
+      <workItem from="1475894077951" duration="37750000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="29223000" />
+    <option name="totallyTimeSpent" value="37869000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1546" y="180" width="1276" height="777" extended-state="0" />
+    <frame x="1453" y="66" width="1425" height="865" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -878,15 +882,15 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.47153285" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18887451" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23419774" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20896602" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3299595" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.11993517" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32988358" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10701374" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -926,14 +930,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/account.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1088">
-          <caret line="90" column="28" selection-start-line="90" selection-start-column="28" selection-end-line="90" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/local/Cellar/go/1.6/libexec/src/strconv/itoa.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="211">
@@ -946,14 +942,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="432">
           <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/shopapi/comm/constant.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="25" column="30" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="30" />
           <folding />
         </state>
       </provider>
@@ -1062,34 +1050,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/shopapi/dao/order.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="358">
-          <caret line="109" column="63" selection-start-line="109" selection-start-column="63" selection-end-line="109" selection-end-column="63" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/comm.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="243" column="64" selection-start-line="243" selection-start-column="64" selection-end-line="243" selection-end-column="64" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/address.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="21" column="44" selection-start-line="21" selection-start-column="44" selection-end-line="21" selection-end-column="44" />
           <folding />
         </state>
       </provider>
@@ -1118,18 +1082,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config/sql/init.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="141">
-          <caret line="299" column="14" selection-start-line="299" selection-start-column="14" selection-end-line="299" selection-end-column="14" />
-          <folding>
-            <marker date="1476068215000" expanded="true" signature="2048:2895" ph="CREATE TABLE... merchant" />
-            <marker date="1476068215000" expanded="true" signature="2911:3459" ph="CREATE TABLE... merchant_open" />
-            <marker date="1476068215000" expanded="true" signature="11715:12859" ph="CREATE TABLE... order_item" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vendor/shopapi/dao/order_item.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1152">
@@ -1146,20 +1098,87 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/order.go">
+    <entry file="file://$PROJECT_DIR$/vendor/shopapi/comm/constant.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="216" column="37" selection-start-line="216" selection-start-column="37" selection-end-line="216" selection-end-column="37" />
-          <folding>
-            <marker date="1476007375000" expanded="true" signature="9508:9596" ph="/*...*/" />
-          </folding>
+        <state relative-caret-position="327">
+          <caret line="32" column="12" selection-start-line="32" selection-start-column="12" selection-end-line="32" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/shopapi/dao/order.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="109" column="63" selection-start-line="109" selection-start-column="63" selection-end-line="109" selection-end-column="63" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/vendor/shopapi/service/order.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="669" column="29" selection-start-line="669" selection-start-column="29" selection-end-line="669" selection-end-column="29" />
+        <state relative-caret-position="-427">
+          <caret line="529" column="5" selection-start-line="529" selection-start-column="5" selection-end-line="529" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/sql/init.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="224">
+          <caret line="14" column="30" selection-start-line="14" selection-start-column="30" selection-end-line="14" selection-end-column="30" />
+          <folding>
+            <marker date="1476068215000" expanded="true" signature="2048:2895" ph="CREATE TABLE... merchant" />
+            <marker date="1476068215000" expanded="true" signature="2911:3459" ph="CREATE TABLE... merchant_open" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/address.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="21" column="44" selection-start-line="21" selection-start-column="44" selection-end-line="21" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/order.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="279">
+          <caret line="478" column="45" selection-start-line="477" selection-start-column="8" selection-end-line="478" selection-end-column="45" />
+          <folding>
+            <marker date="1476154227000" expanded="true" signature="9548:9636" ph="/*...*/" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/shopapi/service/account.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="362">
+          <caret line="280" column="23" selection-start-line="280" selection-start-column="23" selection-end-line="280" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/shopapi/dao/account.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="64">
+          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="12" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="346">
+          <caret line="95" column="49" selection-start-line="95" selection-start-column="49" selection-end-line="95" selection-end-column="49" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/shopapi/api/account.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="237" column="29" selection-start-line="237" selection-start-column="29" selection-end-line="237" selection-end-column="29" />
           <folding />
         </state>
       </provider>

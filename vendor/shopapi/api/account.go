@@ -13,6 +13,8 @@ import (
 	"math/rand"
 	"time"
 	"shopapi/setting"
+	"gitlab.qiyunxin.com/tangtao/utils/page"
+	"shopapi/dao"
 )
 
 type AccountPreRechargeDto struct  {
@@ -30,6 +32,15 @@ type AccountDetailDto struct  {
 	Status int `json:"status"`
 	//是否设置支付密码
 	PasswordIsSet int `json:"password_is_set"`
+}
+
+type Account struct  {
+	Id int64 `json:"id"`
+	AppId string `json:"app_id"`
+	OpenId string `json:"open_id"`
+	Mobile string `json:"mobile"`
+	Money float64 `json:"money"`
+	Status int `json:"status"`
 }
 
 type LoginForSMSParam struct  {
@@ -198,7 +209,40 @@ func AccountDetail(c *gin.Context)  {
 }
 
 func AccountsGet(c *gin.Context)  {
+	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+	appId :=security.GetAppId2(c.Request)
+	mobile := c.Query("mobile")
+	accounts,err := service.AccountsWith(pIndex,pSize,mobile,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"查询失败！")
+		return
+	}
+	 results :=make([]*Account,0)
+	if accounts!=nil{
+		for _,account :=range accounts  {
+			results = append(results,accountToA(account))
+		}
+	}
 
+	total,err :=service.AccountsWithCount(mobile,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"查询总数量失败！")
+		return
+	}
+
+	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),results))
+}
+
+func accountToA(model *dao.Account) *Account  {
+	a := &Account{}
+	a.AppId = model.AppId
+	a.Id = model.Id
+	a.Mobile = model.Mobile
+	a.Money = model.Money
+	a.Status = model.Status
+	a.OpenId = model.OpenId
+
+	return a
 }
 
 func accountDetailModelToDto(model *service.AccountDetailModel) *AccountDetailDto {

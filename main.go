@@ -92,6 +92,8 @@ func main() {
 			users.POST("/loginSMS", api.LoginForSMS)
 			//配置登入界面
 			users.GET("/getonkey", api.GetOnKey)
+
+			users.GET("/",api.AccountsGet)
 		}
 		user := v1.Group("/user")
 		{
