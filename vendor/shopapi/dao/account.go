@@ -10,6 +10,7 @@ type Account struct  {
 	Money float64
 	Password string
 	Status int
+	BaseDModel
 }
 
 type GetOnKey struct  {

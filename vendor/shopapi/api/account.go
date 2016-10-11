@@ -15,6 +15,7 @@ import (
 	"shopapi/setting"
 	"gitlab.qiyunxin.com/tangtao/utils/page"
 	"shopapi/dao"
+	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 )
 
 type AccountPreRechargeDto struct  {
@@ -40,6 +41,8 @@ type Account struct  {
 	OpenId string `json:"open_id"`
 	Mobile string `json:"mobile"`
 	Money float64 `json:"money"`
+	CreateTime string `json:"create_time"`
+	UpdateTime string `json:"update_time"`
 	Status int `json:"status"`
 }
 
@@ -241,6 +244,8 @@ func accountToA(model *dao.Account) *Account  {
 	a.Money = model.Money
 	a.Status = model.Status
 	a.OpenId = model.OpenId
+	a.CreateTime = qtime.ToyyyyMMddHHmm(model.CreateTime)
+	a.UpdateTime = qtime.ToyyyyMMddHHmm(model.UpdateTime)
 
 	return a
 }
