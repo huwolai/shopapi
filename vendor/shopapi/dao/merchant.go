@@ -3,8 +3,9 @@ package dao
 import (
 	"github.com/gocraft/dbr"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
-	//"fmt"
-	//"gitlab.qiyunxin.com/tangtao/utils/log"
+	"fmt"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
+	"strconv"
 )
 
 type Merchant struct  {
@@ -136,18 +137,40 @@ func (self *Merchant) IncrWeightWithIdTx(num int,id int64,tx *dbr.Tx) error {
 
 func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64) ([]*MerchantDetail,error)  {
 	var mdetails []*MerchantDetail
-	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = 1 and mt.open_id<>? and mt.flag<>'default' and getDistance(mt.longitude,latitude,?,?)<cover_distance order by distance limit ?,?",longitude,latitude,appId,openId,longitude,latitude,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)	
-	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = 1 and mt.open_id<>? and mt.flag<>'default' order by distance limit ?,?",longitude,latitude,appId,openId,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)	
+	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = 1 and mt.open_id<>? and mt.flag<>'default' and getDistance(mt.longitude,latitude,?,?)<cover_distance order by distance limit ?,?",longitude,latitude,appId,openId,longitude,latitude,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)	
+	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where 1 order by id desc limit 1",longitude,latitude).LoadStructs(&mdetails)
 	
-	/* builder :=db.NewSession().Select(fmt.Sprintf("mt.*,getDistance(mt.longitude,latitude,%f,%f) distance,mt.cover_distance",longitude,latitude)).From("merchant mt")
+	//首页20个
+	if len(mdetails)>19 {
+		return mdetails,err
+	}
 	
+	//首页补充到20个
+	var mdetails20 []*MerchantDetail
+	l:=3-len(mdetails)	
+	log.Error(l)
+	
+	//排除已存在的厨师
+	existsId := make([]uint64, l)
+	var id uint64
+	for _,mDetail :=range mdetails {
+		id,_ = strconv.ParseUint(mDetail.Id,10,64)
+		existsId = append(existsId,id)
+	}
+	//log.Error(existsId)
+	
+	
+	builder :=db.NewSession().Select(fmt.Sprintf("mt.*,getDistance(mt.longitude,latitude,%f,%f) distance,mt.cover_distance",longitude,latitude)).From("merchant mt")	
 	builder = builder.Where("app_id = ?",appId)
 	builder = builder.Where("mt.status = ?",1)
 	builder = builder.Where("mt.open_id <> ?",openId)
 	builder = builder.Where("mt.flag <> ?","default")
-	builder = builder.Where("getDistance(mt.longitude,latitude,?,?)<cover_distance",longitude,latitude)
+	builder = builder.Where("id not in ?",existsId)	
+	_,err =builder.OrderBy("is_recom desc,id desc").Limit(uint64(l)).Offset(0).LoadStructs(&mdetails20)
 	
-	_,err :=builder.OrderBy("distance").Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&mdetails) */
+	for _,mDetail :=range mdetails20 {
+		mdetails = append(mdetails,mDetail)
+	}
 	
 	return mdetails,err
 }
