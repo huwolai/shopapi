@@ -371,8 +371,8 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 			totalOmitMoney += oItem.OmitMoney			
 			
 			//测试下,用户下单180 ,厨师能不能只拿到150  price
-			if oItem.BuyTotalPrice == 180 {
-				totalMerchantAmount+=150
+			if oItem.BuyTotalPrice == 180.00 {
+				totalMerchantAmount+=150.00
 			}else{
 				totalMerchantAmount += oItem.MerchantAmount
 			}
