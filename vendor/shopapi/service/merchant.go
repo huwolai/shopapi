@@ -295,8 +295,8 @@ func ProdDefaultAddForMerchant(merchant *dao.Merchant) error {
 	prodbll.Title = "四菜一汤"
 	prodbll.Description="四菜一汤"
 	prodbll.AppId = merchant.AppId
-	prodbll.DisPrice = 158.0
-	prodbll.Price = 158.0
+	prodbll.DisPrice = 180.0
+	prodbll.Price = 180.0
 	prodbll.CategoryId=1
 	prodbll.Flag=comm.MERCHANT_DEFAULT_PRODUCT_FLAG
 	prodbll.MerchantId = merchant.Id
