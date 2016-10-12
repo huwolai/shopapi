@@ -360,14 +360,7 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 
 			}
 			oItem.CouponAmount = comm.Floor(couponAmount, 2)
-			
-			//测试下,用户下单180 ,厨师能不能只拿到150  price
-			if oItem.BuyTotalPrice == 180 {
-				oItem.MerchantAmount =150
-			}else{
-				oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
-			}			
-			
+			oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
 			oItem.OmitMoney = 0
 			err = oItem.UpdateAmountWithIdTx(oItem.DbnAmount, oItem.OmitMoney, oItem.CouponAmount, oItem.MerchantAmount, oItem.Id, tx)
 			if err != nil {
