@@ -360,7 +360,14 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 
 			}
 			oItem.CouponAmount = comm.Floor(couponAmount, 2)
-			oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
+			
+			//测试下,用户下单180 ,厨师能不能只拿到150  price
+			if oItem.BuyTotalPrice == 180 {
+				oItem.MerchantAmount +=150
+			}else{
+				oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
+			}			
+			
 			oItem.OmitMoney = 0
 			err = oItem.UpdateAmountWithIdTx(oItem.DbnAmount, oItem.OmitMoney, oItem.CouponAmount, oItem.MerchantAmount, oItem.Id, tx)
 			if err != nil {
@@ -368,17 +375,10 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 				return errors.New("更新订单详情失败!")
 			}
 			totaldbnAmount += oItem.DbnAmount
-			totalOmitMoney += oItem.OmitMoney			
-			
-			//测试下,用户下单180 ,厨师能不能只拿到150  price
-			if oItem.BuyTotalPrice == 180.00 {
-				totalMerchantAmount+=150.00
-			}else{
-				totalMerchantAmount += oItem.MerchantAmount
-			}
+			totalOmitMoney += oItem.OmitMoney
+			totalMerchantAmount += oItem.MerchantAmount
 		}
 	}
-	
 	err =order.UpdateAmountTx(couponTotalAmount,payPrice,totalMerchantAmount,totalOmitMoney,totaldbnAmount,order.No,tx)
 	if err!=nil{
 		log.Error(err)
