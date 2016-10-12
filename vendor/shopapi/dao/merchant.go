@@ -147,7 +147,7 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	
 	//首页补充到20个
 	var mdetails20 []*MerchantDetail
-	l:=3-len(mdetails)	
+	l:=20-len(mdetails)	
 	log.Error(l)
 	
 	//排除已存在的厨师
