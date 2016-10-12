@@ -140,7 +140,7 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = 1 and mt.open_id<>? and mt.flag<>'default' and getDistance(mt.longitude,latitude,?,?)<cover_distance order by distance limit ?,?",longitude,latitude,appId,openId,longitude,latitude,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)	
 	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where 1 order by id desc limit 1",longitude,latitude).LoadStructs(&mdetails)
 	
-	//首页20个
+	//首页固定20个
 	if len(mdetails)>19 {
 		return mdetails,err
 	}
@@ -148,7 +148,7 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	//首页补充到20个
 	var mdetails20 []*MerchantDetail
 	l:=20-len(mdetails)	
-	log.Error(l)
+	log.Info(l)
 	
 	//排除已存在的厨师
 	existsId := make([]uint64, l)
@@ -157,7 +157,7 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 		id,_ = strconv.ParseUint(mDetail.Id,10,64)
 		existsId = append(existsId,id)
 	}
-	//log.Error(existsId)
+	//log.Info(existsId)
 	
 	
 	builder :=db.NewSession().Select(fmt.Sprintf("mt.*,getDistance(mt.longitude,latitude,%f,%f) distance,mt.cover_distance",longitude,latitude)).From("merchant mt")	
