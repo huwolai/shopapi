@@ -270,8 +270,8 @@ func allocOrderAmount(order *dao.Order) error  {
 	imprestsModel.Code = order.Code
 	imprestsModel.Amount = int64(order.MerchantAmount*100)
 	imprestsModel.OpenId = order.MOpenId
-	imprestsModel.Title="卖商品"
-	imprestsModel.Remark = "卖商品"
+	imprestsModel.Title="厨师上门服务" //分销系统待区分
+	imprestsModel.Remark = "厨师上门服务费用"
 	_,err =FetchImprests(imprestsModel)
 	if err!=nil{
 		log.Error(err)
@@ -360,8 +360,15 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 
 			}
 			oItem.CouponAmount = comm.Floor(couponAmount, 2)
-			//oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
-			oItem.MerchantAmount =150
+			//==========================
+			if oItem.BuyTotalPrice==180 {
+				oItem.MerchantAmount =150
+			}else if oItem.BuyTotalPrice==240 {
+				oItem.MerchantAmount =180
+			}else{
+				oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
+			}
+			
 			
 			oItem.OmitMoney = 0
 			err = oItem.UpdateAmountWithIdTx(oItem.DbnAmount, oItem.OmitMoney, oItem.CouponAmount, oItem.MerchantAmount, oItem.Id, tx)
