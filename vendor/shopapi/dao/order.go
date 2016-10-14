@@ -204,6 +204,10 @@ func (self *OrderDetail) OrderDetailWithUser(openId string,orderStatus []int,pay
 	if payStatus!=nil&&len(payStatus) >0 {
 		builder =builder.Where("pay_status in ?",payStatus)
 	}
+	log.Error("==========================");
+	log.Error(pageSize);
+	log.Error(pageIndex);
+	log.Error("==========================");
 	_,err :=builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).OrderDir("create_time",false).LoadStructs(&orders)
 	if err!=nil{
 
