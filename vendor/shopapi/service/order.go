@@ -503,10 +503,10 @@ func HandleCoupon(order *dao.Order,coupotokens []string,tx *dbr.Tx) (float64,err
 	return couponTotalAmount,nil
 }
 
-func OrderByUser(openId string,orderStatus []int,payStatus []int,appId string)  ([]*dao.OrderDetail,error)  {
+func OrderByUser(openId string,orderStatus []int,payStatus []int,appId string,pageIndex uint64,pageSize uint64)  ([]*dao.OrderDetail,error)  {
 
 	orderDetail :=dao.NewOrderDetail()
-	orderDetails,err := orderDetail.OrderDetailWithUser(openId,orderStatus,payStatus,appId)
+	orderDetails,err := orderDetail.OrderDetailWithUser(openId,orderStatus,payStatus,appId,pageIndex,pageSize)
 
 	return orderDetails,err
 }

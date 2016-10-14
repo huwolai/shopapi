@@ -333,6 +333,9 @@ func OrderDetailByNo(c *gin.Context)  {
 
 //获取用户订单
 func OrderWithUserAndStatus(c *gin.Context)  {
+	//分页
+	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+
 	appId,err :=CheckAppAuth(c)
 	if err!=nil{
 		log.Error(err)
@@ -381,7 +384,7 @@ func OrderWithUserAndStatus(c *gin.Context)  {
 		}
 	}
 
-	orderList,err := service.OrderByUser(openId,iorderStatusArray,ipayStatusArray,appId)
+	orderList,err := service.OrderByUser(openId,iorderStatusArray,ipayStatusArray,appId,pIndex,pSize)
 	if err!=nil {
 		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
 		return
