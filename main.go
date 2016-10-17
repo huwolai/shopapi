@@ -291,6 +291,9 @@ func main() {
 			//商品 售出数量 定时增加
 			init.GET("/products/add", api.ProductAddNum)
 		}
+
+		//权限资源数据 （此接口提供给,权限资源服务调用）
+		v1.GET("/sources")
 	}
 
 	//设置上传目录

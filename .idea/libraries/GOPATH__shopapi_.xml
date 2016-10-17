@@ -1,6 +1,7 @@
 <component name="libraryTable">
   <library name="GOPATH &lt;shopapi&gt;">
     <CLASSES>
+      <root url="file://$PROJECT_DIR$/../rbacapi" />
       <root url="file://$PROJECT_DIR$/../usercenter" />
       <root url="file://$PROJECT_DIR$/../imagesever" />
       <root url="file://$PROJECT_DIR$/../commuser" />
@@ -29,6 +30,7 @@
     </CLASSES>
     <JAVADOC />
     <SOURCES>
+      <root url="file://$PROJECT_DIR$/../rbacapi" />
       <root url="file://$PROJECT_DIR$/../usercenter" />
       <root url="file://$PROJECT_DIR$/../imagesever" />
       <root url="file://$PROJECT_DIR$/../commuser" />

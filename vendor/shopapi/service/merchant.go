@@ -81,13 +81,14 @@ func MerchantUpdate(dll *MerchantDetailDLL) error  {
 		tx.Rollback()
 		return err
 	}
+	err = dao.NewMerchantImgs().DeleteWithMerchantIdTx(merchant.Id,merchant.AppId,tx)
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
 	imgs := dll.Imgs
 	if imgs!=nil&&len(imgs)>0{
-		err = dao.NewMerchantImgs().DeleteWithMerchantIdTx(merchant.Id,merchant.AppId,tx)
-		if err!=nil{
-			tx.Rollback()
-			return err
-		}
+
 		for _,img:=range imgs {
 
 			merchantImgs := dao.NewMerchantImgs()

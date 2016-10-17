@@ -122,12 +122,12 @@ func calDBN(order *dao.Order) error {
 //mark 标记
 func cal(order *dao.Order, calMoney float64, openId string, mark string) error {
 	params := map[string]interface{}{
-		"open_id":  openId,
-		"code":     order.Code,
-		"amount":   int64(calMoney * 100),
-		"title":    order.Title,
-		"remark":   order.Title,
-		"out_code": order.No + "-" + mark,
+		"open_id":  openId, //需要领取金额的用户ID
+		"code":     order.Code, // 预支付code
+		"amount":   int64(calMoney * 100), // 领取金额
+		"title":    order.Title, //标题
+		"remark":   order.Title, //备注
+		"out_code": order.No + "-" + mark, //第三方唯一标示
 	}
 	_, err := service.RequestPayApi("/v2/imprests/fetch", params)
 

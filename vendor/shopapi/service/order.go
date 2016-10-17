@@ -160,7 +160,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		tx.Rollback()
 		return nil,errors.New("付款金额不能为负数!")
 	}
-
+	//计算订单金额
 	err =calOrderAmount(order,payPrice,couponTotalAmount,tx)
 	if err!=nil{
 		tx.Rollback()
@@ -326,7 +326,7 @@ func allocOrderAmount(order *dao.Order) error  {
 
 }
 
-//计算分销金额
+//计算订单金额
 func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,tx *dbr.Tx)  error {
 	orderItem := dao.NewOrderItem()
 	orderitems,err :=orderItem.OrderItemWithOrderNo(order.No)
@@ -372,6 +372,7 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 			totalMerchantAmount += oItem.MerchantAmount
 		}
 	}
+	//更新对应金额
 	err =order.UpdateAmountTx(couponTotalAmount,payPrice,totalMerchantAmount,totalOmitMoney,totaldbnAmount,order.No,tx)
 	if err!=nil{
 		log.Error(err)
