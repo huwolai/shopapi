@@ -130,8 +130,9 @@ func (self *Merchant) UpdateStatusTx(status int,merchantId int64,tx *dbr.Tx) err
 
 //权重递增 num 递增子数
 func (self *Merchant) IncrWeightWithIdTx(num int,id int64,tx *dbr.Tx) error {
+	tx.UpdateBySql("update merchant set online=4 where id=? and online in (1,3)",id).Exec()
+	
 	_,err :=tx.UpdateBySql("update merchant set weight=weight + ? where id=?",num,id).Exec()
-
 	return err
 }
 
