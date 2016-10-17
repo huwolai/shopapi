@@ -110,7 +110,7 @@ func ImageUpload(c *gin.Context)  {
 	}
 
 	filepath :=rootDir+"/" +fileDir + "/" + fileName
-	out, err := os.OpenFile(filepath,os.O_WRONLY|os.O_CREATE, 0666)
+	out, err := os.OpenFile(filepath,os.O_WRONLY|os.O_CREATE, 0777)
 	if err!=nil{
 		log.Debug("创建文件失败",filepath)
 		log.Error(err)
