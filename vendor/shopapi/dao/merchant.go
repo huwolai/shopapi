@@ -137,8 +137,13 @@ func (self *Merchant) IncrWeightWithIdTx(num int,id int64,tx *dbr.Tx) error {
 }
 
 func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64) ([]*MerchantDetail,error)  {
+	
+	status := make([]uint64, 0)
+	status = append(status,1)
+	status = append(status,5)
+	
 	var mdetails []*MerchantDetail
-	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = 1 and mt.open_id<>? and mt.flag<>'default' and getDistance(mt.longitude,latitude,?,?)<cover_distance order by distance limit ?,?",longitude,latitude,appId,openId,longitude,latitude,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)	
+	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' and getDistance(mt.longitude,latitude,?,?)<cover_distance order by distance limit ?,?",longitude,latitude,appId,status,openId,longitude,latitude,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)	
 	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where 1 order by id desc limit 1",longitude,latitude).LoadStructs(&mdetails)
 	
 	//首页固定20个
@@ -163,7 +168,8 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	
 	builder :=db.NewSession().Select(fmt.Sprintf("mt.*,getDistance(mt.longitude,latitude,%f,%f) distance,mt.cover_distance",longitude,latitude)).From("merchant mt")	
 	builder = builder.Where("app_id = ?",appId)
-	builder = builder.Where("mt.status = ?",1)
+	//builder = builder.Where("mt.status = ?",1)
+	builder = builder.Where("mt.status in ?",status)
 	builder = builder.Where("mt.open_id <> ?",openId)
 	builder = builder.Where("mt.flag <> ?","default")
 	builder = builder.Where("id not in ?",existsId)	
@@ -177,10 +183,17 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 }
 //附近商户搜索 可提供服务的厨师
 func (self *MerchantDetail) MerchantNearSearch(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64, serviceTime string, serviceHour uint64) ([]*MerchantDetail,error)  {
+
+	status := make([]uint64, 0)
+	status = append(status,1)
+	status = append(status,5)
+
 	var mdetails []*MerchantDetail	
 	
+	
+	
 	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = 1 and mt.open_id<>? and mt.flag<>'default' and getDistance(mt.longitude,latitude,?,?)<cover_distance and id not in (SELECT merchant_prod.merchant_id from prod_attr_val,merchant_prod where merchant_prod.prod_id=prod_attr_val.prod_id and prod_attr_val.attr_key='time' and prod_attr_val.attr_value=?) order by distance limit ?,?",longitude,latitude,appId,openId,longitude,latitude,serviceTime,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
-	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where ?>=11 and ?<=22 and app_id = ? and mt.status = 1 and mt.open_id<>? and mt.flag<>'default' and id not in (SELECT merchant_prod.merchant_id from prod_attr_val,merchant_prod where merchant_prod.prod_id=prod_attr_val.prod_id and prod_attr_val.attr_key='time' and prod_attr_val.attr_value=?) and id not in (SELECT merchant_id from merchant_service_time where stime=? ) order by distance limit ?,?",longitude,latitude,serviceHour,serviceHour,appId,openId,serviceTime,fmt.Sprintf("%d:00",serviceHour),(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
+	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where ?>=11 and ?<=22 and app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' and id not in (SELECT merchant_prod.merchant_id from prod_attr_val,merchant_prod where merchant_prod.prod_id=prod_attr_val.prod_id and prod_attr_val.attr_key='time' and prod_attr_val.attr_value=?) and id not in (SELECT merchant_id from merchant_service_time where stime=? ) order by distance limit ?,?",longitude,latitude,serviceHour,serviceHour,appId,status,openId,serviceTime,fmt.Sprintf("%d:00",serviceHour),(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
 	
 	//log.Error( builder.ToSql() )
 	
