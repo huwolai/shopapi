@@ -25,8 +25,11 @@ type DistributionProductDetail struct {
 	AppId string
 	//商品标题
 	Title string
+	SubTitle string
+	Description string
 	//商品价格
 	Price float64
+	SoldNum float64
 	//折扣价格
 	DisPrice float64
 	//分销编号
@@ -118,7 +121,7 @@ func  (self *DistributionProduct) DeleteWithId(id int64) error  {
 
 func (self *DistributionProductDetail) DistributionWithMerchant(merchantId int64,appId string) ([]*DistributionProductDetail,error)  {
 	var prodList []*DistributionProductDetail
-	_,err :=db.NewSession().SelectBySql("select pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json,dp.csn_rate,dp.id distribution_id,ud.`code` dbn_no from merchant mt,product pt,distribution_product dp, user_distribution ud  where   dp.prod_id = ud.prod_id and dp.prod_id = pt.id and ud.open_id = mt.open_id and mt.id = ? and pt.status=1 and dp.app_id=?",merchantId,appId).LoadStructs(&prodList)
+	_,err :=db.NewSession().SelectBySql("select pt.sub_title,pt.sold_num,pt.description ,pt.id,pt.app_id,pt.title,pt.price,pt.dis_price,pt.flag,pt.`status`,mt.id merchant_id,mt.`name` merchant_name,pt.json,dp.csn_rate,dp.id distribution_id,ud.`code` dbn_no from merchant mt,product pt,distribution_product dp, user_distribution ud  where   dp.prod_id = ud.prod_id and dp.prod_id = pt.id and ud.open_id = mt.open_id and mt.id = ? and pt.status=1 and dp.app_id=?",merchantId,appId).LoadStructs(&prodList)
 
 	err = FillDistributionProdImgs(appId,prodList)
 
