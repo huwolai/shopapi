@@ -270,8 +270,8 @@ func allocOrderAmount(order *dao.Order) error  {
 	imprestsModel.Code = order.Code
 	imprestsModel.Amount = int64(order.MerchantAmount*100)
 	imprestsModel.OpenId = order.MOpenId
-	imprestsModel.Title="卖商品"
-	imprestsModel.Remark = "卖商品"
+	imprestsModel.Title="厨师上门服务" //分销系统待区分
+	imprestsModel.Remark = "厨师上门服务费用"
 	_,err =FetchImprests(imprestsModel)
 	if err!=nil{
 		log.Error(err)
@@ -360,7 +360,16 @@ func calOrderAmount(order *dao.Order,payPrice float64,couponTotalAmount float64,
 
 			}
 			oItem.CouponAmount = comm.Floor(couponAmount, 2)
-			oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
+			//==========================
+			if oItem.BuyTotalPrice==180 {
+				oItem.MerchantAmount =150
+			}else if oItem.BuyTotalPrice==240 {
+				oItem.MerchantAmount =180
+			}else{
+				oItem.MerchantAmount = oItem.BuyTotalPrice - oItem.CouponAmount - oItem.DbnAmount
+			}
+			
+			
 			oItem.OmitMoney = 0
 			err = oItem.UpdateAmountWithIdTx(oItem.DbnAmount, oItem.OmitMoney, oItem.CouponAmount, oItem.MerchantAmount, oItem.Id, tx)
 			if err != nil {
@@ -495,10 +504,10 @@ func HandleCoupon(order *dao.Order,coupotokens []string,tx *dbr.Tx) (float64,err
 	return couponTotalAmount,nil
 }
 
-func OrderByUser(openId string,orderStatus []int,payStatus []int,appId string)  ([]*dao.OrderDetail,error)  {
+func OrderByUser(openId string,orderStatus []int,payStatus []int,appId string,pageIndex uint64,pageSize uint64)  ([]*dao.OrderDetail,error)  {
 
 	orderDetail :=dao.NewOrderDetail()
-	orderDetails,err := orderDetail.OrderDetailWithUser(openId,orderStatus,payStatus,appId)
+	orderDetails,err := orderDetail.OrderDetailWithUser(openId,orderStatus,payStatus,appId,pageIndex,pageSize)
 
 	return orderDetails,err
 }
@@ -605,6 +614,85 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	if err!=nil{
 		tx.Rollback()
 		return errors.New("通知第三方优惠服务失败!")
+	}
+
+	err =tx.Commit()
+	if err!=nil{
+		log.Error(err)
+		tx.Rollback()
+		return errors.New("数据提交失败!")
+	}
+
+	//发布事件
+	go func(){
+		err =PublishOrderPaidEvent(orderItems,order)
+		if err!=nil{
+			log.Warn("发送订单事件失败:", err)
+		}
+	}()
+
+
+	return nil
+}
+
+func OrderPayForAccountThirdPayment(openId string,orderNo string,appId string) error  {
+
+	order :=dao.NewOrder()
+	order,err :=order.OrderWithNo(orderNo,appId)
+	if err!=nil {
+		log.Error(err)
+		return errors.New("订单查询失败!")
+	}
+
+	if order==nil{
+		return  errors.New("没找到订单信息!")
+	}
+	if order.PayStatus!=comm.ORDER_PAY_STATUS_PAYING {
+		return  errors.New("订单不是待付款状态!")
+	}
+
+	tx,_ :=db.NewSession().Begin()
+
+	defer func() {
+		if err :=recover();err!=nil{
+			log.Error(err)
+			tx.Rollback()
+		}
+	}()
+	orderItem := dao.NewOrderItem()
+	orderItems,err :=orderItem.OrderItemWithOrderNo(orderNo)
+	if err!=nil{
+		return  errors.New("查询订单明细失败!")
+	}
+	if orderItems==nil{
+		return  errors.New("订单明细为空!")
+	}
+	//调整商品库存
+	err = ProdSKUStockSubWithOrder(orderItems,tx)
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+
+	//商品累计销量增加
+	err = ProdSoldNumAdd(orderItems,tx)
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+
+	//商户权重加1
+	err =MerchantWeightAdd(1,order.MerchantId,tx)
+	if err!=nil{
+		tx.Rollback()
+		return errors.New("商户权重添加失败!")
+	}
+	//修改订单状态
+	err =order.UpdateWithStatusTx(comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_SUCCESS,orderNo,tx)
+	if err!=nil{
+		log.Error("订单号:",orderNo,"状态更新为支付成功的时候失败!")
+		tx.Rollback()
+		return errors.New("订单更新错误!")
 	}
 
 	err =tx.Commit()

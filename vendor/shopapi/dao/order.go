@@ -190,7 +190,7 @@ func (self *OrderDetail) OrderDetailWithMerchantId(merchantId int64,orderStatus 
 	return orders,err
 }
 
-func (self *OrderDetail) OrderDetailWithUser(openId string,orderStatus []int,payStatus []int,appId string) ([]*OrderDetail,error)  {
+func (self *OrderDetail) OrderDetailWithUser(openId string,orderStatus []int,payStatus []int,appId string,pageIndex uint64,pageSize uint64) ([]*OrderDetail,error)  {
 
 	sess := db.NewSession()
 	var orders []*OrderDetail
@@ -204,7 +204,11 @@ func (self *OrderDetail) OrderDetailWithUser(openId string,orderStatus []int,pay
 	if payStatus!=nil&&len(payStatus) >0 {
 		builder =builder.Where("pay_status in ?",payStatus)
 	}
-	_,err :=builder.OrderDir("create_time",false).LoadStructs(&orders)
+	log.Error("==========================");
+	log.Error(pageSize);
+	log.Error(pageIndex);
+	log.Error("==========================");
+	_,err :=builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).OrderDir("create_time",false).LoadStructs(&orders)
 	if err!=nil{
 
 		return nil,err

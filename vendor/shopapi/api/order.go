@@ -223,6 +223,36 @@ func OrderPayForAccount(c *gin.Context)  {
 
 	util.ResponseSuccess(c.Writer)
 }
+//更改支付状态
+func OrderPayForAccountThirdPayment(c *gin.Context)  {
+	//获取用户openid
+
+	user,err := security.GetAuthUser(c.Request)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败！")
+		return
+	}
+	orderNo := c.Param("order_no")
+	if orderNo =="" {
+		util.ResponseError400(c.Writer,"订单号不能为空!")
+		return
+	}
+	var paramMap map[string]interface{}
+	err = c.BindJSON(&paramMap)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"参数有误!")
+		return
+	}
+	appId :=security.GetAppId2(c.Request)
+	err =service.OrderPayForAccountThirdPayment(user.OpenId,orderNo,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	util.ResponseSuccess(c.Writer)
+}
 
 //取消订单
 func OrderCancel(c *gin.Context)  {
@@ -333,6 +363,9 @@ func OrderDetailByNo(c *gin.Context)  {
 
 //获取用户订单
 func OrderWithUserAndStatus(c *gin.Context)  {
+	//分页
+	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+
 	appId,err :=CheckAppAuth(c)
 	if err!=nil{
 		log.Error(err)
@@ -381,7 +414,7 @@ func OrderWithUserAndStatus(c *gin.Context)  {
 		}
 	}
 
-	orderList,err := service.OrderByUser(openId,iorderStatusArray,ipayStatusArray,appId)
+	orderList,err := service.OrderByUser(openId,iorderStatusArray,ipayStatusArray,appId,pIndex,pSize)
 	if err!=nil {
 		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
 		return
