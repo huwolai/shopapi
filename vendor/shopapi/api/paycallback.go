@@ -72,6 +72,13 @@ func CallbackForPayapi(c *gin.Context)  {
 			if err!=nil{
 				log.Error(err)
 			}
+			//更新订单状态 
+			log.Debug(params.OutTradeNo)
+			err =service.UpdateWithPayStatus(1,params.OutTradeNo)
+			if err!=nil{
+				log.Error(err)
+			}	
+			
 			util.ResponseSuccess(c.Writer)
 			return
 		}

@@ -306,6 +306,13 @@ func (self *Order) UpdateWithStatus(orderStatus int,payStatus int,orderNo string
 	return err
 }
 
+func (self *Order) UpdateWithPayStatus(payStatus int,orderNo string) error {
+
+	_,err :=db.NewSession().Update("order").Set("pay_status",payStatus).Limit(1).Where("no=?",orderNo).Exec()
+
+	return err
+}
+
 func (self *Order) UpdateWithStatusTx(orderStatus int,payStatus int,orderNo string,tx *dbr.Tx) error {
 	log.Error("payStatus:",payStatus)
 	_,err :=tx.Update("order").Set("order_status",orderStatus).Set("pay_status",payStatus).Where("no=?",orderNo).Exec()

@@ -1056,3 +1056,9 @@ func OrderPrePayDtoToModel(dto OrderPrePayDto ) *OrderPrePayModel  {
 	model.NotifyUrl = config.GetValue("notify_url").ToString()
 	return model
 }
+
+func UpdateWithPayStatus(payStatus int,orderNo string) error  {
+	order :=dao.NewOrder()
+	err := order.UpdateWithPayStatus(payStatus,orderNo)
+	return err
+}

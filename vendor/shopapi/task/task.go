@@ -14,9 +14,11 @@ import (
 
 const (
 	//订单自动取消时间
-	ORDER_AUTO_CANCEL_TIME = 5 //单位分钟
+	//ORDER_AUTO_CANCEL_TIME = 5 //单位分钟
+	ORDER_AUTO_CANCEL_TIME = 1440 //单位分钟
 	//订单结算时间
-	ORDER_CAL_MAX_TIME = 30 //单位分钟
+	//ORDER_CAL_MAX_TIME = 30 //单位分钟
+	ORDER_CAL_MAX_TIME = 21600 //单位分钟
 )
 
 func  StartCron() {

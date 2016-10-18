@@ -270,15 +270,19 @@ func MerchantIs(c *gin.Context)  {
 		return
 	}
 	//if merchant!=nil&&merchant.Status==comm.MERCHANT_STATUS_NORMAL{
-	if merchant!=nil&&merchant.Status!=0{
+	if merchant==nil{
 		c.JSON(http.StatusOK,gin.H{
-			"is_merchant": 1,
-			"merchant_id":merchant.Id,
+			"is_merchant": 2,
 		})
-	}else{
+	}else if merchant.Status==0 {
 		c.JSON(http.StatusOK,gin.H{
 			"is_merchant": 0,
 		})
+	}else{
+		c.JSON(http.StatusOK,gin.H{
+			"is_merchant": 1,
+			"merchant_id":merchant.Id,
+		})		
 	}
 }
 
