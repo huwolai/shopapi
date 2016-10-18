@@ -227,12 +227,12 @@ func OrderPayForAccount(c *gin.Context)  {
 func OrderPayForAccountThirdPayment(c *gin.Context)  {
 	//获取用户openid
 
-	user,err := security.GetAuthUser(c.Request)
+	/* user,err := security.GetAuthUser(c.Request)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败！")
 		return
-	}
+	} */
 	orderNo := c.Param("order_no")
 	if orderNo =="" {
 		util.ResponseError400(c.Writer,"订单号不能为空!")
