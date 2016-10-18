@@ -42,10 +42,12 @@ type OrderDetailDto struct  {
 	No string `json:"no"`
 	PayapiNo string `json:"payapi_no"`
 	OpenId string `json:"open_id"`
-	Name string `json:"name,omitempty"`
-	Mobile string `json:"mobile,omitempty"`
+	Name string `json:"name"`
+	Mobile string `json:"mobile"`
 	AddressId int64 `json:"address_id"`
 	Address string `json:"address"`
+	AddressName string `json:"address_name"`
+	AddressMobile string `json:"address_mobile"`
 	AppId string `json:"app_id"`
 	Title string `json:"title"`
 	Price float64 `json:"price"`
@@ -616,12 +618,9 @@ func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
 	dto.Price = model.Price
 	dto.RejectCancelReason = model.RejectCancelReason
 	dto.CancelReason = model.CancelReason
-	if model.Name!=nil{
-		dto.Name = *model.Name
-	}
-	if model.Mobile!=nil{
-		dto.Mobile = *model.Mobile
-	}
+	dto.Name = model.AddressName
+	dto.Mobile = model.AddressMobile
+
 
 	dto.OrderStatus = model.OrderStatus
 	dto.PayStatus = model.PayStatus

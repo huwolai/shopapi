@@ -626,10 +626,10 @@ func merchantToDto(model *dao.Merchant)  *MerchantDto {
 	dto.OpenId = model.OpenId
 	dto.Weight = model.Weight
 	dto.Status = model.Status
-
-	if len(model.Mobile)==11 {
-		dto.Mobile =  strings.Replace(model.Mobile,model.Mobile[3:8],"*****",1)
-	}
+	dto.Mobile = model.Mobile
+	//if len(model.Mobile)==11 {
+	//	dto.Mobile =  strings.Replace(model.Mobile,model.Mobile[3:8],"*****",1)
+	//}
 
 	return dto
 }
