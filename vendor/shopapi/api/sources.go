@@ -20,7 +20,7 @@ type Source struct {
 func SourcesAll(c *gin.Context)  {
 
 
-	c.JSON(http.StatusOK,[]Source{
+	c.JSON(http.StatusOK,[...]Source{
 		Source{Id:"user",Name:"用户",Resource:"users",Permissions:"create,update,delete,browse"},
 		Source{Id:"product",Name:"产品",Resource:"products",Permissions:"create,update,delete,browse"},
 		Source{Id:"merchant",Name:"商户",Resource:"merchants",Permissions:"create,update,delete,browse"},
