@@ -222,7 +222,6 @@ func main() {
 			order.POST("/:order_no/prepay", api.OrderPrePay)
 			//订单支付
 			order.POST("/:order_no/pay", api.OrderPayForAccount)
-			order.GET("/:order_no/pay/changestatus", api.OrderPayForAccountThirdPayment)
 			order.GET("/:order_no/detail", api.OrderDetailWithNo)
 			//取消订单
 			order.PUT("/:order_no/cancel", api.OrderCancel)
