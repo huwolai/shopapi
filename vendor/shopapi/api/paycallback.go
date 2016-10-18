@@ -71,19 +71,22 @@ func CallbackForPayapi(c *gin.Context)  {
 			err :=PublishAccountRechargeEvent(subTradeNo,model.OpenId,params.AppId,params.Amount)
 			if err!=nil{
 				log.Error(err)
-			}
-			//更新订单状态 
-			log.Debug(params.OutTradeNo)
-			err =service.UpdateWithPayStatus(1,params.OutTradeNo)
-			if err!=nil{
-				log.Error(err)
-			}	
-			
+			}			
 			util.ResponseSuccess(c.Writer)
 			return
 		}
-	}else if params.TradeType == comm.Trade_Type_Buy { //购买交易
+	}else if params.TradeType == comm.Trade_Type_Buy { 	   //购买交易
 		log.Debug("购买交易")
+		
+		//更新订单状态
+		log.Debug("OutTradeNo")
+		err =service.UpdateToPayed(params.OutTradeNo,"shopapi")
+		if err!=nil{
+			log.Error(err)
+		}	
+		
+		util.ResponseSuccess(c.Writer)
+		return		
 	}
 }
 

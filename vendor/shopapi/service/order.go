@@ -1056,9 +1056,91 @@ func OrderPrePayDtoToModel(dto OrderPrePayDto ) *OrderPrePayModel  {
 	model.NotifyUrl = config.GetValue("notify_url").ToString()
 	return model
 }
-
-func UpdateWithPayStatus(payStatus int,orderNo string) error  {
+//第三方支付
+func UpdateToPayed(orderNo string,appId string) error  {
 	order :=dao.NewOrder()
-	err := order.UpdateWithPayStatus(payStatus,orderNo)
-	return err
+	//order
+	order,err :=order.OrderWithNo(orderNo,appId)
+	if err!=nil {
+		return  errors.New("paycall:订单查询失败!")
+	}
+	if order==nil{
+		return  errors.New("paycall:没找到订单信息!")
+	}
+	if order.PayStatus!=comm.ORDER_PAY_STATUS_PAYING {
+		return  errors.New("paycall:订单不是待付款状态!")
+	}
+	//支付预付款
+	/*params := map[string]interface{}{
+		"pay_token": payToken,
+		"open_id": order.OpenId,
+		"code": order.Code,
+		"out_trade_pay":order.No,
+	}
+	 resultMap,err := RequestPayApi("/pay/payimprest",params)
+	if err!=nil{
+		return err
+	}
+	subTradeNo :=resultMap["sub_trade_no"].(string) */
+	//tx
+	tx,_ :=db.NewSession().Begin()
+	defer func() {
+		if err :=recover();err!=nil{
+			log.Error(err)
+			tx.Rollback()
+		}
+	}()
+	//orderItem
+	orderItem := dao.NewOrderItem()
+	orderItems,err :=orderItem.OrderItemWithOrderNo(orderNo)
+	if err!=nil{
+		return  errors.New("paycall:查询订单明细失败!")
+	}
+	if orderItems==nil{
+		return  errors.New("paycall:订单明细为空!")
+	}
+	//调整商品库存
+	err = ProdSKUStockSubWithOrder(orderItems,tx)
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+	//商品累计销量增加
+	err = ProdSoldNumAdd(orderItems,tx)
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+	//商户权重加1
+	err =MerchantWeightAdd(1,order.MerchantId,tx)
+	if err!=nil{
+		tx.Rollback()
+		return errors.New("paycall:商户权重添加失败!")
+	}
+	//修改订单状态
+	err =order.UpdateWithStatusTx(comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_SUCCESS,orderNo,tx)
+	if err!=nil{
+		tx.Rollback()
+		return errors.New("paycall:订单号:状态更新为支付成功的时候失败!")
+	}
+	/* err =NotifyCouponServer(orderNo,appId,subTradeNo)
+	if err!=nil{
+		tx.Rollback()
+		return errors.New("paycall:通知第三方优惠服务失败!")
+	} */
+	err =tx.Commit()
+	if err!=nil{
+		log.Error(err)
+		tx.Rollback()
+		return errors.New("paycall:数据提交失败!")
+	}
+	//发布事件
+	go func(){
+		err =PublishOrderPaidEvent(orderItems,order)
+		if err!=nil{
+			log.Warn("paycall:发送订单事件失败:", err)
+		}
+	}()
+	//============
+	return nil
 }

@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS merchant(
   address_id BIGINT COMMENT '地址ID',
   cover_distance INT COMMENT '覆盖距离 单位米',
   weight int COMMENT '商户权重',
-  status INT COMMENT '商户状态 1.正常 0.关闭',
+  status INT COMMENT '商户状态 1.正常 0.等待审核',
   flag VARCHAR(255) DEFAULT '' COMMENT '商户标记',
   json VARCHAR(1000) DEFAULT '' COMMENT '附加数据',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
