@@ -269,8 +269,8 @@ func MerchantIs(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-	if merchant!=nil&&merchant.Status==comm.MERCHANT_STATUS_NORMAL{
-
+	//if merchant!=nil&&merchant.Status==comm.MERCHANT_STATUS_NORMAL{
+	if merchant!=nil&&merchant.Status!=0{
 		c.JSON(http.StatusOK,gin.H{
 			"is_merchant": 1,
 			"merchant_id":merchant.Id,
