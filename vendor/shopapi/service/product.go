@@ -513,6 +513,7 @@ func produCategoryUpdate(prodbll *ProdBLL,tx *dbr.Tx) (error)  {
 
 func prodToModel(prodbll *ProdBLL) *dao.Product {
 	prod := dao.NewProduct()
+	prod.Id = prodbll.Id
 	prod.Title = prodbll.Title
 	prod.SubTitle = prodbll.SubTitle
 	prod.AppId = prodbll.AppId
