@@ -28,6 +28,8 @@ func  StartCron() {
 	c.AddFunc("0 0/6 * * * ?", OrderFetchMoney)
 
 	c.AddFunc("0 0/2 * * * ?", OrderAutoCancel)
+	//厨师随机增加服务数量 0到2
+	c.AddFunc("0 0 0 * * ?", MerchantServiceAdd)
 
 	c.Start()
 }
@@ -162,4 +164,10 @@ func OrderAutoCancel() {
 		log.Warn("没有需要取消的订单")
 	}
 
+}
+
+//厨师随机增加服务数量 0到2
+func MerchantServiceAdd() {
+	log.Info("厨师随机增加服务数量 0~2")
+	dao.MerchantServiceAdd()
 }
