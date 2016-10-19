@@ -145,7 +145,7 @@ func ProdAdd(prodbll *ProdBLL) (*ProdBLL,error)  {
 
 	//保存商品图片信息
 	if prodbll.Imgs!=nil&&len(prodbll.Imgs)>0 {
-		err := productImgSave(prodbll,prodId,tx)
+		err := productImgSave(prodbll,tx)
 		if err!=nil{
 			tx.Rollback()
 			return nil,err
@@ -160,6 +160,49 @@ func ProdAdd(prodbll *ProdBLL) (*ProdBLL,error)  {
 	}
 	//商品分类添加
 	if err:=prodCategoryAdd(prodbll,prodId,tx);err!=nil{
+		tx.Rollback()
+		return nil,err
+	}
+	err = tx.Commit()
+	if err!=nil{
+		tx.Rollback()
+		return nil,err
+	}
+
+	return prodbll,nil;
+}
+
+func ProdUpdate(prodbll *ProdBLL) (*ProdBLL,error)  {
+	session := db.NewSession()
+	tx,_ :=session.Begin()
+	defer func() {
+		if err :=recover();err!=nil{
+			tx.Rollback()
+			panic(err)
+		}
+	}()
+	//保存商品基础信息
+	err := productBaseUpdate(prodbll,tx)
+	if err!=nil{
+		tx.Rollback()
+		return nil,err
+	}
+
+	//修改商品图片信息
+	err = productImgUpdate(prodbll,tx)
+	if err!=nil{
+		tx.Rollback()
+		return nil,err
+	}
+
+	//修改商品所属信息
+	err = merchantProdUpdate(prodbll,tx)
+	if err!=nil{
+		tx.Rollback()
+		return nil,err
+	}
+	//商品分类修改
+	if err:=produCategoryUpdate(prodbll,tx);err!=nil{
 		tx.Rollback()
 		return nil,err
 	}
@@ -380,14 +423,22 @@ func merchantProdAdd(prodbll *ProdBLL,prodId int64,tx *dbr.Tx) error  {
 
 	return mprod.InsertTx(tx)
 }
+
+//商户信息修改
+func merchantProdUpdate(prodbll *ProdBLL,tx *dbr.Tx) error  {
+
+	mprod := dao.NewMerchantProd()
+
+	return mprod.UpdateTx(prodbll.Id,prodbll.MerchantId,tx)
+}
 //保存商品图片
-func productImgSave(prodbll *ProdBLL,prodId int64,tx *dbr.Tx) error  {
+func productImgSave(prodbll *ProdBLL,tx *dbr.Tx) error  {
 
 	imgArray := prodbll.Imgs
 	for _,img :=range imgArray  {
 		prodImgs :=dao.NewProdImgs()
 		prodImgs.AppId = prodbll.AppId
-		prodImgs.ProdId = prodId
+		prodImgs.ProdId = prodbll.Id
 		prodImgs.Url = img.Url
 		prodImgs.Flag = img.Flag
 		prodImgs.Json = img.Json
@@ -400,8 +451,67 @@ func productImgSave(prodbll *ProdBLL,prodId int64,tx *dbr.Tx) error  {
 	return nil;
 }
 
+func productImgUpdate(prodbll *ProdBLL,tx *dbr.Tx) error{
+	imgArray := prodbll.Imgs
+	err :=dao.NewProdImgs().DeleteWithIdTx(prodbll.Id,tx)
+	if err!=nil{
+		return err
+	}
+	if imgArray!=nil&&len(imgArray)>0 {
+		for _,img :=range imgArray  {
+			prodImgs :=dao.NewProdImgs()
+			prodImgs.AppId = prodbll.AppId
+			prodImgs.ProdId = prodbll.Id
+			prodImgs.Url = img.Url
+			prodImgs.Flag = img.Flag
+			prodImgs.Json = img.Json
+			err :=prodImgs.InsertTx(tx)
+			if err!=nil{
+				return err
+			}
+		}
+	}
+
+
+	return nil;
+}
+
 //保存商品基础信息
 func productBaseSave(prodbll *ProdBLL,tx *dbr.Tx) (int64,error)  {
+	prodbll.Status = comm.PRODUCT_STATUS_NORMAL
+	prod := prodToModel(prodbll)
+	prodId,err := prod.InsertTx(tx)
+	if err!=nil{
+		return 0,err
+	}
+
+	return prodId,err
+}
+
+func productBaseUpdate(prodbll *ProdBLL,tx *dbr.Tx) (error)  {
+	prod := prodToModel(prodbll)
+	err := prod.UpdateTx(tx)
+	if err!=nil{
+		return err
+	}
+
+	return err
+}
+
+func produCategoryUpdate(prodbll *ProdBLL,tx *dbr.Tx) (error)  {
+	prodCategory := dao.NewProdCategory()
+	prodCategory.ProdId = prodbll.Id
+	prodCategory.CategoryId = prodbll.CategoryId
+	err := prodCategory.UpdateTx(tx)
+	if err!=nil{
+		return err
+	}
+
+	return err
+}
+
+
+func prodToModel(prodbll *ProdBLL) *dao.Product {
 	prod := dao.NewProduct()
 	prod.Title = prodbll.Title
 	prod.SubTitle = prodbll.SubTitle
@@ -409,16 +519,11 @@ func productBaseSave(prodbll *ProdBLL,tx *dbr.Tx) (int64,error)  {
 	prod.Description = prodbll.Description
 	prod.DisPrice = prodbll.DisPrice
 	prod.Price = prodbll.Price
-	prod.Status = comm.PRODUCT_STATUS_NORMAL
+	prod.Status = prodbll.Status
 	prod.Json = prodbll.Json
 	prod.Flag = prodbll.Flag
-	prodId,err := prod.InsertTx(tx)
-	if err!=nil{
-		tx.Rollback()
-		return 0,err
-	}
 
-	return prodId,err
+	return prod
 }
 
 func ProdAttrKeyToDto(model *dao.ProdAttrKey) *ProdAttrKeyDto  {

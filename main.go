@@ -172,7 +172,7 @@ func main() {
 			//设置商品推荐 0.取消推荐 1.推荐
 			product.PUT("/:prod_id/recom/:is_recom", api.ProductRecom)
 			//修改商品
-			product.PUT("/:prod_id")
+			product.PUT("/:prod_id",api.ProductUpdate)
 
 		}
 		merchants := v1.Group("/merchants")

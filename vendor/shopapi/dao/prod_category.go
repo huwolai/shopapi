@@ -22,3 +22,8 @@ func (self *ProdCategory) InsertTx(tx *dbr.Tx) error {
 
 	return err
 }
+
+func (self *ProdCategory) UpdateTx(tx *dbr.Tx) error  {
+	_,err :=tx.Update("prod_category").Set("category_id",self.CategoryId).Where("prod_id=?",self.ProdId).Exec()
+	return err
+}
