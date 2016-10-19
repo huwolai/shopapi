@@ -337,6 +337,13 @@ func ProductAdd(c *gin.Context)  {
 }
 
 func ProductUpdate(c *gin.Context)  {
+
+	defer func() {
+		if err :=recover();err!=nil{
+			panic(err)
+		}
+	}()
+
 	_,err := CheckUserAuth(c)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
