@@ -10,6 +10,7 @@ type ProdBLL struct {
 	SubTitle string
 	//商户ID
 	MerchantId int64
+	Status int
 	//描述
 	Description string
 	//类别ID

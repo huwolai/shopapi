@@ -26,6 +26,13 @@ func (self *MerchantProd) InsertTx(tx *dbr.Tx) error  {
 	return err
 }
 
+func (self *MerchantProd) UpdateTx(prodId int64,merchantId int64,tx *dbr.Tx) error  {
+
+	_,err :=tx.Update("merchant_prod").Set("merchant_id=?",merchantId).Where("prod_id=?",prodId).Exec()
+
+	return err
+}
+
 //根据商品ID查询
 func (self *MerchantProd) WithProdId(prodId int64,appId string) (*MerchantProd,error)  {
 	var model *MerchantProd

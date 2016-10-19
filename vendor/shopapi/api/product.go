@@ -336,6 +336,62 @@ func ProductAdd(c *gin.Context)  {
 	c.JSON(http.StatusOK,param)
 }
 
+func ProductUpdate(c *gin.Context)  {
+	_,err := CheckUserAuth(c)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	var param *ProductParam
+	err = c.BindJSON(&param)
+	if err!=nil {
+		log.Error(err)
+		util.ResponseError400(c.Writer,"参数有误!")
+		return
+	}
+
+	sprodId :=c.Param("prod_id")
+	if sprodId=="" {
+		util.ResponseError400(c.Writer,"商品ID不能为空!")
+		return
+	}
+	prodId,err := strconv.ParseInt(sprodId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商品ID格式有误!")
+		return
+	}
+	param.Id = prodId
+
+	mid := param.MerchantId
+	if mid==0{
+		util.ResponseError400(c.Writer,"商户ID不能为空!")
+		return
+	}
+	if param.Title=="" {
+		util.ResponseError400(c.Writer,"商品标题不能为空")
+		return
+	}
+	if param.CategoryId==0 {
+		util.ResponseError400(c.Writer,"分类ID不能为空!")
+		return
+	}
+	if param.Price<=0 {
+		util.ResponseError400(c.Writer,"请输入商品价格!")
+		return
+	}
+	param.AppId = security.GetAppId2(c.Request)
+
+	prodBll := productParamToBLL(param)
+	prodBll,err =service.ProdUpdate(prodBll)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	param.Id = prodBll.Id
+	c.JSON(http.StatusOK,param)
+}
+
 //商品推荐列表
 func ProductListWithRecomm(c *gin.Context)  {
 	appId := security.GetAppId2(c.Request)

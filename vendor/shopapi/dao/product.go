@@ -161,6 +161,11 @@ func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 	return pid,err
 }
 
+func (self *Product) UpdateTx(tx *dbr.Tx) error {
+	_,err :=tx.Update("product").Set("title",self.Title).Set("sub_title",self.SubTitle).Set("description",self.Description).Set("price",self.Price).Set("dis_price",self.DisPrice).Set("json",self.Json).Where("id=?",self.Id).Exec()
+	return err
+}
+
 func (self *Product) WithFlag(flag string,merchantId int64)  ([]*Product,error)  {
 	var products []*Product
 	_,err :=db.NewSession().SelectBySql("select * from product pt,merchant_prod mp where pt.id = mp.prod_id and pt.status=1 and pt.flag=? and mp.merchant_id=?",flag,merchantId).LoadStructs(&products)

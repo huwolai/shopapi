@@ -47,6 +47,13 @@ func (self *ProdImgs) InsertTx(tx *dbr.Tx) error {
 	return err
 }
 
+func (self *ProdImgs) DeleteWithIdTx(prodId int64,tx *dbr.Tx) error {
+
+	_,err :=tx.DeleteFrom("prod_imgs").Where("prod_id=?",prodId).Exec()
+
+	return err
+}
+
 func (self *ProdImgsDetail) ProdImgsWithProdId(prodId int64,appId string) ([]*ProdImgsDetail,error)  {
 
 	sess := db.NewSession()
