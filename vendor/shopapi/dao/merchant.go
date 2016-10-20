@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"strconv"
+	"math/rand"  
 )
 
 type Merchant struct  {
@@ -268,5 +269,21 @@ func (self *MerchantOnline) MerchantOnline(openId string,appId string) (*Merchan
 func (self *Merchant) MerchantOnlineAndChange(openId string,appId string,status int) error {
 	_,err :=db.NewSession().Update("merchant").Set("online",status).Where("open_id=?",openId).Where("app_id=?",appId).Exec()
 	return err
+}
+
+//厨师随机增加服务数量 0到2
+func MerchantServiceAdd() error  {
+	var MerchantService []*Merchant		
+	builder :=db.NewSession().Select("*").From("merchant")
+	builder = builder.Where("id>=?",4)	
+	builder = builder.Where("id<=?",8)	
+	builder.LoadStructs(&MerchantService)	
+	
+	x := 0
+	for _,Service :=range MerchantService  {
+		x=rand.Intn(2)
+		db.NewSession().UpdateBySql(fmt.Sprintf("update merchant set weight=weight+%d where id=%d limit 1",x,Service.Id)).Exec()
+	}
+	return nil
 }
 
