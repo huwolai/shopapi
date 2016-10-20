@@ -147,6 +147,8 @@ func main() {
 		skus := v1.Group("/skus")
 		{
 			skus.POST("/product/:prod_id", api.ProdSkuAdd)
+			// 修改sku
+			skus.PUT("/product/:prod_id", api.ProdSkuUpdate)
 		}
 		//商品
 		products := v1.Group("/products")

@@ -187,6 +187,36 @@ func ProdSkuAdd(c *gin.Context)  {
 
 }
 
+func ProdSkuUpdate(c *gin.Context)  {
+
+	var prodSkuDto *ProdSkuDto
+	err :=c.BindJSON(&prodSkuDto)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"数据格式有误!")
+		return
+	}
+	if prodSkuDto.ProdId==0 {
+		util.ResponseError400(c.Writer,"商品ID不能为空!")
+		return
+	}
+
+	prodSku := &service.ProdSku{}
+	prodSku.ProdId = prodSkuDto.ProdId
+	prodSku.AttrSymbolPath = prodSkuDto.AttrSymbolPath
+	prodSku.Price = prodSkuDto.Price
+	prodSku.DisPrice = prodSkuDto.DisPrice
+	prodSku.SkuNo = prodSkuDto.SkuNo
+	prodSku,err = service.ProdSkuUpdate(prodSku)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"添加失败!")
+		return
+	}
+
+	c.JSON(http.StatusOK,prodSkuDto)
+
+}
+
 func ProdDetailListWith(c *gin.Context)  {
 
 	flags :=c.Query("flags")
