@@ -85,6 +85,13 @@ func ProdSkuAdd(prodSku *ProdSku) (*ProdSku,error)  {
 	return prodSku,err
 }
 
+func ProdSkuUpdate(prodSku *ProdSku) (*ProdSku,error) {
+	pSku :=dao.NewProdSku()
+	err :=pSku.UpdatePriceWithProdIdAndSymbolPath(prodSku.Price,prodSku.DisPrice,prodSku.AttrSymbolPath,prodSku.ProdId)
+
+	return prodSku,err
+}
+
 func ProdDetailListWith(keyword string,merchantId int64,flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*dao.ProductDetail,error)  {
 
 	return dao.NewProductDetail().ProdDetailListWith(keyword,merchantId,flags,noflags,isRecomm,orderBy,pageIndex,pageSize,appId)
