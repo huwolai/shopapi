@@ -1144,3 +1144,24 @@ func UpdateToPayed(orderNo string,appId string) error  {
 	//============
 	return nil
 }
+//订单删除
+func OrderDelete(orderNo string,appId string) error {
+
+	order :=dao.NewOrder()
+	order,err :=order.OrderWithNo(orderNo,appId)
+	if err!=nil{
+		return err
+	}
+	
+	if order.OrderStatus!=comm.ORDER_STATUS_CANCELED {
+		return errors.New("订单未取消!")
+	}
+	
+	log.Error("删除订单",orderNo)	
+	err = order.OrderDelete(orderNo,appId)
+	if err!=nil{		
+		return err
+	}
+	
+	return nil
+}

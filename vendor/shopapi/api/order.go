@@ -688,3 +688,28 @@ func orderItemToModel(dto OrderItemDto) service.OrderItemModel  {
 	model.SkuNo = dto.SkuNo
 	return model
 }
+
+//订单删除
+func OrderDelete(c *gin.Context)  {
+	_,err := security.GetAuthUser(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+	orderNo :=c.Param("order_no")
+	appId := security.GetAppId2(c.Request)
+	var paramMap map[string]interface{}
+	err = c.BindJSON(&paramMap)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"参数有误!")
+		return
+	}
+
+	err =service.OrderDelete(orderNo,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	util.ResponseSuccess(c.Writer)
+}

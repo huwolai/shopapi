@@ -352,3 +352,62 @@ func (self *Order) UpdateAmountTx(couponAmount,payPrice,merchantAmount,omitMoney
 
 	return err
 }
+//订单删除
+func (self *Order) OrderDelete(orderNo string,appId string) error {
+	sesson := db.NewSession()
+	tx,_  :=sesson.Begin()
+	defer func() {
+		if err :=recover();err!=nil{
+			tx.Rollback()
+			panic(err)
+		}
+	}()
+	
+	//_,err :=db.NewSession().DeleteBySql("delete from order where `no`=? and app_id=? limit 1",orderNo,appId).Exec()
+	_,err :=tx.DeleteFrom("order").Where("no=?",orderNo).Where("app_id=?",appId).Exec()
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+	
+	//_,err =db.NewSession().DeleteBySql("delete from order_item where `no`=? and app_id=?",orderNo,appId).Exec()
+	_,err =tx.DeleteFrom("order_item").Where("no=?",orderNo).Where("app_id=?",appId).Exec()
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+	
+	if err :=tx.Commit();err!=nil{
+		tx.Rollback()
+
+		return err
+	}
+	
+	return nil
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
