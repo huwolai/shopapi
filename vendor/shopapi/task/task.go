@@ -29,7 +29,7 @@ func  StartCron() {
 
 	c.AddFunc("0 0/2 * * * ?", OrderAutoCancel)
 	//厨师随机增加服务数量 0到2
-	c.AddFunc("0 0 0 * * ?", MerchantServiceAdd)
+	c.AddFunc("0 0 9 * * ?", MerchantServiceAdd)
 
 	c.Start()
 }

@@ -93,6 +93,19 @@ func (self *ProdSku) UpdateStockWithSkuNo(stock int ,skuNo string) error {
 
 	return err
 }
+
+func (self *ProdSku) UpdatePriceWithSkuNo(price float64,disPrice float64,skuNo string) error  {
+	_,err :=db.NewSession().Update("prod_sku").Set("price",price).Set("dis_price",disPrice).Where("sku_no=?",skuNo).Exec()
+
+	return err
+}
+
+func (self *ProdSku) UpdatePriceWithProdIdAndSymbolPath(price float64,disPrice float64,attrSymbolPath string,prodId int64) error  {
+	_,err :=db.NewSession().Update("prod_sku").Set("price",price).Set("dis_price",disPrice).Where("attr_symbol_path=?",attrSymbolPath).Where("prod_id=?",prodId).Exec()
+
+	return err
+}
+
 //修改SKU 库存
 func (self *ProdSku) UpdateStockWithSkuNoTx(stock int ,skuNo string,tx *dbr.Tx) error {
 	_,err :=tx.Update("prod_sku").Set("stock",stock).Where("sku_no=?",skuNo).Exec()
