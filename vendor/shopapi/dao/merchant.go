@@ -194,7 +194,26 @@ func (self *MerchantDetail) MerchantNearSearch(longitude float64,latitude float6
 	
 	
 	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = 1 and mt.open_id<>? and mt.flag<>'default' and getDistance(mt.longitude,latitude,?,?)<cover_distance and id not in (SELECT merchant_prod.merchant_id from prod_attr_val,merchant_prod where merchant_prod.prod_id=prod_attr_val.prod_id and prod_attr_val.attr_key='time' and prod_attr_val.attr_value=?) order by distance limit ?,?",longitude,latitude,appId,openId,longitude,latitude,serviceTime,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
-	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where ?>=11 and ?<=22 and app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' and id not in (SELECT merchant_prod.merchant_id from prod_attr_val,merchant_prod where merchant_prod.prod_id=prod_attr_val.prod_id and prod_attr_val.attr_key='time' and prod_attr_val.attr_value=?) and id not in (SELECT merchant_id from merchant_service_time where stime=? ) order by distance limit ?,?",longitude,latitude,serviceHour,serviceHour,appId,status,openId,serviceTime,fmt.Sprintf("%d:00",serviceHour),(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
+	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where ?>=11 and ?<=22 and app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' and id not in (SELECT merchant_prod.merchant_id from prod_attr_val,merchant_prod where merchant_prod.prod_id=prod_attr_val.prod_id and prod_attr_val.attr_key='time' and prod_attr_val.attr_value=?) and id not in (SELECT merchant_id from merchant_service_time where stime=? ) order by distance limit ?,?",longitude,latitude,serviceHour,serviceHour,appId,status,openId,serviceTime,fmt.Sprintf("%d:00",serviceHour),(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
+	
+	
+	builder :=db.NewSession().Select(fmt.Sprintf("mt.*,getDistance(mt.longitude,latitude,%f,%f) distance,mt.cover_distance",longitude,latitude)).From("merchant mt")	
+	builder = builder.Where("app_id = ?",appId)
+	//builder = builder.Where("mt.status = ?",1)
+	builder = builder.Where("mt.status in ?",status)
+	builder = builder.Where("mt.open_id <> ?",openId)
+	builder = builder.Where("mt.flag <> ?","default")
+	builder = builder.Where("id not in (SELECT merchant_prod.merchant_id from prod_attr_val,merchant_prod where merchant_prod.prod_id=prod_attr_val.prod_id and prod_attr_val.attr_key='time' and prod_attr_val.attr_value=?)",serviceTime)	
+	builder = builder.Where("id not in (SELECT merchant_id from merchant_service_time where stime=? )",fmt.Sprintf("%d:00",serviceHour))
+
+
+	
+	_,err :=builder.OrderBy("is_recom desc,id desc").Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&mdetails)
+	
+	
+	
+	
+	
 	
 	//log.Error( builder.ToSql() )
 	
