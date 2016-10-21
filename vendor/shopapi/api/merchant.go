@@ -271,17 +271,22 @@ func MerchantIs(c *gin.Context)  {
 	}
 	//if merchant!=nil&&merchant.Status==comm.MERCHANT_STATUS_NORMAL{
 	if merchant==nil{
+		//非厨师 未申请
 		c.JSON(http.StatusOK,gin.H{
 			"is_merchant": 2,
 		})
 	}else if merchant.Status==0 {
+		//非厨师 有申请
 		c.JSON(http.StatusOK,gin.H{
 			"is_merchant": 0,
+			"status"	 : merchant.Status,
 		})
 	}else{
+		//厨师
 		c.JSON(http.StatusOK,gin.H{
 			"is_merchant": 1,
 			"merchant_id":merchant.Id,
+			"status"	 : merchant.Status,
 		})		
 	}
 }
