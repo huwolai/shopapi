@@ -114,6 +114,8 @@ type ProductDetailDto struct {
 	ProdImgs []*ProdImgsDetailDto `json:"prod_imgs"`
 	//商品售出数量
 	SoldNum int `json:"sold_num"`
+	//商品总页数
+	TotalPage int `json:"total_page"`
 }
 
 type ProdImgsDetailDto struct  {
@@ -432,7 +434,10 @@ func ProductUpdate(c *gin.Context)  {
 //商品推荐列表
 func ProductListWithRecomm(c *gin.Context)  {
 	appId := security.GetAppId2(c.Request)
-	prodList,err := service.ProductListWithRecomm(appId)
+	pindex,psize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+	
+	prodList,count,err := service.ProductListWithRecomm(appId,pindex,psize)	
+	log.Error(count)
 	if err!=nil {
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询失败!")
@@ -440,9 +445,12 @@ func ProductListWithRecomm(c *gin.Context)  {
 	}
 	prodListDtos :=make([]*ProductDetailDto,0)
 	if prodList!=nil {
-
 		for _,prodDetail :=range prodList {
 			prodListDtos = append(prodListDtos,productDetailToDto(prodDetail))
+		}
+		
+		for _,prodListDto :=range prodListDtos {
+			prodListDto.TotalPage=count;
 		}
 	}
 	c.JSON(http.StatusOK,prodListDtos)

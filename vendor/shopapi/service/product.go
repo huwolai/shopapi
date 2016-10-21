@@ -250,14 +250,14 @@ func ProdAttrValueAdd(dto *ProdAttrValueDto) (*ProdAttrValueDto,error)  {
 }
 
 //获取推荐列表
-func ProductListWithRecomm(appId string) ([]*dao.ProductDetail,error) {
+func ProductListWithRecomm(appId string,pageIndex uint64,pageSize uint64) ([]*dao.ProductDetail,int,error) {
 	productDetail :=dao.NewProductDetail()
-	prodList,err := productDetail.ProductListWithRecomm(appId)
+	prodList,count,err := productDetail.ProductListWithRecomm(appId,pageIndex,pageSize)
 	if err!=nil {
-		return nil,err
+		return nil,0,err
 	}
 
-	return prodList,nil
+	return prodList,count,nil
 }
 
 //根据分类获取商品

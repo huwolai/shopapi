@@ -174,18 +174,23 @@ func (self *Product) WithFlag(flag string,merchantId int64)  ([]*Product,error) 
 }
 
 //商品推荐列表
-func (self *ProductDetail) ProductListWithRecomm(appId string) ([]*ProductDetail,error)  {
+func (self *ProductDetail) ProductListWithRecomm(appId string,pageIndex uint64,pageSize uint64) ([]*ProductDetail,int,error)  {
 	session := db.NewSession()
+	
+	var count int
+	_,err :=session.SelectBySql("select count(id) from product  where is_recom=1 and status=1 and app_id=? order by `order` desc limit ?,?",appId,(pageIndex-1)*pageSize,pageSize).LoadStructs(&count)
+	
+	
 	var prodList []*ProductDetail
-	_,err :=session.SelectBySql("select * from product  where is_recom=1 and status=1 and app_id=? order by `order` desc",appId).LoadStructs(&prodList)
+	_,err =session.SelectBySql("select * from product  where is_recom=1 and status=1 and app_id=? order by `order` desc limit ?,?",appId,(pageIndex-1)*pageSize,pageSize).LoadStructs(&prodList)
 	if err!=nil{
 		log.Debug("----err",err)
-		return nil,err
+		return nil,0,err
 	}
 
 	err = FillProdImgs(appId,prodList)
 
-	return prodList,err
+	return prodList,count,err
 }
 
 func (self *ProductDetail) ProductListWithMerchant(merchantId int64,appId string,flags []string,noflags []string) ([]*ProductDetail,error)  {
