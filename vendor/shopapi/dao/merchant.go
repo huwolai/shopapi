@@ -89,6 +89,14 @@ func (self *Merchant) MerchantWithId(id int64) (*Merchant,error)  {
 	return model,err
 }
 
+func (self *MerchantDetail) MerchantWithIdDistance(id int64,longitude float64,latitude float64) (*MerchantDetail,error)  {
+
+	var model *MerchantDetail
+	_,err :=db.NewSession().Select(fmt.Sprintf("*,getDistance(longitude,latitude,%f,%f) distance",longitude,latitude)).From("merchant").Where("id=?",id).LoadStructs(&model)
+
+	return model,err
+}
+
 func (self *Merchant) MerchantWithOpenId(openId string,appId string) (*Merchant,error)  {
 
 	var model *Merchant

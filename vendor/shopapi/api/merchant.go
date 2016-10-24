@@ -260,6 +260,36 @@ func MerchantWithId(c *gin.Context)  {
 	util.ResponseError400(c.Writer,"没有找到信息!")
 }
 
+func MerchantWithIdDistance(c *gin.Context)  {
+	//appId :=security.GetAppId2(c.Request)
+	appId :="shopapi"
+	
+	longitude :=c.Query("longitude")
+	latitude :=c.Query("latitude")
+	flongitude,_ :=strconv.ParseFloat(longitude,20)
+	flatitude,_  :=strconv.ParseFloat(latitude,20)	
+	
+	id := c.Param("merchant_id")
+	iid,err := strconv.ParseInt(id,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"ID有误!")
+		return
+	}
+
+	merchant,err := service.MerchantWithIdDistance(iid,appId,flongitude,flatitude)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	if merchant!=nil{
+		c.JSON(http.StatusOK,merchantDetailToDto(merchant))
+		return
+	}
+
+	util.ResponseError400(c.Writer,"没有找到信息!")
+}
+
 //是否是商户
 func MerchantIs(c *gin.Context)  {
 	appId :=security.GetAppId2(c.Request)
