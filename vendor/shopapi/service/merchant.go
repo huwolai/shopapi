@@ -212,7 +212,7 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 	merchant.Name = dll.Name
 	merchant.OpenId = dll.OpenId
 	merchant.Mobile  = account.Mobile
-	merchant.Status = comm.MERCHANT_STATUS_APPLICATION //申请中
+	merchant.Status = comm.MERCHANT_STATUS_WAIT_AUIT //申请中
 	merchant.AppId = dll.AppId
 	merchant.Longitude = dll.Longitude
 	merchant.Latitude = dll.Latitude
@@ -427,26 +427,3 @@ func MerchantOnlineAndChange(openId string,appId string,status int) error  {
 	merchant :=dao.NewMerchant()
 	return merchant.MerchantOnlineAndChange(openId,appId,status)
 }
-//对某个用户直接变更status状态为4 ,入参为用户的手机号码
-func MerchantChangeStatusTo4byMoible(mobile int) error  {
-	merchant :=dao.NewMerchant()
-	merchant,count,err :=merchant.MerchantWithMobile(mobile)
-	log.Error(count)
-	if err!=nil{
-		return errors.New("查询商户信息错误!")
-	}
-	if count>1{
-		return errors.New("查询商户信息错误!!")
-	}
-	if merchant==nil{
-		return errors.New("商户不存在!")
-	}
-
-	err =merchant.UpdateStatus(4,merchant.Id)
-	if err!=nil{		
-		return err
-	}
-	
-	return nil
-}
-
