@@ -212,7 +212,7 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 	merchant.Name = dll.Name
 	merchant.OpenId = dll.OpenId
 	merchant.Mobile  = account.Mobile
-	merchant.Status = comm.MERCHANT_STATUS_WAIT_AUIT //等待审核
+	merchant.Status = comm.MERCHANT_STATUS_APPLICATION //申请中
 	merchant.AppId = dll.AppId
 	merchant.Longitude = dll.Longitude
 	merchant.Latitude = dll.Latitude
@@ -284,7 +284,6 @@ func MerchantAudit(merchantId int64,appId string) error  {
 		return err
 	}
 
-
 	return nil
 }
 
@@ -302,8 +301,23 @@ func ProdDefaultAddForMerchant(merchant *dao.Merchant) error {
 	prodbll.Flag=comm.MERCHANT_DEFAULT_PRODUCT_FLAG
 	prodbll.MerchantId = merchant.Id
 	_,err :=ProdAdd(prodbll)
+	
+	if err!=nil{
+		return err
+	}	
+	
+	//prodbll =&ProdBLL{}
+	prodbll.Title = "六菜一汤"
+	prodbll.Description="六菜一汤"
+	prodbll.DisPrice = 240.0
+	prodbll.Price = 240.0
+	_,err =ProdAdd(prodbll)
+	
+	if err!=nil{
+		return err
+	}	
 
-	return err
+	return nil
 }
 
 func MerchantServiceTimeGet(merchantId int64) ([]*dao.MerchantServiceTime,error) {
@@ -412,5 +426,27 @@ func MerchantOnline(openId string,appId string)  (*dao.MerchantOnline,error)  {
 func MerchantOnlineAndChange(openId string,appId string,status int) error  {
 	merchant :=dao.NewMerchant()
 	return merchant.MerchantOnlineAndChange(openId,appId,status)
+}
+//对某个用户直接变更status状态为4 ,入参为用户的手机号码
+func MerchantChangeStatusTo4byMoible(mobile int) error  {
+	merchant :=dao.NewMerchant()
+	merchant,count,err :=merchant.MerchantWithMobile(mobile)
+	log.Error(count)
+	if err!=nil{
+		return errors.New("查询商户信息错误!")
+	}
+	if count>1{
+		return errors.New("查询商户信息错误!!")
+	}
+	if merchant==nil{
+		return errors.New("商户不存在!")
+	}
+
+	err =merchant.UpdateStatus(4,merchant.Id)
+	if err!=nil{		
+		return err
+	}
+	
+	return nil
 }
 
