@@ -10,6 +10,7 @@ import (
 	"io"
 	"time"
 	"gitlab.qiyunxin.com/tangtao/utils/config"
+	"github.com/openshift/origin/pkg/cmd/infra/deployer"
 )
 
 const MERCHANT_IMG_PATH  = "./config/upload/merchant"
@@ -72,9 +73,6 @@ func ImageUpload(c *gin.Context)  {
 		err := c.Request.ParseMultipartForm(32 << 20)
 		log.Error(err)
 	}
-
-	log.Error(c.Request.MultipartForm)
-
 	file, _ , err := c.Request.FormFile(name)
 
 	if err != nil {
