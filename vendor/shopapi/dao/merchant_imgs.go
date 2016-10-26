@@ -47,9 +47,13 @@ func (self *MerchantImgs) MerchantImgsWithId(id int64) (*MerchantImgs,error)  {
 func (self *MerchantImgs) MerchantImgsWithMerchantId(merchantId int64,flags []string) ([]*MerchantImgs,error)  {
 	var merchantImgs []*MerchantImgs
 	builder :=db.NewSession().Select("*").From("merchant_imgs").Where("merchant_id=?",merchantId)
+	
+	builder = builder.Where("audit = ?",1)
+	
 	if flags!=nil&&len(flags)>0 {
 		builder = builder.Where("flag in ?",flags)
 	}
+	
 
 	_,err :=builder.LoadStructs(&merchantImgs)
 
