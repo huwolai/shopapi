@@ -11,6 +11,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/queue"
 	"time"
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
+	"encoding/json"
 )
 
 type OrderModel struct  {
@@ -651,6 +652,21 @@ func PublishOrderPaidEvent(items []*dao.OrderItem,order *dao.Order) error {
 	if merchant.Mobile=="" {
 		return errors.New("商户没有填写手机号！")
 	}
+	
+	//是否代购买 start
+	type IsDiy struct {
+		IsDiy bool `json:"isDIY"`
+	}	
+	var isdiy IsDiy
+	var diy string
+	json.Unmarshal([]byte(items[0].Json), &isdiy)
+	if isdiy.IsDiy {
+		diy="需要"
+	}else{
+		diy="不需要"
+	}
+	//是否代购买 end
+	
 	orderEvent := queue.NewOrderEvent()
 	//订单已付款
 	orderEvent.EventKey = queue.ORDER_EVENT_PAID
@@ -675,6 +691,8 @@ func PublishOrderPaidEvent(items []*dao.OrderItem,order *dao.Order) error {
 		"address":order.Address,
 		// 联系人手机号
 		"mobile": order.AddressMobile,
+		// 是否代购买
+		"isdiy": diy,
 	}
 	if items!=nil&&len(items)>0 {
 		orderEventItems := make([]*queue.OrderEventItem,0)
