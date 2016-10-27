@@ -54,6 +54,7 @@ type MerchantDetail struct  {
 
 type MerchantOnline struct  {
 	Online int
+	Status int
 }
 
 func NewMerchantDetail() *MerchantDetail  {
@@ -276,7 +277,7 @@ func (self *MerchantOnline) MerchantOnline(openId string,appId string) (*Merchan
 	sess := db.NewSession()
 	var online *MerchantOnline
 
-	builder :=sess.Select("online").From("`merchant`")
+	builder :=sess.Select("online,status").From("`merchant`")
 	builder = builder.Where("open_id=?",openId)
 	builder = builder.Where("app_id=?",appId)
 	
