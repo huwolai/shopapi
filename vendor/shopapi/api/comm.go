@@ -10,7 +10,6 @@ import (
 	"io"
 	"time"
 	"gitlab.qiyunxin.com/tangtao/utils/config"
-	"github.com/openshift/origin/pkg/cmd/infra/deployer"
 )
 
 const MERCHANT_IMG_PATH  = "./config/upload/merchant"
