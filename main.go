@@ -77,9 +77,9 @@ func main() {
 
 	//初始化权限资源
 	security.InitSources([]security.Source{
-		security.Source{Id:"user",Name:"用户",Resource:"users",Permissions:"create,update,delete,browse"},
-		security.Source{Id:"product",Name:"产品",Resource:"products",Permissions:"create,update,delete,browse"},
-		security.Source{Id:"merchant",Name:"商户",Resource:"merchants",Permissions:"create,update,delete,browse"},
+		security.Source{Id:"user",Name:"用户",Permissions:"create,update,delete,browse"},
+		security.Source{Id:"product",Name:"产品",Permissions:"create,update,delete,browse"},
+		security.Source{Id:"merchant",Name:"商户",Permissions:"create,update,delete,browse"},
 	})
 
 	//安装权限控制功能
