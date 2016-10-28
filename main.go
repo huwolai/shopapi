@@ -301,6 +301,13 @@ func main() {
 
 		//权限资源数据 （此接口提供给,权限资源服务调用）
 		v1.GET("/sources",api.SourcesAll)
+		
+		//一点公益
+		ydgy := v1.Group("/ydgy")
+		{
+			ydgy.POST("/:open_id/setid/:id", api.YdgySetId)
+			ydgy.GET("/:open_id/getid", api.YdgyGetId)
+		}
 	}
 
 	//设置上传目录
