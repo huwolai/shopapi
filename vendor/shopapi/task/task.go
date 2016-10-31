@@ -132,6 +132,7 @@ func cal(order *dao.Order, calMoney float64, openId string, mark string) error {
 		"title":    order.Title, //标题
 		"remark":   order.Title, //备注
 		"out_code": order.No + "-" + mark, //第三方唯一标示
+		"out_trade_no": order.No,
 	}
 	_, err := service.RequestPayApi("/v2/imprests/fetch", params)
 

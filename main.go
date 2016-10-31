@@ -9,6 +9,8 @@ import (
 	"os"
 	"shopapi/api"
 	"shopapi/task"
+	"gitlab.qiyunxin.com/tangtao/utils/security"
+	"gitlab.qiyunxin.com/tangtao/utils/app"
 )
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -70,7 +72,20 @@ func main() {
 	} else if env == "preproduction" {
 		gin.SetMode(gin.TestMode)
 	}
+	//应用安装
+	app.Setup()
 
+	//初始化权限资源
+	security.InitSources([]security.Source{
+		security.Source{Id:"user",Name:"用户",Permissions:"create,update,delete,browse"},
+		security.Source{Id:"product",Name:"产品",Permissions:"create,update,delete,browse"},
+		security.Source{Id:"merchant",Name:"商户",Permissions:"create,update,delete,browse"},
+	})
+
+	//安装权限控制功能
+	security.Setup()
+
+	//安装消息队列
 	queue.SetupAMQP(config.GetValue("amqp_url").ToString())
 
 	//开启定时器

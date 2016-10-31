@@ -558,7 +558,7 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		"pay_token": payToken,
 		"open_id": order.OpenId,
 		"code": order.Code,
-		"out_trade_pay":order.No,
+		"out_trade_no":order.No,
 	}
 	resultMap,err := RequestPayApi("/pay/payimprest",params)
 	if err!=nil{
