@@ -200,6 +200,8 @@ func main() {
 			merchants.GET("/nearbySearch", api.MerchatNearSearch)
 			//商户图片
 			merchants.GET("/user/:open_id/imgs", api.MerchantImgWithFlag)
+			//商户菜品图片批量命名
+			merchants.POST("/imgsnamed", api.MerchantImgsWithNamed)
 		}
 
 		//商户

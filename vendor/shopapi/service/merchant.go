@@ -7,6 +7,8 @@ import (
 	"strings"
 	"errors"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
+	"gitlab.qiyunxin.com/tangtao/utils/util"
+	"fmt"
 )
 
 type MerchantDetailDLL struct  {
@@ -433,4 +435,29 @@ func MerchantOnline(openId string,appId string)  (*dao.MerchantOnline,error)  {
 func MerchantOnlineAndChange(openId string,appId string,status int) error  {
 	merchant :=dao.NewMerchant()
 	return merchant.MerchantOnlineAndChange(openId,appId,status)
+}
+
+//商户菜品图片批量命名.
+func MerchantImgsWithNamed(appId string,names string) error {
+	
+	type NameStruct struct{
+		Id 		int64	`json:"id"`
+		Name 	string	`json:"name"`
+	}
+
+	var nameMap []NameStruct
+	err:=util.ReadJsonByByte([]byte(names),&nameMap)
+	
+	if err!=nil {		
+		return err
+	}
+	
+	for _,v :=range nameMap {
+		err = dao.NewMerchantImgs().MerchantImgsWithJson(v.Id,fmt.Sprintf("{\"name\":\"%s\"}",v.Name))
+		if err!=nil {		
+			return err
+		}
+	}
+
+	return nil
 }

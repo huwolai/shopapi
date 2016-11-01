@@ -80,3 +80,31 @@ func (self *MerchantImgs) DeleteWithMerchantIdTx(merchantId int64,appId string,t
 
 	return err
 }
+
+func (self *MerchantImgs) MerchantImgsWithJson(id int64,json string) error  {
+	_,err :=db.NewSession().Update("merchant_imgs").Set("json",json).Where("flag=?","works").Where("id=?",id).Exec()
+	return err
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

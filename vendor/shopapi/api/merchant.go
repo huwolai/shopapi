@@ -11,7 +11,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/security"
 	"strings"
 	"gitlab.qiyunxin.com/tangtao/utils/page"
-	"os"
+	"os"	
 	//"shopapi/comm"
 )
 
@@ -754,3 +754,55 @@ func MerchantOnlineAndChange(c *gin.Context)  {
 	
 	util.ResponseSuccess(c.Writer)
 }
+//商户菜品图片批量命名
+func MerchantImgsWithNamed(c *gin.Context)  {
+	appId := security.GetAppId2(c.Request)	
+	
+	type Names struct  {		
+		Names string `json:"names"`
+	}
+	
+	var params Names
+	c.BindJSON(&params)	
+	//params.Names= c.PostForm("names")
+	
+	if len(params.Names)<1 {
+		util.ResponseError400(c.Writer,"菜品名不能为空！")
+		return
+	}
+		
+	err:=service.MerchantImgsWithNamed(appId,params.Names)	
+	if err!=nil {
+		util.ResponseError400(c.Writer,"菜品名格式错误！")
+		return
+	}
+	
+	util.ResponseSuccess(c.Writer)
+	//c.JSON(http.StatusOK,params.Names)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
