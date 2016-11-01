@@ -72,7 +72,7 @@ func main() {
 	} else if env == "preproduction" {
 		gin.SetMode(gin.TestMode)
 	}
-	//应用安装
+	/* //应用安装
 	app.Setup()
 
 	//初始化权限资源
@@ -83,7 +83,7 @@ func main() {
 	})
 
 	//安装权限控制功能
-	security.Setup()
+	security.Setup() */
 
 	//安装消息队列
 	queue.SetupAMQP(config.GetValue("amqp_url").ToString())
