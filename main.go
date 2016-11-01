@@ -9,8 +9,8 @@ import (
 	"os"
 	"shopapi/api"
 	"shopapi/task"
-	"gitlab.qiyunxin.com/tangtao/utils/security"
-	"gitlab.qiyunxin.com/tangtao/utils/app"
+	//"gitlab.qiyunxin.com/tangtao/utils/security"
+	//"gitlab.qiyunxin.com/tangtao/utils/app"
 )
 
 func CORSMiddleware() gin.HandlerFunc {
