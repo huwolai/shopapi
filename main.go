@@ -314,6 +314,8 @@ func main() {
 			init.GET("/products/init", api.ProductInitNum)
 			//商品 售出数量 定时增加
 			init.GET("/products/add", api.ProductAddNum)
+			//判断token是否过期
+			init.GET("/token/expired", api.TokenWithExpired)
 		}
 
 		//权限资源数据 （此接口提供给,权限资源服务调用）
@@ -324,6 +326,8 @@ func main() {
 		{
 			ydgy.POST("/:open_id/setid/:id", api.YdgySetId)
 			ydgy.GET("/:open_id/getid", api.YdgyGetId)
+			ydgy.POST("/:open_id/setidwithstatus/:status", api.YdgySetIdWithStatus)
+			ydgy.DELETE("/:open_id/deleteid", api.YdgySetIdWithDelete)
 		}
 	}
 

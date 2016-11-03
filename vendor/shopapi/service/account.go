@@ -270,15 +270,27 @@ func loginSMSOfCommuser(mobile,code,appId string) ( map[string]interface{},error
 	return nil,errors.New("调用统一用户中心登录失败!")
 }
 
-func AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string) ([]*dao.Account,error)   {
+func AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string,userName string,ydgyId string,ydgyName string) ([]*dao.Account,error)   {
 
+	accounts,err := dao.NewAccount().AccountsWith(pageIndex,pageSize,mobile,appId,userName,ydgyId,ydgyName)
+	
+	if err==nil {
+		merchant := dao.NewMerchant()
+		for i,account :=range accounts  {
+			merchant,_ = merchant.MerchantWithOpenId(account.OpenId,appId)
+			if merchant!=nil {
+				accounts[i].Name=merchant.Name
+			}
+		}
+	}	
+	
 
-	return dao.NewAccount().AccountsWith(pageIndex,pageSize,mobile,appId)
+	return accounts,err
 }
 
-func AccountsWithCount(mobile string,appId string) (int64,error) {
+func AccountsWithCount(mobile string,appId string,userName string,ydgyId string,ydgyName string) (int64,error) {
 
-	return dao.NewAccount().AccountsWithCount(mobile,appId)
+	return dao.NewAccount().AccountsWithCount(mobile,appId,userName,ydgyId,ydgyName)
 }
 //配置登入界面
 func GetOnKey() (*dao.GetOnKey,error)   {

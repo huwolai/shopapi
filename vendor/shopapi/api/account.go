@@ -44,6 +44,9 @@ type Account struct  {
 	CreateTime string `json:"create_time"`
 	UpdateTime string `json:"update_time"`
 	Status int `json:"status"`
+	YdgyId string `json:"ydgy_id"`
+	YdgyName string `json:"ydgy_name"`
+	Name string `json:"username"`
 }
 
 type LoginForSMSParam struct  {
@@ -215,7 +218,13 @@ func AccountsGet(c *gin.Context)  {
 	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 	appId :=security.GetAppId2(c.Request)
 	mobile := c.Query("mobile")
-	accounts,err := service.AccountsWith(pIndex,pSize,mobile,appId)
+	
+	userName := c.Query("username") // 用户名
+	ydgyId 	 := c.Query("ydgy_id")	//一点公益 ID
+	ydgyName := c.Query("ydgy_name") //一点公益名字
+	
+	
+	accounts,err := service.AccountsWith(pIndex,pSize,mobile,appId,userName,ydgyId,ydgyName)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"查询失败！")
 		return
@@ -227,7 +236,7 @@ func AccountsGet(c *gin.Context)  {
 		}
 	}
 
-	total,err :=service.AccountsWithCount(mobile,appId)
+	total,err :=service.AccountsWithCount(mobile,appId,userName,ydgyId,ydgyName)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"查询总数量失败！")
 		return
@@ -246,6 +255,9 @@ func accountToA(model *dao.Account) *Account  {
 	a.OpenId = model.OpenId
 	a.CreateTime = qtime.ToyyyyMMddHHmm(model.CreateTime)
 	a.UpdateTime = qtime.ToyyyyMMddHHmm(model.UpdateTime)
+	a.YdgyId = model.YdgyId
+	a.YdgyName = model.YdgyName
+	a.Name = model.Name
 
 	return a
 }

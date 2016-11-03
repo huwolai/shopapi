@@ -10,6 +10,9 @@ type Account struct  {
 	Money float64
 	Password string
 	Status int
+	YdgyId string
+	YdgyName string
+	Name string
 	BaseDModel
 }
 
@@ -63,21 +66,39 @@ func (self *Account) AccountUpdateStatus(status int,openId string,appId string) 
 }
 
 //查询用户
-func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string) ([]*Account,error)  {
+func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string,userName string,ydgyId string,ydgyName string) ([]*Account,error)  {
 	var list []*Account
 	builder :=db.NewSession().Select("*").From("account").Where("app_id=?",appId).OrderDir("create_time",false)
 	if mobile!=""{
 		builder = builder.Where("mobile like ?",mobile + "%")
 	}
-
+	if ydgyId!=""{
+		builder = builder.Where("ydgy_id like ?","%" + ydgyId + "%")
+	}
+	if ydgyName!=""{
+		builder = builder.Where("ydgy_name like ?","%" + ydgyName + "%")
+	}
+	if userName!=""{
+		builder = builder.Where("open_id in (select open_id from merchant where name like ? )","%" + userName + "%")
+	}
 	_,err :=builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&list)
+	
 	return list,err
 }
 
-func (self *Account) AccountsWithCount(mobile string,appId string) (int64,error) {
+func (self *Account) AccountsWithCount(mobile string,appId string,userName string,ydgyId string,ydgyName string) (int64,error) {
 	builder :=db.NewSession().Select("count(*)").From("account").Where("app_id=?",appId)
 	if mobile!=""{
 		builder = builder.Where("mobile like ?",mobile + "%")
+	}
+	if ydgyId!=""{
+		builder = builder.Where("ydgy_id like ?","%" + ydgyId + "%")
+	}
+	if ydgyName!=""{
+		builder = builder.Where("ydgy_name like ?","%" + ydgyName + "%")
+	}
+	if userName!=""{
+		builder = builder.Where("open_id in (select open_id from merchant where name like ? )","%" + userName + "%")
 	}
 	var count int64
 	_,err :=builder.Load(&count)
