@@ -25,8 +25,13 @@ func YdgyGetId(openId string) (*Ydgy,error) {
 	return ydgy,err
 }
 //一点公益ID号状态审核
-func YdgySetIdWithStatus(openId string,YdgyStatus int64) error {
-	_,err :=db.NewSession().Update("account").Set("ydgy_status",YdgyStatus).Where("open_id=?",openId).Limit(1).Exec()
+func YdgySetIdWithStatus(openId string,YdgyStatus int64,ydgyRes string) error {
+
+	builder :=db.NewSession().Update("account").Set("ydgy_status",YdgyStatus)
+	if len(ydgyRes)>0 {
+		builder = builder.Set("ydgy_fail_res",ydgyRes)
+	}
+	_,err :=builder.Where("open_id=?",openId).Limit(1).Exec()
 	return err
 }
 //一点公益ID号删除

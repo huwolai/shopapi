@@ -67,7 +67,7 @@ func YdgySetIdWithStatus(c *gin.Context)  {
 		return
 	}	
 	
-	err :=service.YdgySetIdWithStatus(openId,YdgyStatus)	
+	err :=service.YdgySetIdWithStatus(openId,YdgyStatus,c.Query("failres"))	
 	if err!=nil{
 		util.ResponseError400(c.Writer,"操作失败!")
 		return

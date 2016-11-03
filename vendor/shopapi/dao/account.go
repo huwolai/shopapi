@@ -12,6 +12,7 @@ type Account struct  {
 	Status int
 	YdgyId string
 	YdgyName string
+	YdgyStatus int64
 	Name string
 	BaseDModel
 }

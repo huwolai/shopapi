@@ -13,8 +13,8 @@ func YdgyGetId(openId string) (*dao.Ydgy,error) {
 	return dao.YdgyGetId(openId)
 }
 //一点公益ID号状态审核
-func YdgySetIdWithStatus(openId string,YdgyStatus int64) error {
-	return dao.YdgySetIdWithStatus(openId,YdgyStatus)
+func YdgySetIdWithStatus(openId string,YdgyStatus int64,ydgyRes string) error {
+	return dao.YdgySetIdWithStatus(openId,YdgyStatus,ydgyRes)
 }
 //一点公益ID号删除
 func YdgySetIdWithDelete(openId string) error {

@@ -46,6 +46,7 @@ type Account struct  {
 	Status int `json:"status"`
 	YdgyId string `json:"ydgy_id"`
 	YdgyName string `json:"ydgy_name"`
+	YdgyStatus int64 `json:"ydgy_status"`
 	Name string `json:"username"`
 }
 
@@ -257,6 +258,7 @@ func accountToA(model *dao.Account) *Account  {
 	a.UpdateTime = qtime.ToyyyyMMddHHmm(model.UpdateTime)
 	a.YdgyId = model.YdgyId
 	a.YdgyName = model.YdgyName
+	a.YdgyStatus = model.YdgyStatus
 	a.Name = model.Name
 
 	return a
