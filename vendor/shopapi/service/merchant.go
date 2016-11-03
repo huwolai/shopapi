@@ -256,7 +256,7 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 }
 
 //审核商户
-func MerchantAudit(merchantId int64,appId string) error  {
+func MerchantAudit(merchantId int64,appId string,state int64,failRes string) error  {
 
 	merchant :=dao.NewMerchant()
 	merchant,err :=merchant.MerchantWithId(merchantId)
@@ -270,14 +270,28 @@ func MerchantAudit(merchantId int64,appId string) error  {
 
 	if merchant.Status!=comm.MERCHANT_STATUS_WAIT_AUIT {
 		return errors.New("商户不是等待商户状态!")
+	}	
+	
+	//审核未通过
+	if  state == comm.MERCHANT_STATUS_FAIL  {
+		err =merchant.UpdateStatus(comm.MERCHANT_STATUS_FAIL,merchant.Id,failRes)
+		if err!=nil{
+			log.Error("更新商户状态失败",err)
+			return err
+		}
+		return nil
+	}	
+	
+	if  state != comm.MERCHANT_STATUS_NORMAL  {
+		log.Info(state)
+		return errors.New("商户状态错误!")
 	}
-
-	err =merchant.UpdateStatus(comm.MERCHANT_STATUS_NORMAL,merchant.Id)
+	
+	err =merchant.UpdateStatus(comm.MERCHANT_STATUS_NORMAL,merchant.Id,"")
 	if err!=nil{
 		log.Error("更新商户状态失败",err)
 		return err
 	}
-
 	//------------- 特殊要求--------------
 	//为商户添加默认产品
 	err =ProdDefaultAddForMerchant(merchant)
@@ -285,7 +299,7 @@ func MerchantAudit(merchantId int64,appId string) error  {
 		log.Error("为商户添加默认商品失败",err)
 		return err
 	}
-
+	
 	return nil
 }
 

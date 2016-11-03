@@ -9,9 +9,22 @@ const (
 
 	//等待审核
 	MERCHANT_STATUS_WAIT_AUIT = 0
-	//商户正常状态
-	MERCHANT_STATUS_NORMAL = 1
+	//商户正常状态 1/5
+	MERCHANT_STATUS_NORMAL = 1 
+	
+	//记录为null 或者申请中  2
+	MERCHANT_STATUS_APPLICATION = 2
+	
+	//不通过为3
+	MERCHANT_STATUS_FAIL = 3
+	
+	//准厨师(能看到厨师功能界面,但是不显示在首页) 4
+	MERCHANT_STATUS_CHEF_ING = 4
+	
+	//后期用户更新资料中 6
+	MERCHANT_STATUS_UPDATE = 6
 
+	
 )
 
 const (

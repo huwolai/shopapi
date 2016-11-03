@@ -564,11 +564,11 @@ func MerchantImgWithFlag(c *gin.Context)  {
 }
 
 func MerchantAudit(c *gin.Context){
-	_,err := security.CheckUserAuth(c.Request)
+	/* _,err := security.CheckUserAuth(c.Request)
 	if err!=nil{
 		util.ResponseError(c.Writer,http.StatusUnauthorized,err.Error())
 		return
-	}
+	} */
 	merchantId := c.Param("merchant_id")
 	appId := security.GetAppId2(c.Request)
 	imerchantId,err := strconv.ParseInt(merchantId,10,64)
@@ -576,7 +576,20 @@ func MerchantAudit(c *gin.Context){
 		util.ResponseError400(c.Writer,"商户ID有误!")
 		return
 	}
-	err =service.MerchantAudit(imerchantId,appId)
+	
+	type Req struct{
+		State 	int64	`json:"state"`
+		FailRes string	`json:"failres"`
+	}
+	var req Req
+	//c.BindJSON(&req)
+	
+	stateInt64,_ := strconv.ParseInt(c.Query("state"),10,64)
+    req.State=stateInt64
+    req.FailRes= c.Query("failres")
+	
+	
+	err =service.MerchantAudit(imerchantId,appId,req.State,req.FailRes)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())

@@ -125,8 +125,12 @@ func (self *Merchant) MerchantUpdateTx(merchant *Merchant,tx *dbr.Tx) error  {
 	return err
 }
 
-func (self *Merchant) UpdateStatus(status int,merchantId int64) error  {
-	_,err :=db.NewSession().Update("merchant").Set("status",status).Where("id=?",merchantId).Exec()
+func (self *Merchant) UpdateStatus(status int,merchantId int64,res string) error  {
+	builder :=db.NewSession().Update("merchant").Set("status",status)
+	if len(res)>0 {
+		builder = builder.Set("fail_res",res)
+	}
+	_,err :=builder.Where("id=?",merchantId).Exec()
 	return err
 }
 
