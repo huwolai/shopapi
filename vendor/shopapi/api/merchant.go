@@ -564,11 +564,11 @@ func MerchantImgWithFlag(c *gin.Context)  {
 }
 
 func MerchantAudit(c *gin.Context){
-	/* _,err := security.CheckUserAuth(c.Request)
+	_,err := security.CheckUserAuth(c.Request)
 	if err!=nil{
 		util.ResponseError(c.Writer,http.StatusUnauthorized,err.Error())
 		return
-	} */
+	}
 	merchantId := c.Param("merchant_id")
 	appId := security.GetAppId2(c.Request)
 	imerchantId,err := strconv.ParseInt(merchantId,10,64)
