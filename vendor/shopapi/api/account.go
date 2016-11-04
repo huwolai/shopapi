@@ -233,13 +233,16 @@ func AccountsGet(c *gin.Context)  {
 	
 	results :=make([]*Account,0)
 	if accounts!=nil{
-		//var detailModel *service.AccountDetailModel
-		//log.Info(detailModel)
+		var detailModel *service.AccountDetailModel
+		
 		for _,account :=range accounts  {
 			
-			//detailModel,_ =service.AccountDetail(account.OpenId)
-			//account.Money=float64(detailModel.Amount)/100.0
-			account.Money=888888
+			detailModel,_ =service.AccountDetail(account.OpenId)
+			account.Money=float64(detailModel.Amount)/100.0
+			log.Info("余额查询")
+			log.Info(detailModel.Amount)
+			log.Info(float64(detailModel.Amount)/100.0)
+			log.Info("余额查询")
 			results = append(results,accountToA(account))
 		}
 	}
