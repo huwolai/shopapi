@@ -230,9 +230,15 @@ func AccountsGet(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"查询失败！")
 		return
 	}
-	 results :=make([]*Account,0)
+	
+	results :=make([]*Account,0)
 	if accounts!=nil{
+		var detailModel *service.AccountDetailModel
+		log.Info(detailModel)
 		for _,account :=range accounts  {
+			
+			detailModel,_ =service.AccountDetail(account.OpenId)
+			account.Money=float64(detailModel.Amount)/100.0
 			results = append(results,accountToA(account))
 		}
 	}
