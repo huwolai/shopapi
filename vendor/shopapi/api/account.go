@@ -291,40 +291,34 @@ func GetOnKey(c *gin.Context)  {
 
 //管理员后台-账户充值
 func AccountPreRechargeByAdmin(c *gin.Context)  {
-
-	//获取用户openid
-	/* openId,err :=security.CheckUserAuth(c.Request)
-	if err!=nil{
-		log.Error(err)
-		util.ResponseError400(c.Writer,err.Error())
-		return
-	} */
-	
 	openId:=c.Param("open_id")
 	if openId!="wesdfsfsdf23323" {
 		util.ResponseError400(c.Writer,"权限不足！")
 		return
 	}
+	password := c.Query("sepassword")
+	if password!="180181" {
+		util.ResponseError400(c.Writer,"权限不足.！")
+		return
+	}	
 	
 	var param AccountPreRechargeDto
-	var err error
 	err :=c.BindJSON(&param)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
 		return
-	} 
+	}
 
-	param.OpenId = c.Query("open_id")
+	//log.Info(param)
+	param.OpenId = c.Param("open_id")
+	
 	appId := security.GetAppId2(c.Request)
-
-	//param.Money=100
-	//appId := "shopapi"
 
 	model :=&service.AccountRechargeModel{}
 	model.Money = param.Money
 	model.OpenId = param.OpenId
-	model.PayType = 3
+	model.PayType = 3 //param.PayType
 	model.AppId = appId
 	resultMap,err := service.AccountPreRecharge(model)
 	if err!=nil {

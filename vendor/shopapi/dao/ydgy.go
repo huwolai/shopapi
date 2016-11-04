@@ -7,6 +7,7 @@ type Ydgy struct {
 	YdgyName	string	`json:"name"`
 	YdgyMine	int64	`json:"mine"`
 	YdgyStatus	int64	`json:"stauts"`
+	YdgyFailRes string  `json:"fail_res"`
 }
 
 //一点公益ID号绑定
@@ -16,7 +17,7 @@ func YdgySetId(openId string,ydgyId string,ydgyName string,ydgyMine int64) error
 }
 //一点公益ID号获取
 func YdgyGetId(openId string) (*Ydgy,error) {
-	bulider :=db.NewSession().Select("ydgy_id,ydgy_name,ydgy_mine,ydgy_status").From("account").Where("open_id=?",openId)
+	bulider :=db.NewSession().Select("ydgy_id,ydgy_name,ydgy_mine,ydgy_status,ydgy_fail_res").From("account").Where("open_id=?",openId)
 
 	var ydgy *Ydgy
 	
