@@ -311,7 +311,7 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 	}
 
 	//log.Info(param)
-	param.OpenId = c.Param("open_id")
+	//param.OpenId = c.Param("open_id")
 	
 	appId := security.GetAppId2(c.Request)
 
