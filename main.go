@@ -330,6 +330,11 @@ func main() {
 			ydgy.POST("/:open_id/setidwithstatus/:status", api.YdgySetIdWithStatus)
 			ydgy.DELETE("/:open_id/deleteid", api.YdgySetIdWithDelete)
 		}
+		//应用
+		app := v1.Group("/apps")
+		{
+			app.GET("/update_log", api.AppUpdateLog)
+		}
 	}
 
 	//设置上传目录

@@ -121,7 +121,22 @@ func (self*Merchant) MerchantExistWithOpenId(openId string,appId string) (bool,e
 }
 
 func (self *Merchant) MerchantUpdateTx(merchant *Merchant,tx *dbr.Tx) error  {
-	_,err :=tx.Update("merchant").Set("name",merchant.Name).Set("address",merchant.Address).Set("address_id",merchant.AddressId).Set("longitude",merchant.Longitude).Set("latitude",merchant.Latitude).Set("json",merchant.Json).Where("id=?",merchant.Id).Exec()
+	//_,err :=tx.Update("merchant").Set("name",merchant.Name).Set("address",merchant.Address).Set("address_id",merchant.AddressId).Set("longitude",merchant.Longitude).Set("latitude",merchant.Latitude).Set("cover_distance",merchant.CoverDistance).Set("json",merchant.Json).Where("id=?",merchant.Id).Exec()
+	//return err
+	
+	builder :=db.NewSession().Update("merchant")
+	builder = builder.Set("name",merchant.Name)
+	builder = builder.Set("address",merchant.Address)
+	builder = builder.Set("address_id",merchant.AddressId)
+	builder = builder.Set("longitude",merchant.Longitude)
+	builder = builder.Set("latitude",merchant.Latitude)	
+	builder = builder.Set("json",merchant.Json)
+	
+	if merchant.CoverDistance>0 {
+		builder = builder.Set("cover_distance",merchant.CoverDistance)
+	}
+	
+	_,err :=builder.Where("id=?",merchant.Id).Exec()
 	return err
 }
 
