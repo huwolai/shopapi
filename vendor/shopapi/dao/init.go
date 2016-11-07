@@ -3,12 +3,35 @@ package dao
 import (
 	"gitlab.qiyunxin.com/tangtao/utils/db"
 	"fmt"
-	"math/rand"  
+	"math/rand"
+	"reflect"
+	"errors"
 	//"gitlab.qiyunxin.com/tangtao/utils/log" //log.Debug(x)
 )
 
 type ProductIds struct  {
 	Id int
+}
+
+type MerchantResume struct {
+	Name 				string `json:"name"`
+	Nation				string `json:"nation"`
+	Gender 				int64  `json:"gender"`
+	Birth 				string `json:"birth"`
+	Goodat 				string `json:"goodat"`
+	Location 			string `json:"location"`
+	Household			string `json:"household"`
+	Workyear 			int64  `json:"workyear"`
+	Professionaltitle 	string `json:"professionaltitle"`
+	Honor 				string `json:"honor"`
+	Worktype 			int64  `json:"worktype"`
+	Servicearea 		string `json:"servicearea"`
+	Workexperience 		string `json:"workexperience"`	
+	Address	 			string `json:"address"`
+	Qq	 				string `json:"qq"`
+	Tel	 				string `json:"tel"`
+	Wx	 				string `json:"wx"`
+	Email	 			string `json:"email"`
 }
 
 //随机数
@@ -48,4 +71,28 @@ func ProductAddNum() error  {
 	}
 
 	return nil
+}
+//厨师面试登记表
+func MerchantResumesWithAdd( resumes interface{} ) error  {
+	
+	resume:=resumes.(MerchantResume)	
+	
+	builder :=db.NewSession().InsertInto("merchant_resume")
+	
+	t := reflect.TypeOf(resume)
+	v := reflect.ValueOf(resume)
+	for i := 0; i < t.NumField(); i++ {
+		//fmt.Printf("\n\n%s=%v\n===========================\n", t.Field(i).Name, v.Field(i))		
+		builder = builder.Pair(fmt.Sprintf("%v", t.Field(i).Name),fmt.Sprintf("%v", v.Field(i)))	
+	}
+	_,err :=builder.Exec() 
+		
+	return err
+}
+func MerchantResumesSearchByTel( Tel string ) error  {
+	count, _ := db.NewSession().Select("count(id)").From("merchant_resume").Where("tel = ?", Tel).ReturnInt64()
+	if count >0 {
+		return errors.New("该手机号码已注册！")
+	}
+	return 	nil
 }

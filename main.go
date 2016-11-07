@@ -203,6 +203,8 @@ func main() {
 			merchants.GET("/user/:open_id/imgs", api.MerchantImgWithFlag)
 			//商户菜品图片批量命名
 			merchants.POST("/imgsnamed", api.MerchantImgsWithNamed)
+			//厨师面试登记表
+			merchants.POST("/resume/add", api.MerchantResumesWithAdd)
 		}
 
 		//商户
