@@ -65,6 +65,15 @@ type ProductDetail struct {
 	ProdImgs []*ProdImgsDetail
 }
 
+type ProductSearch struct {
+	Keyword		 string
+	Category  	 uint64
+	Status  	 uint64
+	IsRecom  	 uint64
+	PriceUp	 	 float64
+	PriceDown 	 float64
+}
+
 
 func NewProductDetail() *ProductDetail {
 
@@ -77,23 +86,54 @@ func NewProduct() *Product  {
 }
 
 //详情集合
-func (self *ProductDetail) ProdDetailListWith(keyword string,merchantId int64,flags []string,noflags []string,isRecomm string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*ProductDetail,error)  {
+func (self *ProductDetail) ProdDetailListWith(keywords interface{} ,merchantId int64,flags []string,noflags []string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*ProductDetail,error)  {
+	
+	search:=keywords.(ProductSearch)	
+	
 	var prodList []*ProductDetail
 	buider :=db.NewSession().Select("product.*,IFNULL(merchant.id,0) merchant_id,IFNULL(merchant.name,'') merchant_name,IFNULL(category.id,0) category_id,IFNULL(category.title,'') category_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id").LeftJoin("prod_category","prod_category.prod_id=product.id").LeftJoin("category","prod_category.category_id=category.id")
 	if flags!=nil{
 		buider = buider.Where("product.flag in ?",flags)
 	}
 
-	if keyword!="" {
-		buider = buider.Where("product.title like ?","%"+keyword+"%")
+	if search.Keyword!="" {
+		buider = buider.Where("product.title like ?","%"+search.Keyword+"%")
+	}
+	//分类类别  ( 1 水果 2干货 3海鲜 4食材 5家常用餐 6经典家宴 7私人订制)
+	if search.Category>0 {
+		buider = buider.Where("product.id in (select prod_id from prod_category where category_id =?)",search.Category)
+	}
+	//是否上架状态 ( 1 上架 2 下架)
+	if search.Status>0 {
+		if search.Status==1 {
+			buider = buider.Where("product.status = ?",1)
+		}else{
+			buider = buider.Where("product.status = ?",0)
+		}		
+	}
+	//是否推荐 ( 1 是 2 否)
+	if search.IsRecom>0 {
+		if search.IsRecom==1 {
+			buider = buider.Where("product.is_recom = ?",1)
+		}else{
+			buider = buider.Where("product.is_recom = ?",0)
+		}		
+	}	
+	//价格区间 左边(包含)
+	if search.PriceUp>0 {
+		buider = buider.Where("product.price >= ?",search.PriceUp)
+	}
+	//价格区间  右边(包含)
+	if search.PriceDown>0 {
+		buider = buider.Where("product.price <= ?",search.PriceDown)
 	}
 
 	if noflags!=nil {
 		buider = buider.Where("product.flag not in ?",noflags)
 	}
-	if isRecomm!="" {
+	/* if isRecomm!="" {
 		buider = buider.Where("product.is_recomm=?",isRecomm)
-	}
+	} */
 	if merchantId!=0{
 		buider = buider.Where("merchant.id=?",merchantId)
 	}
@@ -109,7 +149,10 @@ func (self *ProductDetail) ProdDetailListWith(keyword string,merchantId int64,fl
 	return prodList,err
 }
 
-func (self *ProductDetail) ProdDetailListCountWith(keyword string,merchantId int64,flags []string,noflags []string,isRecomm string)  (int64,error) {
+func (self *ProductDetail) ProdDetailListCountWith(keywords interface{},merchantId int64,flags []string,noflags []string)  (int64,error) {
+
+	search:=keywords.(ProductSearch)	
+
 	var count int64
 	buider :=db.NewSession().Select("count(*)").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id")
 
@@ -122,13 +165,41 @@ func (self *ProductDetail) ProdDetailListCountWith(keyword string,merchantId int
 		buider = buider.Where("product.flag not in ?",noflags)
 	}
 
-	if keyword!="" {
-		buider = buider.Where("product.title like ?","%"+keyword+"%")
+	if search.Keyword!="" {
+		buider = buider.Where("product.title like ?","%"+search.Keyword+"%")
+	}
+	//分类类别  ( 1 水果 2干货 3海鲜 4食材 5家常用餐 6经典家宴 7私人订制)
+	if search.Category>0 {
+		buider = buider.Where("product.id in (select prod_id from prod_category where category_id =?)",search.Category)
+	}
+	//是否上架状态 ( 1 上架 2 下架)
+	if search.Status>0 {
+		if search.Status==1 {
+			buider = buider.Where("product.status = ?",1)
+		}else{
+			buider = buider.Where("product.status = ?",0)
+		}		
+	}
+	//是否推荐 ( 1 是 2 否)
+	if search.IsRecom>0 {
+		if search.IsRecom==1 {
+			buider = buider.Where("product.is_recom = ?",1)
+		}else{
+			buider = buider.Where("product.is_recom = ?",0)
+		}		
+	}	
+	//价格区间 左边(包含)
+	if search.PriceUp>0 {
+		buider = buider.Where("product.price >= ?",search.PriceUp)
+	}
+	//价格区间  右边(包含)
+	if search.PriceDown>0 {
+		buider = buider.Where("product.price <= ?",search.PriceDown)
 	}
 
-	if isRecomm!="" {
+	/* if isRecomm!="" {
 		buider = buider.Where("product.is_recomm=?",isRecomm)
-	}
+	} */
 
 	if merchantId!=0{
 		buider = buider.Where("merchant.id=?",merchantId)

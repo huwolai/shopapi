@@ -223,9 +223,9 @@ func ProdDetailListWith(c *gin.Context)  {
 
 	flags :=c.Query("flags")
 	noflags :=c.Query("noflags")
-	isRecomm :=c.Query("is_recomm")
+	//isRecomm :=c.Query("is_recomm")
 	merchantId := c.Query("merchant_id")
-	keyword :=c.Query("keyword")
+	
 	var imerchantId int64
 	var err error
 	if merchantId!="" {
@@ -239,13 +239,24 @@ func ProdDetailListWith(c *gin.Context)  {
 	appId :=security.GetOpenId(c.Request)
 	pindex,psize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 	flagsArray,noflagsArray :=GetFlagsAndNoFlags(flags,noflags)
-	prodList,err :=service.ProdDetailListWith(keyword,imerchantId,flagsArray,noflagsArray,isRecomm,orderBy,pindex,psize,appId)
+	
+	//==search
+	var keywords dao.ProductSearch	
+	keywords.Keyword 	=c.Query("keyword")
+	keywords.Category,_ =strconv.ParseUint(c.Query("fenlei"),10,64)
+	keywords.Status,_ 	=strconv.ParseUint(c.Query("shangjia"),10,64)
+	keywords.IsRecom,_ 	=strconv.ParseUint(c.Query("tuijian"),10,64)
+	keywords.PriceUp,_ 	=strconv.ParseFloat(c.Query("jiageup"),64)
+	keywords.PriceDown,_=strconv.ParseFloat(c.Query("jiagedown"),64)
+	
+	
+	prodList,err :=service.ProdDetailListWith(keywords,imerchantId,flagsArray,noflagsArray,orderBy,pindex,psize,appId)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询商品失败!")
 		return
 	}
-	count,err :=service.ProdDetailListCountWith(keyword,imerchantId,flagsArray,noflagsArray,isRecomm)
+	count,err :=service.ProdDetailListCountWith(keywords,imerchantId,flagsArray,noflagsArray)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询商品数量失败!")
