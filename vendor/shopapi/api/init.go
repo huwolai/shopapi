@@ -7,24 +7,6 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/security"
 	"shopapi/dao"
 )
-//商品初始化售出数量
-func ProductInitNum(c *gin.Context)  {
-	err :=service.ProductInitNum()
-	if err!=nil {
-		util.ResponseError400(c.Writer,err.Error())
-		return
-	}	
-	util.ResponseSuccess(c.Writer)
-}
-//商品 售出数量 定时增加
-func ProductAddNum(c *gin.Context)  {
-	err :=service.ProductAddNum()
-	if err!=nil {
-		util.ResponseError400(c.Writer,err.Error())
-		return
-	}	
-	util.ResponseSuccess(c.Writer)
-}
 //判断token是否过期
 func TokenWithExpired(c *gin.Context)  {
 	_,err :=security.CheckUserAuth(c.Request)
