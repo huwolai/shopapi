@@ -179,20 +179,10 @@ func MerchantServiceAdd() {
 //商品初始化售出数量
 func ProductInitNum()  {
 	log.Info("商品初始化售出数量！")
-	err :=service.ProductInitNum()
-	if err!=nil {
-		util.ResponseError400(c.Writer,err.Error())
-		return
-	}	
-	util.ResponseSuccess(c.Writer)
+	service.ProductInitNum()
 }
 //商品 售出数量 定时增加
 func ProductAddNum()  {
 	log.Info("商品 售出数量 定时增加!")
-	err :=service.ProductAddNum()
-	if err!=nil {
-		util.ResponseError400(c.Writer,err.Error())
-		return
-	}	
-	util.ResponseSuccess(c.Writer)
+	service.ProductAddNum()
 }
