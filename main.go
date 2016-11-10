@@ -314,9 +314,9 @@ func main() {
 		init := v1.Group("/inits")
 		{
 			//商品初始化售出数量
-			init.GET("/products/init", api.ProductInitNum)
+			//init.GET("/products/init", api.ProductInitNum)
 			//商品 售出数量 定时增加
-			init.GET("/products/add", api.ProductAddNum)
+			//init.GET("/products/add", api.ProductAddNum)
 			//判断token是否过期
 			init.GET("/token/expired", api.TokenWithExpired)
 		}
