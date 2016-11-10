@@ -39,7 +39,10 @@ type Order struct  {
 	OrderStatus int
 	PayStatus int
 	Json string
-	BaseDModel
+	BaseDModel	
+	
+	GmOrdernum string
+	GmPassnum string
 }
 
 type OrderDetail struct  {
@@ -68,10 +71,21 @@ type OrderDetail struct  {
 	Flag string
 	Json string
 	BaseDModel
+
+	GmOrdernum string
+	GmPassnum string
 }
 
 type OrderCount struct  {
 	Count int64
+}
+
+type OrderSearch struct {
+	MerchantName	string
+	Title  			string
+	OrderNo  	 	string
+	PayStatus 	 	uint64
+	OrderStatus		uint64
 }
 
 func NewOrder() *Order {
@@ -97,18 +111,87 @@ func (self *Order) OrderWithStatusLTTime(payStatus int,orderStatus int,time stri
 
 }
 
-func (self *Order) With(pageIndex uint64,pageSize uint64,appId string) ([]*Order,error)  {
+func (self *Order) With(searchs interface{},pageIndex uint64,pageSize uint64,appId string) ([]*Order,error)  {
 	var orders []*Order
-	_,err :=db.NewSession().Select("*").From("`order`").Where("app_id=?",appId).Limit(pageSize).Offset((pageIndex-1)*pageSize).OrderDir("create_time",false).LoadStructs(&orders)
+	//_,err :=db.NewSession().Select("*").From("`order`").Where("app_id=?",appId).Limit(pageSize).Offset((pageIndex-1)*pageSize).OrderDir("create_time",false).LoadStructs(&orders)
 
+	buider :=db.NewSession().Select("*").From("`order`").Where("app_id=?",appId)
+	
+	search:=searchs.(OrderSearch)
+	if search.MerchantName!="" {
+		buider = buider.Where("merchant_name like ?","%"+search.MerchantName+"%")
+	}
+	if search.Title!="" {
+		buider = buider.Where("title like ?","%"+search.Title+"%")
+	}
+	if search.OrderNo!="" {
+		buider = buider.Where("no = ?",search.OrderNo)
+	}
+	switch search.PayStatus {
+		case 1://1，未付款；
+			buider = buider.Where("pay_status = ?",0)
+		case 2://2，已付款
+			buider = buider.Where("pay_status = ?",1)
+		case 3://3，已付款
+			buider = buider.Where("pay_status = ?",2)
+	}
+	switch search.OrderStatus {
+		case 1://1，未确认
+			buider = buider.Where("order_status = ?",0)
+		case 2://2，已确认；
+			buider = buider.Where("order_status = ?",1)
+		case 3://3，已取消；
+			buider = buider.Where("order_status = ?",2)
+		case 4://4，无效；
+			buider = buider.Where("order_status = ?",3)
+		case 5://5，退货
+			buider = buider.Where("order_status = ?",4)
+	}
+	
+	_,err :=buider.Limit(pageSize).Offset((pageIndex-1)*pageSize).OrderDir("create_time",false).LoadStructs(&orders)
 	return orders,err
 }
 
-func (self *Order) WithCount(appId string) (int64,error)  {
-
+func (self *Order) WithCount(searchs interface{},appId string) (int64,error)  {
+	
 	var count int64
-	err :=db.NewSession().Select("count(*)").From("`order`").Where("app_id=?",appId).LoadValue(&count)
+	//err :=db.NewSession().Select("count(*)").From("`order`").Where("app_id=?",appId).LoadValue(&count)
+	
+	buider :=db.NewSession().Select("count(*)").From("`order`").Where("app_id=?",appId)
+	
+	search:=searchs.(OrderSearch)
+	if search.MerchantName!="" {
+		buider = buider.Where("merchant_name like ?","%"+search.MerchantName+"%")
+	}
+	if search.Title!="" {
+		buider = buider.Where("title like ?","%"+search.Title+"%")
+	}
+	if search.OrderNo!="" {
+		buider = buider.Where("no = ?",search.OrderNo)
+	}
+	switch search.PayStatus {
+		case 1://1，未付款；
+			buider = buider.Where("pay_status = ?",0)
+		case 2://2，已付款
+			buider = buider.Where("pay_status = ?",1)
+		case 3://3，已付款
+			buider = buider.Where("pay_status = ?",2)
+	}
+	switch search.OrderStatus {
+		case 1://1，未确认
+			buider = buider.Where("order_status = ?",0)
+		case 2://2，已确认；
+			buider = buider.Where("order_status = ?",1)
+		case 3://3，已取消；
+			buider = buider.Where("order_status = ?",2)
+		case 4://4，无效；
+			buider = buider.Where("order_status = ?",3)
+		case 5://5，退货
+			buider = buider.Where("order_status = ?",4)
+	}
 
+	err :=buider.LoadValue(&count)
+	
 	return count,err
 }
 
@@ -136,6 +219,14 @@ func (self *Order) OrderWithNo(no string,appId string) (*Order,error)  {
 	sess := db.NewSession()
 	var order *Order
 	_,err :=sess.Select("*").From("`order`").Where("`no`=?",no).Where("app_id=?",appId).LoadStructs(&order)
+
+	return order,err
+}
+func (self *Order) OrderWithId(id uint64,appId string) (*Order,error)  {
+
+	sess := db.NewSession()
+	var order *Order
+	_,err :=sess.Select("*").From("`order`").Where("`id`=?",id).Where("app_id=?",appId).LoadStructs(&order)
 
 	return order,err
 }
@@ -283,8 +374,11 @@ func fillOrderItemDetail(orders []*OrderDetail)  error {
 
 		for _,order :=range orders {
 			order.Items = orderItemDetailMap[order.No]
-		}
-
+			if len(orderItemDetailMap)>0{
+				order.GmOrdernum=orderItemDetailMap[order.No][0].GmOrdernum
+				order.GmPassnum=orderItemDetailMap[order.No][0].GmPassnum
+			}			
+		}		
 	}
 
 	return nil

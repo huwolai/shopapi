@@ -970,13 +970,13 @@ func OrderCancel(orderNo string,reason string,appId string) error {
 	return nil
 }
 
-func OrdersGet(pageIndex uint64,pageSize uint64,appId string)([]*dao.Order,error) {
+func OrdersGet(searchs interface{},pageIndex uint64,pageSize uint64,appId string)([]*dao.Order,error) {
 
-	return dao.NewOrder().With(pageIndex,pageSize,appId)
+	return dao.NewOrder().With(searchs,pageIndex,pageSize,appId)
 }
-func OrdersGetCount(appId string)(int64,error) {
+func OrdersGetCount(searchs interface{},appId string)(int64,error) {
 
-	return dao.NewOrder().WithCount(appId)
+	return dao.NewOrder().WithCount(searchs,appId)
 }
 
 
@@ -1183,3 +1183,64 @@ func OrderDelete(orderNo string,appId string) error {
 	
 	return nil
 }
+//单增加购买订单号
+func OrdersAddNum(orderNo string,appId string,ordernum string) error {
+	/* order :=dao.NewOrder()
+	order,err :=order.OrderWithId(orderId,appId)
+	if err!=nil{
+		return err
+	} */
+	
+	orderItem := dao.NewOrderItem()
+	err :=orderItem.OrdersAddNumWithNo(orderNo,appId,ordernum)
+	if err!=nil{
+		return err
+	}
+	
+	return nil
+}
+//订单增加购买运单号
+func OrdersAddPassnum(orderNo string,appId string,passnum string) error {
+	/* order :=dao.NewOrder()
+	order,err :=order.OrderWithId(orderId,appId)
+	if err!=nil{
+		return err
+	} */
+	
+	orderItem := dao.NewOrderItem()
+	err :=orderItem.OrdersAddNumWithPassnum(orderNo,appId,passnum)
+	if err!=nil{
+		return err
+	}
+	
+	return nil
+}
+func OrderItems(orderNo string) ([]*dao.OrderItem,error)  {
+	orderItem := dao.NewOrderItem()
+	orderItems,err :=orderItem.OrderItemWithOrderNo(orderNo)
+	if err!=nil{
+		return nil,err
+	}
+	return orderItems,nil
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

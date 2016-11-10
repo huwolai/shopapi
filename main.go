@@ -170,12 +170,12 @@ func main() {
 		products := v1.Group("/products")
 		{
 			products.POST("/:merchant_id", api.ProductAdd)
-			products.GET("/", api.ProdDetailListWith)
+			products.GET("/", api.ProdDetailListWith)			
 		}
 
 		//商品
 		product := v1.Group("/product")
-		{
+		{			
 			//根据属性path查询商品的SKU
 			product.GET("/:prod_id/sku", api.ProductSkuWithProdIdAndSymbolPath)
 			product.GET("/:prod_id/imgs", api.ProdImgsWithProdId)
@@ -191,6 +191,8 @@ func main() {
 			product.PUT("/:prod_id/recom/:is_recom", api.ProductRecom)
 			//修改商品
 			product.PUT("/:prod_id",api.ProductUpdate)
+			//录入商品链接
+			product.POST("/:prod_id/addlink", api.ProductAndAddLink)
 
 		}
 		merchants := v1.Group("/merchants")
@@ -302,8 +304,11 @@ func main() {
 		admin := v1.Group("/admin")
 		{
 			admin.GET("/orders", api.OrdersGet)
+			admin.POST("/orders/addordernum", api.OrdersAddNum)
+			admin.POST("/orders/addpassnum", api.OrdersAddPassnum)
+			
 			admin.GET("/merchants", api.MerchantWith)
-			admin.GET("/product/:prod_id/detail", api.ProdDetailWithProdId)
+			admin.GET("/product/:prod_id/detail", api.ProdDetailWithProdId)			
 		}
 		flags := v1.Group("/flags")
 		{

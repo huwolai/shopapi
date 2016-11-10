@@ -79,8 +79,7 @@ type ProductBaseDto struct  {
 	//商品状态
 	Status int `json:"status"`
 	//附加数据
-	Json string `json:"json"`
-
+	Json string `json:"json"`	
 }
 
 type ProductDetailDto struct {
@@ -116,6 +115,8 @@ type ProductDetailDto struct {
 	SoldNum int `json:"sold_num"`
 	//商品总页数
 	TotalPage int `json:"total_page"`
+	//购物链接
+	Shopurl string `json:"shopurl"`
 }
 
 type ProdImgsDetailDto struct  {
@@ -795,6 +796,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.IsRecom = model.IsRecom
 	dto.Description = model.Description
 	dto.SoldNum 	= model.SoldNum
+	dto.Shopurl 	= model.Shopurl
 	
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*ProdImgsDetailDto,0)
@@ -846,4 +848,41 @@ func prodAttrValToDto(model *dao.ProdAttrVal) *ProdAttrValDto {
 	dto.Json = model.Json
 
 	return dto
+}
+//录入商品链接
+func ProductAndAddLink(c *gin.Context) {
+	appId :=security.GetAppId2(c.Request)
+	
+	prodId :=c.Param("prod_id")
+	if prodId=="" {
+		util.ResponseError400(c.Writer,"商品ID不能为空!")
+		return
+	}
+	
+	iprodId,err := strconv.ParseUint(prodId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商品ID格式有误!")
+		return
+	}
+	//================
+	type Links struct  {
+		Shopurl string `json:"shopurl"`
+	}
+	param := &Links{}
+	err =c.BindJSON(&param)
+	//param.Shopurl="test"
+	
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	//================
+	err =service.ProductAndAddLink(appId,iprodId,param.Shopurl)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	util.ResponseSuccess(c.Writer)
 }

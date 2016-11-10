@@ -63,6 +63,8 @@ type ProductDetail struct {
 	Json string
 	//商品图片集合
 	ProdImgs []*ProdImgsDetail
+	//购物链接
+	Shopurl string
 }
 
 type ProductSearch struct {
@@ -383,5 +385,10 @@ func (self *Product) UpdateStatusWithProdId(status int,prodId int64) error  {
 func (self *Product) UpdateRecomWithProdId(isRecom int,prodId int64) error  {
 	_,err :=db.NewSession().Update("product").Set("is_recom",isRecom).Where("id=?",prodId).Exec()
 
+	return err
+}
+//录入商品链接
+func ProductAndAddLink(appId string,prodId uint64,shopurl string) error  {
+	_,err :=db.NewSession().Update("product").Set("shopurl",shopurl).Where("id=?",prodId).Exec()
 	return err
 }

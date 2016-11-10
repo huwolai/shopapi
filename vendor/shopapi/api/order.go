@@ -35,6 +35,9 @@ type OrderDto struct  {
 	RealPrice float64 `json:"real_price"`
 	PayPrice float64 `json:"pay_price"`
 	CreateTime string `json:"create_time"`
+	
+	GmOrdernum string `json:"ordernum"`
+	GmPassnum string `json:"passnum"`
 }
 
 type OrderDetailDto struct  {
@@ -62,6 +65,8 @@ type OrderDetailDto struct  {
 	Json string `json:"json"`
 	CreateTime string `json:"create_time"`
 
+	GmOrdernum string  `json:"ordernum"`
+	GmPassnum string   `json:"passnum"`
 }
 
 type OrderItemDetailDto struct  {
@@ -479,16 +484,25 @@ func OrderDetailWithNo(c *gin.Context)  {
 
 func OrdersGet(c *gin.Context)  {
 
+	//==search
+	var search dao.OrderSearch
+	search.MerchantName 	=c.Query("shanghu")
+	search.Title 			=c.Query("titile")
+	search.OrderNo	 		=c.Query("ordernum")
+	search.PayStatus,_ 		=strconv.ParseUint(c.Query("paystate"),10,64)
+	search.OrderStatus,_ 	=strconv.ParseUint(c.Query("orderstate"),10,64)
+	
+
 	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 	appId :=security.GetAppId2(c.Request)
-	orders,err :=service.OrdersGet(pIndex,pSize,appId)
+	orders,err :=service.OrdersGet(search,pIndex,pSize,appId)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询失败！");
 		return
 	}
 
-	total,err :=service.OrdersGetCount(appId)
+	total,err :=service.OrdersGetCount(search,appId)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询订单总数量失败！")
@@ -497,7 +511,15 @@ func OrdersGet(c *gin.Context)  {
 
 	results :=make([]*OrderDto,0)
 	if orders!=nil&&len(orders) > 0 {
+		var orderItem []*dao.OrderItem
 		for _,od :=range orders {
+			orderItem,_=service.OrderItems(od.No);
+			if len(orderItem)>0 {
+				od.GmOrdernum	=orderItem[0].GmOrdernum
+				od.GmPassnum	=orderItem[0].GmPassnum
+			}else{
+				log.Info("========")				
+			}			
 			results = append(results,orderToA(od))
 		}
 	}
@@ -589,7 +611,8 @@ func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
 	dto.CancelReason = model.CancelReason
 	dto.Name = model.AddressName
 	dto.Mobile = model.AddressMobile
-
+	dto.GmOrdernum = model.GmOrdernum
+	dto.GmPassnum = model.GmPassnum
 
 	dto.OrderStatus = model.OrderStatus
 	dto.PayStatus = model.PayStatus
@@ -648,6 +671,8 @@ func orderToA(order *dao.Order) *OrderDto {
 	a.RealPrice = order.RealPrice
 	a.PayPrice = order.PayPrice
 	a.CreateTime = qtime.ToyyyyMMddHHmm(order.CreateTime)
+	a.GmOrdernum = order.GmOrdernum
+	a.GmPassnum = order.GmPassnum
 	
 
 	return a
@@ -713,3 +738,71 @@ func OrderDelete(c *gin.Context)  {
 	
 	util.ResponseSuccess(c.Writer)
 }
+//单增加购买订单号
+func OrdersAddNum(c *gin.Context)  {
+	/* _,err := security.GetAuthUser(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+	*/
+	appId 		:= security.GetAppId2(c.Request)
+
+	//orderNo		:=c.PostForm("id")
+	//ordernum	:=c.PostForm("ordernum")
+	
+	type Params struct {
+		Id			string   `json:"id"`
+		Ordernum	string   `json:"ordernum"`
+	}
+	var param Params
+	c.BindJSON(&param)
+	
+	
+	err :=service.OrdersAddNum(param.Id,appId,param.Ordernum)
+	
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	util.ResponseSuccess(c.Writer)
+}
+//订单增加购买运单号
+func OrdersAddPassnum(c *gin.Context)  {
+	/* _,err := security.GetAuthUser(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+	*/
+	appId 		:= security.GetAppId2(c.Request)
+
+	//orderNo		:=c.PostForm("id")
+	//passnum		:=c.PostForm("passnum")
+
+	type Params struct {
+		Id			string   `json:"id"`
+		Passnum		string   `json:"passnum"`
+	}
+	var param Params
+	c.BindJSON(&param)
+	
+	err :=service.OrdersAddPassnum(param.Id,appId,param.Passnum)
+	
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	util.ResponseSuccess(c.Writer)
+}
+
+
+
+
+
+
+
+
+

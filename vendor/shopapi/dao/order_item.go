@@ -30,6 +30,9 @@ type OrderItem struct  {
 	//商家所得金额
 	MerchantAmount float64
 	Json string
+	
+	GmOrdernum string
+	GmPassnum string
 }
 
 type OrderItemDetail struct  {
@@ -64,6 +67,8 @@ type OrderItemDetail struct  {
 	MerchantAmount float64
 	Json string
 
+	GmOrdernum string
+	GmPassnum string
 
 }
 
@@ -143,4 +148,14 @@ func fillOrderItemImg(orderItems []*OrderItemDetail) error  {
 
 	return nil
 }
+
+func (self *OrderItem)OrdersAddNumWithNo(orderNo string,appId string,ordernum string) error {
+	_,err :=db.NewSession().Update("order_item").Set("gm_ordernum",ordernum).Where("no=?",orderNo).Where("app_id=?",appId).Exec()
+	return err
+}
+func (self *OrderItem)OrdersAddNumWithPassnum(orderNo string,appId string,passnum string) error {
+	_,err :=db.NewSession().Update("order_item").Set("gm_passnum",passnum).Where("no=?",orderNo).Where("app_id=?",appId).Exec()
+	return err
+}
+
 

@@ -571,3 +571,7 @@ func ProdAttrValueDtoToModel(dto *ProdAttrValueDto) *dao.ProdAttrVal  {
 
 	return model
 }
+//录入商品链接
+func ProductAndAddLink(appId string,prodId uint64,shopurl string) error  {
+	return dao.ProductAndAddLink(appId,prodId,shopurl)
+}
