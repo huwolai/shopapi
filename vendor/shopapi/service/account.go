@@ -21,7 +21,7 @@ type AccountRechargeModel struct  {
 	//充值金额
 	Money float64
 	PayType int  //付款类型(1.支付宝 2.微信)
-
+	Remark string
 }
 
 type AccountDetailModel struct  {
@@ -52,6 +52,11 @@ func AccountPreRecharge(model *AccountRechargeModel) (map[string]interface{},err
 		log.Error(err)
 		return nil,errors.New("充值记录插入失败!")
 	}
+	
+	remark:="充值"
+	if len(model.Remark)>0{
+		remark=model.Remark
+	}
 
 	//参数
 	params := map[string]interface{}{
@@ -64,7 +69,7 @@ func AccountPreRecharge(model *AccountRechargeModel) (map[string]interface{},err
 		"title": "充值",
 		"client_ip": "127.0.0.1",
 		"notify_url": config.GetValue("notify_url").ToString(),
-		"remark": "充值",
+		"remark": remark,
 	}
 	resultMap,err :=RequestPayApi("/pay/makeprepay",params)
 

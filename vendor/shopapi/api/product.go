@@ -478,10 +478,12 @@ func ProductListWithCategory(c *gin.Context)  {
 	 noflags := c.Query("noflags")
 
 	flagsArray,noflagsArray := GetFlagsAndNoFlags(flags,noflags)
+	
+	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 
 	icategoryId,_ := strconv.Atoi(categoryId)
 	appId := security.GetAppId2(c.Request)
-	prodList,err := service.ProductListWithCategory(appId,int64(icategoryId),flagsArray,noflagsArray)
+	prodList,err := service.ProductListWithCategory(appId,int64(icategoryId),flagsArray,noflagsArray,pIndex,pSize)
 	if err!=nil {
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询失败!")

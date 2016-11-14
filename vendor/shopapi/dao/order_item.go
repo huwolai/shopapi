@@ -33,6 +33,7 @@ type OrderItem struct  {
 	
 	GmOrdernum string
 	GmPassnum string
+	GmPassway string
 }
 
 type OrderItemDetail struct  {
@@ -69,6 +70,7 @@ type OrderItemDetail struct  {
 
 	GmOrdernum string
 	GmPassnum string
+	GmPassway string
 
 }
 
@@ -153,8 +155,8 @@ func (self *OrderItem)OrdersAddNumWithNo(orderNo string,appId string,ordernum st
 	_,err :=db.NewSession().Update("order_item").Set("gm_ordernum",ordernum).Where("no=?",orderNo).Where("app_id=?",appId).Exec()
 	return err
 }
-func (self *OrderItem)OrdersAddNumWithPassnum(orderNo string,appId string,passnum string) error {
-	_,err :=db.NewSession().Update("order_item").Set("gm_passnum",passnum).Where("no=?",orderNo).Where("app_id=?",appId).Exec()
+func (self *OrderItem)OrdersAddNumWithPassnum(orderNo string,appId string,passnum string,passway string) error {
+	_,err :=db.NewSession().Update("order_item").Set("gm_passnum",passnum).Set("gm_passway",passway).Where("no=?",orderNo).Where("app_id=?",appId).Exec()
 	return err
 }
 

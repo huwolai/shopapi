@@ -12,6 +12,15 @@ import (
 	"time"
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 	"encoding/json"
+	
+	"gitlab.qiyunxin.com/tangtao/utils/network"
+	"net/http"
+	"gitlab.qiyunxin.com/tangtao/utils/util"
+	"fmt"
+	"net/url"
+	"crypto/md5"
+    "encoding/hex"
+	"encoding/base64"
 )
 
 type OrderModel struct  {
@@ -1200,7 +1209,7 @@ func OrdersAddNum(orderNo string,appId string,ordernum string) error {
 	return nil
 }
 //订单增加购买运单号
-func OrdersAddPassnum(orderNo string,appId string,passnum string) error {
+func OrdersAddPassnum(orderNo string,appId string,passnum string,passway string) error {
 	/* order :=dao.NewOrder()
 	order,err :=order.OrderWithId(orderId,appId)
 	if err!=nil{
@@ -1208,7 +1217,7 @@ func OrdersAddPassnum(orderNo string,appId string,passnum string) error {
 	} */
 	
 	orderItem := dao.NewOrderItem()
-	err :=orderItem.OrdersAddNumWithPassnum(orderNo,appId,passnum)
+	err :=orderItem.OrdersAddNumWithPassnum(orderNo,appId,passnum,passway)
 	if err!=nil{
 		return err
 	}
@@ -1223,7 +1232,50 @@ func OrderItems(orderNo string) ([]*dao.OrderItem,error)  {
 	}
 	return orderItems,nil
 }
-
+//订单快递查询
+func ExpressDelivery(logisticCode string,shipperCode string) (string,error)  {	
+	//header参数
+	headers := map[string]string{
+		"Content-Type"	: "application/x-www-form-urlencoded",
+		"Host"			: "api.kdniao.cc",
+	}
+	
+	//参数 
+	params := map[string]string{
+		"EBusinessID": "1269064",
+		"DataType"	 : "2",
+		"RequestType": "1002",
+	}
+	
+	h := md5.New()
+    h.Write([]byte("{'OrderCode':'','ShipperCode':'"+shipperCode+"','LogisticCode':'"+logisticCode+"'}84b6cbd8-605b-4d60-96c6-0622a8a4328b"))
+    md5s:=fmt.Sprintf("%s", hex.EncodeToString(h.Sum(nil)))	
+	base64s := base64.StdEncoding.EncodeToString([]byte(md5s))	
+	
+	params["RequestData"] = url.QueryEscape("{'OrderCode':'','ShipperCode':'"+shipperCode+"','LogisticCode':'"+logisticCode+"'}")
+	
+	params["DataSign"] 	  = url.QueryEscape(base64s)
+	
+	request:=""
+	for k, v := range params {  
+		request+=fmt.Sprintf("%s=%s&", k, v)  
+    }
+	
+	paramData:= []byte("")
+	
+	response,err := network.Post("http://api.kdniao.cc/Ebusiness/EbusinessOrderHandle.aspx?"+request,paramData,headers)
+	if err!=nil{
+		return "",err
+	}
+	if response.StatusCode==http.StatusOK {
+		return response.Body,nil
+	}else if response.StatusCode==http.StatusBadRequest {
+		var resultMap map[string]interface{}
+		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
+		return "",errors.New(resultMap["err_msg"].(string))
+	}
+	return "",errors.New("访问接口失败")	
+}
 
 
 

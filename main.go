@@ -241,6 +241,11 @@ func main() {
 		}
 
 		//订单
+		orders := v1.Group("/orders")
+		{
+			//订单快递查询
+			orders.GET("/expressdelivery", api.ExpressDelivery)
+		}
 		order := v1.Group("/order")
 		{
 			//添加订单

@@ -13,6 +13,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 	"gitlab.qiyunxin.com/tangtao/utils/security"
 	"gitlab.qiyunxin.com/tangtao/utils/page"
+	"fmt"
 )
 
 type OrderDto struct  {
@@ -38,6 +39,10 @@ type OrderDto struct  {
 	
 	GmOrdernum string `json:"ordernum"`
 	GmPassnum string `json:"passnum"`
+	GmPassway string `json:"passway"`
+	WayStatus string `json:"way_status"`
+	
+	DetailTitle []string `json:"detailtitle"`
 }
 
 type OrderDetailDto struct  {
@@ -67,6 +72,8 @@ type OrderDetailDto struct  {
 
 	GmOrdernum string  `json:"ordernum"`
 	GmPassnum string   `json:"passnum"`
+	GmPassway string `json:"passway"`
+	WayStatus string `json:"way_status"`
 }
 
 type OrderItemDetailDto struct  {
@@ -509,17 +516,26 @@ func OrdersGet(c *gin.Context)  {
 		return
 	}
 
-	results :=make([]*OrderDto,0)
+	results 	:=make([]*OrderDto,0)
+	detailTitle :=make([]string,0)
+	
 	if orders!=nil&&len(orders) > 0 {
 		var orderItem []*dao.OrderItem
+		
 		for _,od :=range orders {
 			orderItem,_=service.OrderItems(od.No);
 			if len(orderItem)>0 {
 				od.GmOrdernum	=orderItem[0].GmOrdernum
 				od.GmPassnum	=orderItem[0].GmPassnum
+				od.GmPassway	=orderItem[0].GmPassway
+				for _,odItem :=range orderItem {
+					detailTitle=append(detailTitle,fmt.Sprintf("%s*%d", odItem.Title,odItem.Num))
+				}
+				od.DetailTitle	=detailTitle
+				detailTitle=make([]string,0)
 			}else{
 				log.Info("========")				
-			}			
+			}	
 			results = append(results,orderToA(od))
 		}
 	}
@@ -612,7 +628,9 @@ func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
 	dto.Name = model.AddressName
 	dto.Mobile = model.AddressMobile
 	dto.GmOrdernum = model.GmOrdernum
-	dto.GmPassnum = model.GmPassnum
+	dto.GmPassnum = model.GmPassnum	
+	dto.GmPassway = model.GmPassway	
+	dto.WayStatus = model.WayStatus
 
 	dto.OrderStatus = model.OrderStatus
 	dto.PayStatus = model.PayStatus
@@ -673,6 +691,8 @@ func orderToA(order *dao.Order) *OrderDto {
 	a.CreateTime = qtime.ToyyyyMMddHHmm(order.CreateTime)
 	a.GmOrdernum = order.GmOrdernum
 	a.GmPassnum = order.GmPassnum
+	a.GmPassway = order.GmPassway
+	a.DetailTitle = order.DetailTitle
 	
 
 	return a
@@ -784,11 +804,12 @@ func OrdersAddPassnum(c *gin.Context)  {
 	type Params struct {
 		Id			string   `json:"id"`
 		Passnum		string   `json:"passnum"`
+		Passway	string   `json:"passway"`
 	}
 	var param Params
 	c.BindJSON(&param)
 	
-	err :=service.OrdersAddPassnum(param.Id,appId,param.Passnum)
+	err :=service.OrdersAddPassnum(param.Id,appId,param.Passnum,param.Passway)
 	
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
@@ -797,9 +818,19 @@ func OrdersAddPassnum(c *gin.Context)  {
 	
 	util.ResponseSuccess(c.Writer)
 }
-
-
-
+//订单快递查询
+func ExpressDelivery(c *gin.Context)  {
+	logisticCode 	:= c.Query("logisticCode")
+	shipperCode 	:= c.Query("ShipperCode")
+	
+	data,err :=service.ExpressDelivery(logisticCode,shipperCode)
+	
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	c.JSON(http.StatusOK,data)
+}
 
 
 

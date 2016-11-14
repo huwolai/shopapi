@@ -22,6 +22,7 @@ type AccountPreRechargeDto struct  {
 	OpenId string `json:"open_id"`
 	Money float64 `json:"money"`
 	PayType int `json:"pay_type"`
+	Remark string `json:"remark"`
 }
 
 type AccountDetailDto struct  {
@@ -234,10 +235,11 @@ func AccountsGet(c *gin.Context)  {
 	results :=make([]*Account,0)
 	if accounts!=nil{
 		var detailModel *service.AccountDetailModel
-		
+		log.Info(detailModel)
 		for _,account :=range accounts  {			
 			detailModel,_ =service.AccountDetail(account.OpenId)
 			account.Money=float64(detailModel.Amount)/100.0
+			//account.Money=0
 			results = append(results,accountToA(account))
 		}
 	}
@@ -314,6 +316,11 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
+	
+	if len(param.Remark)<1 {
+		util.ResponseError400(c.Writer,"充值或扣款缘由未填！")
+		return
+	}	
 
 	//log.Info(param)
 	//param.OpenId = c.Param("open_id")
@@ -325,6 +332,7 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 	model.OpenId = param.OpenId
 	model.PayType = 3 //param.PayType
 	model.AppId = appId
+	model.Remark = param.Remark
 	resultMap,err := service.AccountPreRecharge(model)
 	if err!=nil {
 		log.Error(err)

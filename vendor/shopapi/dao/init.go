@@ -66,7 +66,7 @@ func ProductAddNum() error  {
 
 	x := 0
 	for _,Product :=range Products  {
-		x=RandInt(1,5)
+		x=RandInt(20,30)
 		db.NewSession().UpdateBySql(fmt.Sprintf("update product set sold_num_init=sold_num_init+%d,sold_num=sold_num+%d where id=%d limit 1",x,x,Product.Id)).Exec()
 	}
 
