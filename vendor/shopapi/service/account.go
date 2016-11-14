@@ -66,7 +66,7 @@ func AccountPreRecharge(model *AccountRechargeModel) (map[string]interface{},err
 		"amount": int64(model.Money*100),
 		"trade_type": comm.Trade_Type_Recharge,
 		"pay_type": model.PayType,
-		"title": "充值",
+		"title": remark,
 		"client_ip": "127.0.0.1",
 		"notify_url": config.GetValue("notify_url").ToString(),
 		"remark": remark,
