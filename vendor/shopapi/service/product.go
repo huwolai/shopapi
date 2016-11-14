@@ -261,14 +261,14 @@ func ProductListWithRecomm(appId string,pageIndex uint64,pageSize uint64) ([]*da
 }
 
 //根据分类获取商品
-func ProductListWithCategory(appId string,categoryId int64,flags []string,noflags []string,pageIndex uint64,pageSize uint64) ([]*dao.ProductDetail,error)   {
+func ProductListWithCategory(appId string,categoryId int64,flags []string,noflags []string,pageIndex uint64,pageSize uint64) ([]*dao.ProductDetail,int,error)   {
 	productDetail :=dao.NewProductDetail()
-	prodList,err := productDetail.ProductListWithCategory(appId,categoryId,flags,noflags,pageIndex,pageSize)
+	prodList,count,err := productDetail.ProductListWithCategory(appId,categoryId,flags,noflags,pageIndex,pageSize)
 	if err!=nil {
-		return nil,err
+		return nil,0,err
 	}
 
-	return prodList,nil
+	return prodList,count,nil
 }
 
 //查询商品指定key的属性值

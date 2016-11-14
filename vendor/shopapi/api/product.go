@@ -483,7 +483,7 @@ func ProductListWithCategory(c *gin.Context)  {
 
 	icategoryId,_ := strconv.Atoi(categoryId)
 	appId := security.GetAppId2(c.Request)
-	prodList,err := service.ProductListWithCategory(appId,int64(icategoryId),flagsArray,noflagsArray,pIndex,pSize)
+	prodList,count,err := service.ProductListWithCategory(appId,int64(icategoryId),flagsArray,noflagsArray,pIndex,pSize)
 	if err!=nil {
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询失败!")
@@ -491,8 +491,8 @@ func ProductListWithCategory(c *gin.Context)  {
 	}
 	prodListDtos :=make([]*ProductDetailDto,0)
 	if prodList!=nil {
-
 		for _,prodDetail :=range prodList {
+			prodDetail.TotalPage=count;
 			prodListDtos = append(prodListDtos,productDetailToDto(prodDetail))
 		}
 	}
@@ -799,6 +799,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.Description = model.Description
 	dto.SoldNum 	= model.SoldNum
 	dto.Shopurl 	= model.Shopurl
+	dto.TotalPage 	= model.TotalPage
 	
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*ProdImgsDetailDto,0)

@@ -221,12 +221,13 @@ func AccountsGet(c *gin.Context)  {
 	appId :=security.GetAppId2(c.Request)
 	mobile := c.Query("mobile")
 	
-	userName := c.Query("username") // 用户名
-	ydgyId 	 := c.Query("ydgy_id")	//一点公益 ID
-	ydgyName := c.Query("ydgy_name") //一点公益名字
+	userName 	:= c.Query("username") // 用户名
+	ydgyId 	 	:= c.Query("ydgy_id")	//一点公益 ID
+	ydgyName 	:= c.Query("ydgy_name") //一点公益名字
+	ydgyStatus  := c.Query("ydgy_status") //一点公益状态
 	
 	
-	accounts,err := service.AccountsWith(pIndex,pSize,mobile,appId,userName,ydgyId,ydgyName)
+	accounts,err := service.AccountsWith(pIndex,pSize,mobile,appId,userName,ydgyId,ydgyName,ydgyStatus)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"查询失败！")
 		return
@@ -244,7 +245,7 @@ func AccountsGet(c *gin.Context)  {
 		}
 	}
 
-	total,err :=service.AccountsWithCount(mobile,appId,userName,ydgyId,ydgyName)
+	total,err :=service.AccountsWithCount(mobile,appId,userName,ydgyId,ydgyName,ydgyStatus)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"查询总数量失败！")
 		return

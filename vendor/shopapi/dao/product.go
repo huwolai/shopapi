@@ -65,6 +65,8 @@ type ProductDetail struct {
 	ProdImgs []*ProdImgsDetail
 	//购物链接
 	Shopurl string
+	//商品总页数
+	TotalPage int
 }
 
 type ProductSearch struct {
@@ -294,9 +296,10 @@ func (self *ProductDetail) ProductListWithMerchant(merchantId int64,appId string
 	return prodList,err
 }
 
-func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64,flags []string,noflags []string,pageIndex uint64,pageSize uint64) ([]*ProductDetail,error)  {
+func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64,flags []string,noflags []string,pageIndex uint64,pageSize uint64) ([]*ProductDetail,int , error)  {
 	session := db.NewSession()
 	var prodList []*ProductDetail
+	
 	builder :=session.Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.status=?",1).Where("product.app_id=?",appId)
 	if flags!=nil&&len(flags)>0{
 
@@ -307,14 +310,29 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 	}
 	_,err := builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&prodList)
 	if err!=nil{
-		return nil,err
+		return nil,0,err
 	}
+	
+	var count int
+	builder =session.Select("count(product.id)").From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.status=?",1).Where("product.app_id=?",appId)
+	if flags!=nil&&len(flags)>0{
+
+		builder = builder.Where("product.flag in ?",flags)
+	}
+	if noflags!=nil&&len(noflags) >0 {
+		builder = builder.Where("product.flag not in ?",noflags)
+	}
+	_,err = builder.Limit(1).LoadStructs(&count)
+	if err!=nil{
+		return nil,0,err
+	}
+	
 	if prodList!=nil&&len(prodList)>0 {
 		err = FillProdImgs(appId,prodList)
-	}
+	}	
 
 
-	return prodList,err
+	return prodList,count,err
 }
 
 //填充商品图片数据
