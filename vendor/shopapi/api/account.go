@@ -22,7 +22,7 @@ type AccountPreRechargeDto struct  {
 	OpenId string `json:"open_id"`
 	Money float64 `json:"money"`
 	PayType int `json:"pay_type"`
-	Remark string `json:"remark"`
+	Remark string `json:"content"`
 }
 
 type AccountDetailDto struct  {
