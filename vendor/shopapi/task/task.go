@@ -28,6 +28,7 @@ func  StartCron() {
 	c.AddFunc("0 0/6 * * * ?", OrderFetchMoney)
 
 	c.AddFunc("0 0/2 * * * ?", OrderAutoCancel)
+	
 	//厨师随机增加服务数量 0到2
 	c.AddFunc("0 0 9 * * ?", MerchantServiceAdd)
 	//商品初始化售出数量
@@ -179,10 +180,10 @@ func MerchantServiceAdd() {
 //商品初始化售出数量
 func ProductInitNum()  {
 	log.Info("商品初始化售出数量！")
-	service.ProductInitNum()
+	dao.ProductInitNum()
 }
 //商品 售出数量 定时增加
 func ProductAddNum()  {
 	log.Info("商品 售出数量 定时增加!")
-	service.ProductAddNum()
+	dao.ProductAddNum()
 }
