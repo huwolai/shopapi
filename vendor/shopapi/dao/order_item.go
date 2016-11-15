@@ -34,6 +34,7 @@ type OrderItem struct  {
 	GmOrdernum string
 	GmPassnum string
 	GmPassway string
+	WayStatus int64
 }
 
 type OrderItemDetail struct  {
@@ -71,6 +72,7 @@ type OrderItemDetail struct  {
 	GmOrdernum string
 	GmPassnum string
 	GmPassway string
+	WayStatus int64
 
 }
 

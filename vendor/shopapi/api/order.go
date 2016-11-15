@@ -40,7 +40,7 @@ type OrderDto struct  {
 	GmOrdernum string `json:"ordernum"`
 	GmPassnum string `json:"passnum"`
 	GmPassway string `json:"passway"`
-	WayStatus string `json:"way_status"`
+	WayStatus int64 `json:"way_status"`
 	
 	DetailTitle []string `json:"detailtitle"`
 }
@@ -73,7 +73,7 @@ type OrderDetailDto struct  {
 	GmOrdernum string  `json:"ordernum"`
 	GmPassnum string   `json:"passnum"`
 	GmPassway string `json:"passway"`
-	WayStatus string `json:"way_status"`
+	WayStatus int64 `json:"way_status"`
 }
 
 type OrderItemDetailDto struct  {
@@ -97,6 +97,11 @@ type OrderItemDetailDto struct  {
 	BuyUnitPrice float64 `json:"buy_unit_price"`
 	BuyTotalPrice float64 `json:"buy_total_price"`
 	Json string `json:"json"`
+	
+	GmOrdernum string  `json:"ordernum"`
+	GmPassnum string   `json:"passnum"`
+	GmPassway string `json:"passway"`
+	WayStatus int64 `json:"way_status"`
 
 }
 
@@ -528,6 +533,7 @@ func OrdersGet(c *gin.Context)  {
 				od.GmOrdernum	=orderItem[0].GmOrdernum
 				od.GmPassnum	=orderItem[0].GmPassnum
 				od.GmPassway	=orderItem[0].GmPassway
+				od.WayStatus	=orderItem[0].WayStatus
 				for _,odItem :=range orderItem {
 					detailTitle=append(detailTitle,fmt.Sprintf("%s*%d", odItem.Title,odItem.Num))
 				}
@@ -668,6 +674,11 @@ func orderItemDetailToDto(model *dao.OrderItemDetail) *OrderItemDetailDto  {
 	dto.ProdCoverImg  = model.ProdCoverImg
 	dto.MerchantName = model.MerchantName
 	dto.MerchantId = model.MerchantId
+	
+	dto.GmOrdernum = model.GmOrdernum
+	dto.GmPassnum = model.GmPassnum
+	dto.GmPassway = model.GmPassway
+	dto.WayStatus = model.WayStatus
 
 	return dto
 }
@@ -692,6 +703,7 @@ func orderToA(order *dao.Order) *OrderDto {
 	a.GmOrdernum = order.GmOrdernum
 	a.GmPassnum = order.GmPassnum
 	a.GmPassway = order.GmPassway
+	a.WayStatus = order.WayStatus
 	a.DetailTitle = order.DetailTitle
 	
 

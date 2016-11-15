@@ -44,7 +44,7 @@ type Order struct  {
 	GmOrdernum string
 	GmPassnum string
 	GmPassway string
-	WayStatus string
+	WayStatus int64
 	
 	DetailTitle []string
 }
@@ -79,7 +79,7 @@ type OrderDetail struct  {
 	GmOrdernum string
 	GmPassnum string
 	GmPassway string
-	WayStatus string
+	WayStatus int64
 }
 
 type OrderCount struct  {
@@ -384,6 +384,7 @@ func fillOrderItemDetail(orders []*OrderDetail)  error {
 				order.GmOrdernum=orderItemDetailMap[order.No][0].GmOrdernum
 				order.GmPassnum=orderItemDetailMap[order.No][0].GmPassnum
 				order.GmPassway=orderItemDetailMap[order.No][0].GmPassway
+				order.WayStatus=orderItemDetailMap[order.No][0].WayStatus
 			}			
 		}		
 	}
