@@ -303,3 +303,84 @@ func GetOnKey() (*dao.GetOnKey,error)   {
 	GetOnKey,err :=GetOnKey.GetOnKey()
 	return GetOnKey,err
 }
+//账户预充值 减去 AccountPreRechargeMinus
+func AccountPreRechargeMinus(model *AccountRechargeModel) (map[string]interface{},error) {
+	//制作预付款
+	payparams := map[string]interface{}{
+		"open_id":model.OpenId,
+		"type": 1,
+		"amount": int64(model.Money*100),
+		"title": model.Remark,
+		"remark": model.Remark,
+	}
+	resultImprestMap,err := RequestPayApi("/pay/makeimprest",payparams)
+	if err!=nil{
+		log.Error(err)
+		return nil,err
+	}	
+	//领取预付款
+	payparams =map[string]interface{}{
+		"open_id": model.OpenId,
+		"code": resultImprestMap["code"],
+		"amount": int64(model.Money*100),
+		"title": model.Remark,
+		"remark": model.Remark,
+	}
+	//获取接口签名信息
+	noncestr,timestamp,appid,basesign,sign  :=GetPayapiSign(payparams)
+	//header参数
+	headers := map[string]string{
+		"app_id": appid,
+		"sign": fmt.Sprintf("%s.%s",basesign,sign),
+		"noncestr": noncestr,
+		"timestamp": timestamp,
+	}
+	paramData,_:= json.Marshal(payparams);
+	response,err := network.Post(config.GetValue("payapi_url").ToString()+"/imprests/fetch",paramData,headers)
+	if err!=nil{
+		log.Error(err)
+		return nil,err
+	}
+	
+	if response.StatusCode==http.StatusOK {
+		var resultMap map[string]interface{}
+		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
+		return resultMap,nil
+	}else if response.StatusCode==http.StatusBadRequest {
+		var resultMap map[string]interface{}
+		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)
+
+		log.Error(err)
+		return nil,errors.New(resultMap["err_msg"].(string))
+	}else{
+		return nil,errors.New("请求API失败!")
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

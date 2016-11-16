@@ -323,12 +323,14 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 		return
 	}
 	
+	if param.Money==0 {
+		util.ResponseError400(c.Writer,"金额错误！")
+		return
+	}
 	
-	
-
 	//log.Info(param)
 	//param.OpenId = c.Param("open_id")
-	
+		
 	appId := security.GetAppId2(c.Request)
 
 	model :=&service.AccountRechargeModel{}
@@ -337,11 +339,43 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 	model.PayType = 3 //param.PayType
 	model.AppId = appId
 	model.Remark = param.Remark
-	resultMap,err := service.AccountPreRecharge(model)
-	if err!=nil {
-		log.Error(err)
-		util.ResponseError400(c.Writer,err.Error())
-		return
+	
+	var resultMap map[string]interface{}
+	if param.Money<0 {	
+		resultMap,err = service.AccountPreRechargeMinus(model)
+		if err!=nil {
+			log.Error(err)
+			util.ResponseError400(c.Writer,err.Error())
+			return
+		}		
+	}else{		
+		resultMap,err = service.AccountPreRecharge(model)
+		if err!=nil {
+			log.Error(err)
+			util.ResponseError400(c.Writer,err.Error())
+			return
+		}
 	}
 	c.JSON(http.StatusOK,resultMap)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

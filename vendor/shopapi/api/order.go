@@ -44,6 +44,10 @@ type OrderDto struct  {
 	WayStatus int64 `json:"way_status"`
 	
 	DetailTitle []string `json:"detailtitle"`
+	
+	Address string	 `json:"address"`
+	AddressMobile string	 `json:"address_mobile"`
+	AddressName string	 `json:"address_name"`
 }
 
 type OrderDetailDto struct  {
@@ -724,6 +728,10 @@ func orderToA(order *dao.Order) *OrderDto {
 	a.GmPassway = order.GmPassway
 	a.WayStatus = order.WayStatus
 	a.DetailTitle = order.DetailTitle
+	
+	a.Address = order.Address
+	a.AddressMobile = order.AddressMobile
+	a.AddressName = order.AddressName
 	
 
 	return a
