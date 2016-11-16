@@ -92,6 +92,7 @@ type OrderSearch struct {
 	OrderNo  	 	string
 	PayStatus 	 	uint64
 	OrderStatus		uint64
+	AddressMobile	string
 }
 
 func NewOrder() *Order {
@@ -132,6 +133,9 @@ func (self *Order) With(searchs interface{},pageIndex uint64,pageSize uint64,app
 	}
 	if search.OrderNo!="" {
 		buider = buider.Where("no = ?",search.OrderNo)
+	}
+	if search.AddressMobile!="" {
+		buider = buider.Where("address_mobile like ?",search.AddressMobile+"%")
 	}
 	switch search.PayStatus {
 		case 1://1，未付款；
