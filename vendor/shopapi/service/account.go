@@ -318,7 +318,18 @@ func AccountPreRechargeMinus(model *AccountRechargeModel) (map[string]interface{
 		log.Error(err)
 		return nil,err
 	}
-	log.Info("后台领取预付款")
+	//支付预付款
+	payparams = map[string]interface{}{
+		"pay_token": resultImprestMap["pay_token"],
+		"open_id": model.OpenId,
+		"code": resultImprestMap["code"],
+		"out_trade_no":"",
+	}
+	resultMap,err := RequestPayApi("/pay/payimprest",payparams)
+	if err!=nil{
+		return nil,err
+	}
+	log.Info(resultMap)
 	//领取预付款
 	payparams =map[string]interface{}{
 		"open_id": model.OpenId,
