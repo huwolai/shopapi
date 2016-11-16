@@ -179,6 +179,9 @@ func (self *Order) WithCount(searchs interface{},appId string) (int64,error)  {
 	if search.OrderNo!="" {
 		buider = buider.Where("no = ?",search.OrderNo)
 	}
+	if search.AddressMobile!="" {
+		buider = buider.Where("address_mobile like ?",search.AddressMobile+"%")
+	}
 	switch search.PayStatus {
 		case 1://1，未付款；
 			buider = buider.Where("pay_status = ?",0)
