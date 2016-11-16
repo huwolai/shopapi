@@ -317,7 +317,8 @@ func AccountPreRechargeMinus(model *AccountRechargeModel) (map[string]interface{
 	if err!=nil{
 		log.Error(err)
 		return nil,err
-	}	
+	}
+	log.Info("后台领取预付款")
 	//领取预付款
 	payparams =map[string]interface{}{
 		"open_id": model.OpenId,
