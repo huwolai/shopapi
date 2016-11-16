@@ -333,22 +333,23 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 		
 	appId := security.GetAppId2(c.Request)
 
-	model :=&service.AccountRechargeModel{}
-	model.Money = param.Money
+	model :=&service.AccountRechargeModel{}	
 	model.OpenId = param.OpenId
 	model.PayType = 3 //param.PayType
 	model.AppId = appId
 	model.Remark = param.Remark
 	
 	var resultMap map[string]interface{}
-	if param.Money<0 {	
+	if param.Money<0 {
+		model.Money = 0-param.Money
 		resultMap,err = service.AccountPreRechargeMinus(model)
 		if err!=nil {
 			log.Error(err)
 			util.ResponseError400(c.Writer,err.Error())
 			return
 		}		
-	}else{		
+	}else{
+		model.Money = param.Money
 		resultMap,err = service.AccountPreRecharge(model)
 		if err!=nil {
 			log.Error(err)
