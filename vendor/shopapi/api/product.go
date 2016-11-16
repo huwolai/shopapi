@@ -11,6 +11,8 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/security"
 	"strings"
 	"gitlab.qiyunxin.com/tangtao/utils/page"
+	"fmt"
+	"time"
 )
 
 type ProductParam struct  {
@@ -35,6 +37,8 @@ type ProductParam struct  {
 	Flag string `json:"flag"`
 	//附加数据
 	Json  string `json:"json"`
+	//限购数量
+	LimitNum  int64 `json:"limit_num"`
 }
 
 type ProductImgParam struct {
@@ -117,6 +121,10 @@ type ProductDetailDto struct {
 	TotalPage int `json:"total_page"`
 	//购物链接
 	Shopurl string `json:"shopurl"`
+	//限购数量
+	LimitNum int64 `json:"limit_num"`
+	//已经购买数量
+	LimitNumd int64 `json:"limit_numd"`
 }
 
 type ProdImgsDetailDto struct  {
@@ -516,6 +524,9 @@ func ProdDetailWithProdId(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"商品没找到!")
 		return
 	}
+	if len(c.Query("open_id"))>0 {
+		product.LimitNumd,_=service.ProdOrderCountWithId(iprodId,c.Query("open_id"),fmt.Sprintf(time.Now().Format("2006-01-02")))
+	}
 	c.JSON(http.StatusOK,productDetailToDto(product))
 }
 
@@ -756,6 +767,7 @@ func productParamToBLL(param *ProductParam) *service.ProdBLL {
 	prodBll.SubTitle = param.SubTitle
 	prodBll.Flag = param.Flag
 	prodBll.Json  = param.Json
+	prodBll.LimitNum  = param.LimitNum
 
 	imgsparams  := param.Imgs
 	if imgsparams!=nil {
@@ -800,6 +812,8 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.SoldNum 	= model.SoldNum
 	dto.Shopurl 	= model.Shopurl
 	dto.TotalPage 	= model.TotalPage
+	dto.LimitNum 	= model.LimitNum
+	dto.LimitNumd 	= model.LimitNumd
 	
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*ProdImgsDetailDto,0)

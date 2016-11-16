@@ -108,6 +108,10 @@ func ProdDetailWithProdId(prodId int64,appId string) (*dao.ProductDetail,error) 
 	product := dao.NewProduct()
 	return product.ProductDetailWithId(prodId)
 }
+//商品已购买数量
+func ProdOrderCountWithId(prodId int64,OpenId string,Date string) (int64,error) {
+	return dao.ProdOrderCountWithId(prodId,OpenId,Date)
+}
 
 //商品图片
 func  ProdImgsWithProdId(prodId int64,appId string) ([]*ProdImgsDetailDLL,error) {
@@ -530,6 +534,7 @@ func prodToModel(prodbll *ProdBLL) *dao.Product {
 	prod.Status = prodbll.Status
 	prod.Json = prodbll.Json
 	prod.Flag = prodbll.Flag
+	prod.LimitNum = prodbll.LimitNum
 
 	return prod
 }

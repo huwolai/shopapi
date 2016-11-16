@@ -162,4 +162,43 @@ func (self *OrderItem)OrdersAddNumWithPassnum(orderNo string,appId string,passnu
 	return err
 }
 
+//商品已购买数量
+func ProdOrderCountWithId(prodId int64,OpenId string,Date string) (int64,error) {
+	//count, err :=db.NewSession().Select("sum(order_item.num)").From("order_item").LeftJoin("order","order_item.no=order.no").Where("order_item.prod_id = ?", prodId).Where("order.open_id = ?", OpenId).ReturnInt64()
+	
+	buider :=db.NewSession().Select("sum(order_item.num)").From("order_item").LeftJoin("order","order_item.no=order.no")
+	
+	if len(Date)>0 {
+		buider = buider.Where("order_item.create_time like ?",Date+"%")
+	}
+	
+	count, err :=buider.Where("order.order_status <= ?", 1).Where("order_item.prod_id = ?", prodId).Where("order.open_id = ?", OpenId).ReturnInt64()
+	
+	
+	return count,err
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

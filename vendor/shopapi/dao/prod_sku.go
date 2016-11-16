@@ -31,6 +31,8 @@ type ProdSkuDetail struct  {
 	AttrSymbolPath string
 	Stock int
 	Json string
+	
+	LimitNum int64
 }
 
 func NewProdSkuDetail() *ProdSkuDetail  {
@@ -67,7 +69,7 @@ func (self *ProdSku) WithSkuNo(skuNo string) (*ProdSku,error)   {
 
 func (self *ProdSkuDetail) WithSkuNo(skuNo string) (*ProdSkuDetail,error)  {
 	var prodSkuDetail *ProdSkuDetail
-	_,err :=db.NewSession().Select("prod_sku.*,product.title").From("prod_sku").Join("product","prod_sku.prod_id=product.id").Where("sku_no=?",skuNo).LoadStructs(&prodSkuDetail)
+	_,err :=db.NewSession().Select("prod_sku.*,product.title,product.limit_num").From("prod_sku").Join("product","prod_sku.prod_id=product.id").Where("sku_no=?",skuNo).LoadStructs(&prodSkuDetail)
 
 	return prodSkuDetail,err
 }

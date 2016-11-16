@@ -21,6 +21,7 @@ import (
 	"crypto/md5"
     "encoding/hex"
 	"encoding/base64"
+	"strings"
 )
 
 type OrderModel struct  {
@@ -1268,7 +1269,27 @@ func ExpressDelivery(logisticCode string,shipperCode string) (string,error)  {
 		return "",err
 	}
 	if response.StatusCode==http.StatusOK {
-		return response.Body,nil
+		str:=response.Body
+		str =strings.Replace(str, "\n", "", -1)
+		
+		/* str:=strings.Replace(response.Body, "\n", "", -1)
+		str =strings.Replace(str, "\r", "", -1)
+		str =strings.Replace(str, "\\", "", -1)
+	
+		type Res struct {
+			State string
+		}
+		var res Res 
+		json.Unmarshal([]byte(str), &res)
+	
+		
+		if res.State=="3" {
+			fmt.Println("=@#$#%$%^$%")
+		} */
+		
+		
+		
+		return str,nil
 	}else if response.StatusCode==http.StatusBadRequest {
 		var resultMap map[string]interface{}
 		err =util.ReadJsonByByte([]byte(response.Body),&resultMap)

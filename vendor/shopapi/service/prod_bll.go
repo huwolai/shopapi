@@ -24,6 +24,8 @@ type ProdBLL struct {
 	//标记
 	Flag string
 	Json string
+	
+	LimitNum int64
 }
 
 type ProdImgBLL struct {

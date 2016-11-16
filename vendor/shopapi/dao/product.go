@@ -28,6 +28,8 @@ type Product struct  {
 	Flag string
 	//附加数据
 	Json string
+	//限购数量
+	LimitNum int64
 }
 
 type ProductDetail struct {
@@ -67,6 +69,10 @@ type ProductDetail struct {
 	Shopurl string
 	//商品总页数
 	TotalPage int
+	//限购数量
+	LimitNum int64
+	//已经购买数量
+	LimitNumd int64
 }
 
 type ProductSearch struct {
@@ -223,7 +229,7 @@ func (self *Product) SoldNumInc(num int,prodId int64,tx *dbr.Tx) error  {
 
 func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 
-	result,err :=tx.InsertInto("product").Columns("title","sub_title","app_id","description","sold_num","price","dis_price","json","flag","status","is_recom").Record(self).Exec()
+	result,err :=tx.InsertInto("product").Columns("title","sub_title","app_id","description","sold_num","price","dis_price","json","flag","status","is_recom","limit_num").Record(self).Exec()
 	if err !=nil {
 
 		return 0,err

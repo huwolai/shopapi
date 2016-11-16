@@ -14,6 +14,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/security"
 	"gitlab.qiyunxin.com/tangtao/utils/page"
 	"fmt"
+	"time"
 )
 
 type OrderDto struct  {
@@ -159,7 +160,25 @@ func OrderAdd(c *gin.Context)  {
 	orderDto.AppId = appId
 	orderDto.OpenId = openId
 	orderDto.OrderStatus = comm.ORDER_STATUS_WAIT_SURE
-
+	
+	//限购商品
+	items := orderDto.Items
+	if items!=nil {
+		prodSkuDetail := dao.NewProdSkuDetail()
+		var prodSkuDetailItem *dao.ProdSkuDetail
+		var buyCount int64
+		for _,item :=range items  {		
+			prodSkuDetailItem,_ =prodSkuDetail.WithSkuNo(item.SkuNo)
+			if prodSkuDetailItem.LimitNum>0 {
+				buyCount,_=service.ProdOrderCountWithId(prodSkuDetailItem.ProdId,orderDto.OpenId,fmt.Sprintf(time.Now().Format("2006-01-02")))
+				if (buyCount+int64(item.Num))>prodSkuDetailItem.LimitNum {
+					util.ResponseError400(c.Writer,"您购买的商品数量已超过限购数!")
+					return
+				}
+			}
+		}
+	}	
+	
 	order,err := service.OrderAdd(orderDtoToModel(orderDto))
 	if err!=nil{
 		log.Error(err)

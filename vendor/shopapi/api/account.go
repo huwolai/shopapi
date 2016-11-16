@@ -321,7 +321,10 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 	if len(param.Remark)<1 {
 		util.ResponseError400(c.Writer,"充值或扣款缘由未填！")
 		return
-	}	
+	}
+	
+	
+	
 
 	//log.Info(param)
 	//param.OpenId = c.Param("open_id")
