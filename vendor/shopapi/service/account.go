@@ -318,7 +318,7 @@ func AccountPreRechargeMinus(model *AccountRechargeModel) (map[string]interface{
 		log.Error(err)
 		return nil,err
 	}
-	//支付预付款
+	//payToken
 	payparams = map[string]interface{}{
 		"open_id": model.OpenId,
 		"password": "123456",
@@ -327,11 +327,9 @@ func AccountPreRechargeMinus(model *AccountRechargeModel) (map[string]interface{
 	if err!=nil{
 		return nil,err
 	}
-	log.Info(resultMap)
-	
 	//支付预付款
 	payparams = map[string]interface{}{
-		"pay_token": "shopapi",
+		"pay_token": resultMap["pay_token"].(string),
 		"open_id": model.OpenId,
 		"code": resultImprestMap["code"],
 		"out_trade_no":"",
