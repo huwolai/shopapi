@@ -181,21 +181,15 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 
 	if model.PayType == comm.Pay_Type_Account {//账户支付
 		code :=order.Code
-		if order.PayStatus==comm.ORDER_PAY_STATUS_NOPAY {
+		if order.PayStatus==comm.ORDER_PAY_STATUS_NOPAY || order.PayStatus==comm.ORDER_PAY_STATUS_PAYING {
 			//请求预付款
-			log.Info("222222@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 			resultImprestMap,err := makeImprest(order,address,payPrice)
 			if err!=nil{
-				log.Info("4444@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 				tx.Rollback()
 				log.Error(err)
 				return nil,err
 			}
-			log.Info("666666666@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 			code :=resultImprestMap["code"].(string)
-			log.Info("T@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-			log.Info(model.Json)
-			log.Info("T@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 			err =order.OrderPayapiUpdateWithNoAndCodeTx("",address.Id,address.Address,address.Name,address.Mobile,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,model.Json,order.AppId,tx)
 			if err!=nil{
 				log.Error(err)
@@ -210,9 +204,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		tx.Commit()
 		return resultMap,nil
 	}else{
-		log.Info("EEEEE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 		resultPrepayMap,err := makePrepay(order,address,payPrice,model)
-		log.Info("GGGGGG@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 		if err!=nil{
 			tx.Rollback()
 			log.Error(err)
@@ -222,9 +214,6 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 			payapiNo :=resultPrepayMap["pay_no"].(string)
 			code :=resultPrepayMap["code"].(string)
 			//将payapi的订单号更新到订单数据里
-			log.Info("$$@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-			log.Info(model.Json)
-			log.Info("$$@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 			err :=order.OrderPayapiUpdateWithNoAndCodeTx(payapiNo,address.Id,address.Address,address.Name,address.Mobile,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,model.Json,order.AppId,tx)
 			if err!=nil{
 				log.Error(err)
