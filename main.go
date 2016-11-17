@@ -9,6 +9,7 @@ import (
 	"os"
 	"shopapi/api"
 	"shopapi/task"
+	
 	//"gitlab.qiyunxin.com/tangtao/utils/security"
 	//"gitlab.qiyunxin.com/tangtao/utils/app"
 )
@@ -146,7 +147,9 @@ func main() {
 			//删除银行信息
 			user.DELETE("/:open_id/bank/:id", api.UserBankDel)
 			//是否是厨师
-			user.GET("/:open_id/ismerchant", api.MerchantIs)			
+			user.GET("/:open_id/ismerchant", api.MerchantIs)	
+			//充值记录 后台
+			user.GET("/:open_id/rechargerecord/admin", api.RechargeRecordByAdmin)
 
 		}
 		//分类

@@ -51,3 +51,30 @@ func (self *AccountRecharge) UpdateStatusWithNo(status int,no string,appId strin
 
 	return err
 }
+//账户充值记录
+func (self *AccountRecharge) WithOpenId(openId string,appId string,froms int) ([]*AccountRecharge,error)  {
+	var model []*AccountRecharge
+	
+	buider :=db.NewSession().Select("*").From("account_recharge").Where("open_id=?",openId).Where("app_id=?",appId)
+	
+	if froms>=0 {
+		buider = buider.Where("froms=?",froms)
+	}
+	
+	_,err :=buider.OrderDir("id",false).Limit(68).LoadStructs(&model)
+	return model,err
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

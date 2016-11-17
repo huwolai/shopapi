@@ -359,6 +359,46 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 	}
 	c.JSON(http.StatusOK,resultMap)
 }
+//账户充值记录  后台
+func RechargeRecordByAdmin(c *gin.Context)  {
+	appId := security.GetAppId2(c.Request)
+	openId:=c.Param("open_id")
+	
+	rechargeRecord,err:=service.RechargeRecordByAdmin(openId,appId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	c.JSON(http.StatusOK,service.RechargeRecordFormat(rechargeRecord))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

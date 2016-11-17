@@ -24,6 +24,16 @@ type AccountRechargeModel struct  {
 	Remark string
 }
 
+type AccountRecharge struct  {
+	Id 		int64 	`json:"id"`
+	No 		string	`json:"no"`	
+	Amount 	float64	`json:"amount"`
+	Status 	int		`json:"status"`
+	Flag 	string	`json:"flag"`
+	Json 	string	`json:"json"`
+	Froms 	int		`json:"froms"`
+}
+
 type AccountDetailModel struct  {
 
 	//账户余额 单位分
@@ -399,10 +409,27 @@ func AccountPreRechargeMinus(model *AccountRechargeModel,from int) (map[string]i
 		return nil,errors.New("请求API失败!")
 	} */
 }
-
-
-
-
+//账户充值记录  后台
+func RechargeRecordByAdmin(openId string,appId string) ([]*dao.AccountRecharge,error) {
+	accountRecharge :=dao.NewAccountRecharge()
+	return accountRecharge.WithOpenId(openId,appId,1)
+}
+//账户充值记录 格式化
+func RechargeRecordFormat(model []*dao.AccountRecharge) []AccountRecharge  {
+	dto 	:=make([]AccountRecharge,0)
+	dtoItem	:=AccountRecharge{}
+	for _,item :=range model {
+		dtoItem.Id=item.Id
+		dtoItem.No=item.No
+		dtoItem.Amount=item.Amount
+		dtoItem.Status=item.Status
+		dtoItem.Flag=item.Flag
+		dtoItem.Json=item.Json
+		dtoItem.Froms=item.Froms	
+		dto = append(dto,dtoItem)
+	}
+	return dto
+}
 
 
 
