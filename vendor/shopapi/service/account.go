@@ -309,7 +309,7 @@ func GetOnKey() (*dao.GetOnKey,error)   {
 func AccountPreRechargeMinus(model *AccountRechargeModel,from int) (map[string]interface{},error) {
 	
 	accountRecharge :=dao.NewAccountRecharge()
-	accountRecharge.Amount = model.Money
+	accountRecharge.Amount = 0-model.Money
 	accountRecharge.No = util.GenerUUId()
 	accountRecharge.AppId = model.AppId
 	accountRecharge.Status = comm.ACCOUNT_RECHARGE_STATUS_WAIT
