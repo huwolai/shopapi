@@ -189,7 +189,7 @@ func AccountPreRecharge(c *gin.Context)  {
 	model.OpenId = param.OpenId
 	model.PayType = param.PayType
 	model.AppId = appId
-	resultMap,err := service.AccountPreRecharge(model)
+	resultMap,err := service.AccountPreRecharge(model,2)
 	if err!=nil {
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
@@ -342,7 +342,7 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 	var resultMap map[string]interface{}
 	if param.Money<0 {
 		model.Money = 0-param.Money
-		resultMap,err = service.AccountPreRechargeMinus(model)
+		resultMap,err = service.AccountPreRechargeMinus(model,1)
 		if err!=nil {
 			log.Error(err)
 			util.ResponseError400(c.Writer,err.Error())
@@ -350,7 +350,7 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 		}		
 	}else{
 		model.Money = param.Money
-		resultMap,err = service.AccountPreRecharge(model)
+		resultMap,err = service.AccountPreRecharge(model,1)
 		if err!=nil {
 			log.Error(err)
 			util.ResponseError400(c.Writer,err.Error())

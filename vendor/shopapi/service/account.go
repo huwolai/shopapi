@@ -40,13 +40,15 @@ type AccountDetailModel struct  {
 }
 
 //账户预充值
-func AccountPreRecharge(model *AccountRechargeModel) (map[string]interface{},error) {
+func AccountPreRecharge(model *AccountRechargeModel,from int) (map[string]interface{},error) {
 
 	accountRecharge :=dao.NewAccountRecharge()
 	accountRecharge.Amount = model.Money
 	accountRecharge.No = util.GenerUUId()
 	accountRecharge.AppId = model.AppId
 	accountRecharge.Status = comm.ACCOUNT_RECHARGE_STATUS_WAIT
+	accountRecharge.OpenId = model.OpenId
+	accountRecharge.From = from
 	err :=accountRecharge.Insert()
 	if err!=nil{
 		log.Error(err)
@@ -304,10 +306,22 @@ func GetOnKey() (*dao.GetOnKey,error)   {
 	return GetOnKey,err
 }
 //账户预充值 减去 AccountPreRechargeMinus
-func AccountPreRechargeMinus(model *AccountRechargeModel) (map[string]interface{},error) {
-
+func AccountPreRechargeMinus(model *AccountRechargeModel,from int) (map[string]interface{},error) {
+	
+	accountRecharge :=dao.NewAccountRecharge()
+	accountRecharge.Amount = model.Money
+	accountRecharge.No = util.GenerUUId()
+	accountRecharge.AppId = model.AppId
+	accountRecharge.Status = comm.ACCOUNT_RECHARGE_STATUS_WAIT
+	accountRecharge.OpenId = model.OpenId
+	accountRecharge.From = from
+	err :=accountRecharge.Insert()
+	if err!=nil{
+		return nil,errors.New("充值记录插入失败!")
+	}
+	
 	account := dao.NewAccount()
-	account,err :=account.AccountWithOpenId(model.OpenId,model.AppId)
+	account,err =account.AccountWithOpenId(model.OpenId,model.AppId)
 	if err!=nil{
 		return nil,err
 	}
