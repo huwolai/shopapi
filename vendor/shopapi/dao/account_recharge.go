@@ -11,10 +11,10 @@ type AccountRecharge struct  {
 	AppId string
 	OpenId string
 	Amount float64
-	Status int
-	From int
+	Status int	
 	Flag string
 	Json string
+	Froms int
 	BaseDModel
 }
 
@@ -25,7 +25,7 @@ func NewAccountRecharge() *AccountRecharge {
 
 func (self *AccountRecharge) InsertTx(tx *dbr.Tx) error  {
 
-	_,err :=tx.InsertInto("account_recharge").Columns("no","app_id","open_id","amount","status","flag","json","from").Record(self).Exec()
+	_,err :=tx.InsertInto("account_recharge").Columns("no","app_id","open_id","amount","status","flag","json","froms").Record(self).Exec()
 
 	return err
 }

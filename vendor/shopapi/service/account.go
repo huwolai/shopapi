@@ -48,7 +48,7 @@ func AccountPreRecharge(model *AccountRechargeModel,from int) (map[string]interf
 	accountRecharge.AppId = model.AppId
 	accountRecharge.Status = comm.ACCOUNT_RECHARGE_STATUS_WAIT
 	accountRecharge.OpenId = model.OpenId
-	accountRecharge.From = from
+	accountRecharge.Froms = from
 	err :=accountRecharge.Insert()
 	if err!=nil{
 		log.Error(err)
@@ -314,7 +314,7 @@ func AccountPreRechargeMinus(model *AccountRechargeModel,from int) (map[string]i
 	accountRecharge.AppId = model.AppId
 	accountRecharge.Status = comm.ACCOUNT_RECHARGE_STATUS_WAIT
 	accountRecharge.OpenId = model.OpenId
-	accountRecharge.From = from
+	accountRecharge.Froms = from
 	err :=accountRecharge.Insert()
 	if err!=nil{
 		return nil,errors.New("充值记录插入失败!")
