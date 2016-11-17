@@ -32,7 +32,7 @@ func (self *AccountRecharge) InsertTx(tx *dbr.Tx) error  {
 
 func (self *AccountRecharge) Insert() error  {
 
-	_,err :=db.NewSession().InsertInto("account_recharge").Columns("no","app_id","open_id","amount","status","flag","json").Record(self).Exec()
+	_,err :=db.NewSession().InsertInto("account_recharge").Columns("no","app_id","open_id","amount","status","flag","json","froms").Record(self).Exec()
 
 	return err
 }
