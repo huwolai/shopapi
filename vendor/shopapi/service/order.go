@@ -183,12 +183,15 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		code :=order.Code
 		if order.PayStatus==comm.ORDER_PAY_STATUS_NOPAY {
 			//请求预付款
+			log.Info("222222@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 			resultImprestMap,err := makeImprest(order,address,payPrice)
 			if err!=nil{
+				log.Info("4444@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 				tx.Rollback()
 				log.Error(err)
 				return nil,err
 			}
+			log.Info("666666666@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 			code :=resultImprestMap["code"].(string)
 			log.Info("T@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 			log.Info(model.Json)
@@ -207,7 +210,9 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		tx.Commit()
 		return resultMap,nil
 	}else{
+		log.Info("EEEEE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 		resultPrepayMap,err := makePrepay(order,address,payPrice,model)
+		log.Info("GGGGGG@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 		if err!=nil{
 			tx.Rollback()
 			log.Error(err)
