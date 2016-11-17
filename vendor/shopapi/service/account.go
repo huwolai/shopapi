@@ -305,6 +305,13 @@ func GetOnKey() (*dao.GetOnKey,error)   {
 }
 //账户预充值 减去 AccountPreRechargeMinus
 func AccountPreRechargeMinus(model *AccountRechargeModel) (map[string]interface{},error) {
+
+	account := dao.NewAccount()
+	account,err :=account.AccountWithOpenId(model.OpenId,model.AppId)
+	if err!=nil{
+		return nil,err
+	}
+	
 	//制作预付款
 	payparams := map[string]interface{}{
 		"open_id":model.OpenId,
@@ -321,7 +328,7 @@ func AccountPreRechargeMinus(model *AccountRechargeModel) (map[string]interface{
 	//payToken
 	payparams = map[string]interface{}{
 		"open_id": model.OpenId,
-		"password": "123456",
+		"password": account.Password,
 	}
 	resultMap,err := RequestPayApi("/pay/token",payparams)
 	if err!=nil{
