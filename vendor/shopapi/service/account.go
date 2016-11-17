@@ -320,6 +320,17 @@ func AccountPreRechargeMinus(model *AccountRechargeModel) (map[string]interface{
 	}
 	//支付预付款
 	payparams = map[string]interface{}{
+		"open_id": model.OpenId,
+		"password": "123456",
+	}
+	resultMap,err := RequestPayApi("/pay/token",payparams)
+	if err!=nil{
+		return nil,err
+	}
+	log.Info(resultMap)
+	
+	//支付预付款
+	payparams = map[string]interface{}{
 		"pay_token": "shopapi",
 		"open_id": model.OpenId,
 		"code": resultImprestMap["code"],
@@ -329,7 +340,8 @@ func AccountPreRechargeMinus(model *AccountRechargeModel) (map[string]interface{
 	if err!=nil{
 		return nil,err
 	}
-	log.Info(resultMap)
+	return resultMap,nil
+	/* log.Info(resultMap)
 	//领取预付款
 	payparams =map[string]interface{}{
 		"open_id": model.OpenId,
@@ -366,7 +378,7 @@ func AccountPreRechargeMinus(model *AccountRechargeModel) (map[string]interface{
 		return nil,errors.New(resultMap["err_msg"].(string))
 	}else{
 		return nil,errors.New("请求API失败!")
-	}
+	} */
 }
 
 
