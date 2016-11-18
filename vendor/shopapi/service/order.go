@@ -185,12 +185,12 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 
 	if model.PayType == comm.Pay_Type_Account {//账户支付
 		code :=order.Code
-		log.Ionfo("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-		log.Ionfo(order.PayStatus)
-		log.Ionfo(comm.ORDER_PAY_STATUS_NOPAY)
+		log.Info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+		log.Info(order.PayStatus)
+		log.Info(comm.ORDER_PAY_STATUS_NOPAY)
 		if order.PayStatus==comm.ORDER_PAY_STATUS_NOPAY  {
-			log.Ionfo("11111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-			log.Ionfo("请求预付款")
+			log.Info("11111111@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+			log.Info("请求预付款")
 			//请求预付款
 			resultImprestMap,err := makeImprest(order,address,payPrice)
 			if err!=nil{
@@ -200,8 +200,8 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 			}
 			code :=resultImprestMap["code"].(string)
 			err =order.OrderPayapiUpdateWithNoAndCodeTx("",address.Id,address.Address,address.Name,address.Mobile,code,comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_PAYING,order.No,model.Json,order.AppId,tx)
-			log.Ionfo("2222@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-			log.Ionfo("err")
+			log.Info("2222@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+			log.Info("err")
 			if err!=nil{
 				log.Error(err)
 				tx.Rollback()
