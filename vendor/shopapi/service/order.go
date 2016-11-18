@@ -182,7 +182,8 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 		log.Error(err)
 		return nil,errors.New("计算订单金额失败!")
 	}
-
+	log.Info("00000000000000@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+	log.Info(model.PayType)
 	if model.PayType == comm.Pay_Type_Account {//账户支付
 		code :=order.Code
 		log.Info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
