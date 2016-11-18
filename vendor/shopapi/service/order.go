@@ -181,7 +181,7 @@ func OrderPrePay(model *OrderPrePayModel) (map[string]interface{},error) {
 
 	if model.PayType == comm.Pay_Type_Account {//账户支付
 		code :=order.Code
-		if order.PayStatus==comm.ORDER_PAY_STATUS_NOPAY || order.PayStatus==comm.ORDER_PAY_STATUS_PAYING {
+		if order.PayStatus==comm.ORDER_PAY_STATUS_NOPAY  {
 			//请求预付款
 			resultImprestMap,err := makeImprest(order,address,payPrice)
 			if err!=nil{
