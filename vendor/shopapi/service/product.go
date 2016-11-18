@@ -104,9 +104,12 @@ func ProdDetailListCountWith(keywords interface{},merchantId int64,flags []strin
 
 //商品详情
 func ProdDetailWithProdId(prodId int64,appId string) (*dao.ProductDetail,error)  {
-
 	product := dao.NewProduct()
 	return product.ProductDetailWithId(prodId)
+}
+func ProdDetailWithProdParentId(prodParentId int64,appId string) ([]*dao.ProductDetail,error)  {
+	product := dao.NewProduct()
+	return product.ProdDetailWithProdParentId(prodParentId)
 }
 //商品已购买数量
 func ProdOrderCountWithId(prodId int64,OpenId string,Date string) (int64,error) {
@@ -535,6 +538,7 @@ func prodToModel(prodbll *ProdBLL) *dao.Product {
 	prod.Json = prodbll.Json
 	prod.Flag = prodbll.Flag
 	prod.LimitNum = prodbll.LimitNum
+	prod.ParentId = prodbll.ParentId
 
 	return prod
 }
@@ -579,4 +583,8 @@ func ProdAttrValueDtoToModel(dto *ProdAttrValueDto) *dao.ProdAttrVal  {
 //录入商品链接
 func ProductAndAddLink(appId string,prodId uint64,shopurl string) error  {
 	return dao.ProductAndAddLink(appId,prodId,shopurl)
+}
+//changeshowstate
+func ProductChangeShowState(appId string,id int64,show int64) error  {	
+	return dao.NewProduct().ProductChangeShowState(appId,id,show)
 }

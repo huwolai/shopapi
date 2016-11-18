@@ -48,6 +48,8 @@ type OrderDto struct  {
 	Address string	 `json:"address"`
 	AddressMobile string	 `json:"address_mobile"`
 	AddressName string	 `json:"address_name"`
+	
+	Show int `json:"show"`
 }
 
 type OrderDetailDto struct  {
@@ -733,6 +735,8 @@ func orderToA(order *dao.Order) *OrderDto {
 	a.AddressMobile = order.AddressMobile
 	a.AddressName = order.AddressName
 	
+	a.Show = order.Show
+	
 
 	return a
 }
@@ -896,6 +900,35 @@ func ExpressDelivery(c *gin.Context)  {
 	}
 	c.JSON(http.StatusOK,data)
 }
+//changeshowstate
+func OrderChangeShowState(c *gin.Context)  {
+	appId,err :=CheckAppAuth(c)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}	
+	
+	id,err :=strconv.ParseInt(c.Param("id"),10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"id格式错误")
+		return
+	}
+	
+	show,err :=strconv.ParseInt(c.Param("show"),10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"参数格式错误")
+		return
+	}	
+	
+	err =service.OrderChangeShowState(appId,id,show)	
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	util.ResponseSuccess(c.Writer)
+}
+
 
 
 

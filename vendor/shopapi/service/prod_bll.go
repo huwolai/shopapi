@@ -26,6 +26,8 @@ type ProdBLL struct {
 	Json string
 	
 	LimitNum int64
+	
+	ParentId int64
 }
 
 type ProdImgBLL struct {

@@ -49,6 +49,8 @@ type Order struct  {
 	DetailTitle []string
 	
 	UpdateTimeUnix int64
+	
+	Show int
 }
 
 type OrderDetail struct  {
@@ -494,6 +496,11 @@ func (self *Order) OrderDelete(orderNo string,appId string) error {
 }
 func (self *Order) OrderType(orderNo string,appId string)([]*OrderItem,error)  {
 	return NewOrderItem().OrderItemWithOrderNo(orderNo)
+}
+//changeshowstate
+func (self *Order) OrderChangeShowState(appId string,id int64,show int64) error  {	
+	_,err :=db.NewSession().Update("order").Set("show",show).Where("id=?",id).Where("app_id=?",appId).Exec()
+	return err
 }
 
 

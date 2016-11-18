@@ -354,6 +354,12 @@ func main() {
 		{
 			app.GET("/update_log", api.AppUpdateLog)
 		}
+		//应用
+		changeshowstate := v1.Group("/changeshowstate")
+		{
+			changeshowstate.GET("/order/:id/:show", api.OrderChangeShowState)
+			changeshowstate.GET("/product/:id/:show", api.ProductChangeShowState)
+		}
 	}
 
 	//设置上传目录

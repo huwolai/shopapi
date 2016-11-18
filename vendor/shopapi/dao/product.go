@@ -30,6 +30,8 @@ type Product struct  {
 	Json string
 	//限购数量
 	LimitNum int64
+	
+	ParentId int64
 }
 
 type ProductDetail struct {
@@ -73,6 +75,8 @@ type ProductDetail struct {
 	LimitNum int64
 	//已经购买数量
 	LimitNumd int64
+	//是否显示
+	Show int
 }
 
 type ProductSearch struct {
@@ -102,6 +106,9 @@ func (self *ProductDetail) ProdDetailListWith(keywords interface{} ,merchantId i
 	
 	var prodList []*ProductDetail
 	buider :=db.NewSession().Select("product.*,IFNULL(merchant.id,0) merchant_id,IFNULL(merchant.name,'') merchant_name,IFNULL(category.id,0) category_id,IFNULL(category.title,'') category_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id").LeftJoin("prod_category","prod_category.prod_id=product.id").LeftJoin("category","prod_category.category_id=category.id")
+	
+	buider = buider.Where("product.parent_id = ?",0)
+	
 	if flags!=nil{
 		buider = buider.Where("product.flag in ?",flags)
 	}
@@ -229,7 +236,7 @@ func (self *Product) SoldNumInc(num int,prodId int64,tx *dbr.Tx) error  {
 
 func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 
-	result,err :=tx.InsertInto("product").Columns("title","sub_title","app_id","description","sold_num","price","dis_price","json","flag","status","is_recom","limit_num").Record(self).Exec()
+	result,err :=tx.InsertInto("product").Columns("title","sub_title","app_id","description","sold_num","price","dis_price","json","flag","status","is_recom","limit_num","parent_id").Record(self).Exec()
 	if err !=nil {
 
 		return 0,err
@@ -390,6 +397,12 @@ func (self *Product) ProductDetailWithId(id int64) (*ProductDetail,error) {
 
 	return prodDetail,err
 }
+func (self *Product) ProdDetailWithProdParentId(id int64) ([]*ProductDetail,error) {
+	var prodDetail []*ProductDetail
+	_,err :=db.NewSession().SelectBySql("select pt.*,mt.`name` merchant_name,mt.id merchant_id,pct.category_id from product pt left join merchant_prod md on pt.id=md.prod_id LEFT JOIN merchant mt on md.merchant_id=mt.id left join prod_category pct on pct.prod_id=pt.id WHERE pt.id=md.prod_id and md.merchant_id=mt.id and pt.parent_id=?",id).LoadStructs(&prodDetail)
+
+	return prodDetail,err
+}
 
 func (self *Product) ProductWithId(id int64,appId string) (*Product,error)  {
 	sess :=db.NewSession()
@@ -416,3 +429,28 @@ func ProductAndAddLink(appId string,prodId uint64,shopurl string) error  {
 	_,err :=db.NewSession().Update("product").Set("shopurl",shopurl).Where("id=?",prodId).Exec()
 	return err
 }
+//changeshowstate
+func (self *Product) ProductChangeShowState(appId string,id int64,show int64) error  {	
+	_,err :=db.NewSession().Update("product").Set("show",show).Where("id=?",id).Where("app_id=?",appId).Exec()
+	return err
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

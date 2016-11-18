@@ -39,6 +39,8 @@ type ProductParam struct  {
 	Json  string `json:"json"`
 	//限购数量
 	LimitNum  int64 `json:"limit_num"`
+	//
+	ParentId  int64 `json:"parent_id"`
 }
 
 type ProductImgParam struct {
@@ -125,6 +127,10 @@ type ProductDetailDto struct {
 	LimitNum int64 `json:"limit_num"`
 	//已经购买数量
 	LimitNumd int64 `json:"limit_numd"`
+	//是否显示
+	Show int `json:"show"`
+	
+	Items []*ProductDetailDto `json:"items"`
 }
 
 type ProdImgsDetailDto struct  {
@@ -527,7 +533,22 @@ func ProdDetailWithProdId(c *gin.Context)  {
 	if len(c.Query("open_id"))>0 {
 		product.LimitNumd,_=service.ProdOrderCountWithId(iprodId,c.Query("open_id"),fmt.Sprintf(time.Now().Format("2006-01-02")))
 	}
-	c.JSON(http.StatusOK,productDetailToDto(product))
+	
+	
+	subProducts,err:= service.ProdDetailWithProdParentId(iprodId,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"查询子商品失败!")
+		return
+	}
+	subProductDtos := make([]*ProductDetailDto,0)
+	for _,subProduct :=range subProducts  {
+		subProductDtos = append(subProductDtos,productDetailToDto(subProduct))
+	}
+	
+	productDto:=productDetailToDto(product)
+	productDto.Items=subProductDtos	
+	
+	c.JSON(http.StatusOK,productDto)
 }
 
 //商品图片
@@ -768,6 +789,7 @@ func productParamToBLL(param *ProductParam) *service.ProdBLL {
 	prodBll.Flag = param.Flag
 	prodBll.Json  = param.Json
 	prodBll.LimitNum  = param.LimitNum
+	prodBll.ParentId  = param.ParentId
 
 	imgsparams  := param.Imgs
 	if imgsparams!=nil {
@@ -814,6 +836,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.TotalPage 	= model.TotalPage
 	dto.LimitNum 	= model.LimitNum
 	dto.LimitNumd 	= model.LimitNumd
+	dto.Show 		= model.Show
 	
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*ProdImgsDetailDto,0)
@@ -903,3 +926,35 @@ func ProductAndAddLink(c *gin.Context) {
 
 	util.ResponseSuccess(c.Writer)
 }
+//changeshowstate
+func ProductChangeShowState(c *gin.Context)  {
+	appId,err :=CheckAppAuth(c)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}	
+	
+	id,err :=strconv.ParseInt(c.Param("id"),10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"id格式错误")
+		return
+	}
+	
+	show,err :=strconv.ParseInt(c.Param("show"),10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"参数格式错误")
+		return
+	}	
+	
+	err =service.ProductChangeShowState(appId,id,show)	
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	util.ResponseSuccess(c.Writer)
+}
+
+
+
+

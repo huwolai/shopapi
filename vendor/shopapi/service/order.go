@@ -1326,7 +1326,10 @@ func ExpressDelivery(logisticCode string,shipperCode string) (string,error)  {
 	return "",errors.New("访问接口失败")	
 }
 
-
+//changeshowstate
+func OrderChangeShowState(appId string,id int64,show int64) error  {	
+	return dao.NewOrder().OrderChangeShowState(appId,id,show)
+}
 
 
 
