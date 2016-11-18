@@ -90,6 +90,18 @@ func (self *AccountRecharge) RecordWithUser(appId string,froms int64,pageIndex u
 	
 	return model,err
 }
+func (self *AccountRecharge) RecordWithUserCount(appId string,froms int64,pageIndex uint64,pageSize uint64) (int64,error)  {
+	buider :=db.NewSession().Select("count(id)").From("account_recharge").Where("app_id=?",appId)
+	
+	if froms>=0 {
+		buider = buider.Where("froms=?",froms)
+	}
+	
+	var count int64
+	_,err :=buider.LoadStructs(&count)
+
+	return count,err
+}
 
 
 

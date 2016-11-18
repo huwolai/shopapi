@@ -418,9 +418,16 @@ func RechargeRecordByAdmin(openId string,appId string,froms int64) ([]*dao.Accou
 	accountRecharge :=dao.NewAccountRecharge()
 	return accountRecharge.WithOpenId(openId,appId,froms)
 }
-func RechargeRecordByAdmins(appId string,froms int64,pageIndex uint64,pageSize uint64) ([]*dao.AccountRecharge,error) {
+func RechargeRecordByAdmins(appId string,froms int64,pageIndex uint64,pageSize uint64) ([]*dao.AccountRecharge,int64,error) {
 	accountRecharge :=dao.NewAccountRecharge()
-	return accountRecharge.RecordWithUser(appId,froms,pageIndex,pageSize)
+	
+	rechargeRecord,err:=accountRecharge.RecordWithUser(appId,froms,pageIndex,pageSize)
+	
+	count,err:=accountRecharge.RecordWithUserCount(appId,froms,pageIndex,pageSize)
+	
+	log.Info(err)
+	
+	return rechargeRecord,count,nil
 }
 //账户充值记录 格式化
 func RechargeRecordFormat(model *dao.AccountRecharge) AccountRecharge  {

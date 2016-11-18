@@ -395,7 +395,7 @@ func RechargeRecordByAdmins(c *gin.Context)  {
 	pIndex,pSize := page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 	
 	
-	rechargeRecord,err:=service.RechargeRecordByAdmins(appId,froms,pIndex,pSize)
+	rechargeRecord,total,err:=service.RechargeRecordByAdmins(appId,froms,pIndex,pSize)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
@@ -415,7 +415,8 @@ func RechargeRecordByAdmins(c *gin.Context)  {
 		dto = append(dto,dtoItem)
 	}
 
-	c.JSON(http.StatusOK,dto)
+	//c.JSON(http.StatusOK,dto)
+	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),dto))
 }
 
 
