@@ -1200,12 +1200,12 @@ func OrderDelete(orderNo string,appId string) error {
 //订单删除 批量
 func OrderDeleteBatch(orderNo []OrderNo,appId string) error {
 
-	order :=dao.NewOrder()
+	orderDao :=dao.NewOrder()
 	
 	for _,item :=range orderNo {
 		log.Error("删除订单",item.orderNo)	
 		
-		order,err :=order.OrderWithNo(item.orderNo,appId)
+		order,err :=orderDao.OrderWithNo(item.orderNo,appId)
 		if err!=nil{
 			return err
 		}
@@ -1213,7 +1213,7 @@ func OrderDeleteBatch(orderNo []OrderNo,appId string) error {
 		if order.OrderStatus!=comm.ORDER_STATUS_CANCELED {
 			return errors.New("订单未取消!")
 		}		
-		err = order.OrderDelete(item.orderNo,appId)
+		err = orderDao.OrderDelete(item.orderNo,appId)
 		if err!=nil{		
 			return err
 		}	
