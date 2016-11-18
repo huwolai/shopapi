@@ -110,6 +110,8 @@ func main() {
 			users.GET("/getonkey", api.GetOnKey)
 
 			users.GET("/",api.AccountsGet)
+			//充值记录 后台
+			users.GET("/rechargerecord/admin", api.RechargeRecordByAdmins)
 		}
 		user := v1.Group("/user")
 		{
@@ -248,6 +250,8 @@ func main() {
 		{
 			//订单快递查询
 			orders.GET("/expressdelivery", api.ExpressDelivery)
+			//订单删除
+			orders.POST("/to_delete", api.OrderDeleteBatch)
 		}
 		order := v1.Group("/order")
 		{

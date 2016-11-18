@@ -12,6 +12,7 @@ import (
 	"shopapi/dao"
 	"shopapi/comm"
 	"shopapi/redis"
+	"time"
 )
 
 type AccountRechargeModel struct  {
@@ -25,13 +26,16 @@ type AccountRechargeModel struct  {
 }
 
 type AccountRecharge struct  {
-	Id 		int64 	`json:"id"`
-	No 		string	`json:"no"`	
-	Amount 	float64	`json:"amount"`
-	Status 	int		`json:"status"`
-	Flag 	string	`json:"flag"`
-	Json 	string	`json:"json"`
-	Froms 	int		`json:"froms"`
+	Id 			int64 	`json:"id"`
+	No 			string	`json:"no"`	
+	OpenId 		string	`json:"open_id"`	
+	Amount 		float64	`json:"amount"`
+	Status 		int		`json:"status"`
+	Flag 		string	`json:"flag"`
+	Json 		string	`json:"json"`
+	Froms 		int		`json:"froms"`
+	CreateTime  string `json:"create_time"`
+	Mobile 	    string `json:"mobile"`
 }
 
 type AccountDetailModel struct  {
@@ -410,25 +414,34 @@ func AccountPreRechargeMinus(model *AccountRechargeModel,from int) (map[string]i
 	} */
 }
 //账户充值记录  后台
-func RechargeRecordByAdmin(openId string,appId string) ([]*dao.AccountRecharge,error) {
+func RechargeRecordByAdmin(openId string,appId string,froms int64) ([]*dao.AccountRecharge,error) {
 	accountRecharge :=dao.NewAccountRecharge()
-	return accountRecharge.WithOpenId(openId,appId,1)
+	return accountRecharge.WithOpenId(openId,appId,froms)
+}
+func RechargeRecordByAdmins(appId string,froms int64,pageIndex uint64,pageSize uint64) ([]*dao.AccountRecharge,error) {
+	accountRecharge :=dao.NewAccountRecharge()
+	return accountRecharge.RecordWithUser(appId,froms,pageIndex,pageSize)
 }
 //账户充值记录 格式化
-func RechargeRecordFormat(model []*dao.AccountRecharge) []AccountRecharge  {
-	dto 	:=make([]AccountRecharge,0)
+func RechargeRecordFormat(model *dao.AccountRecharge) AccountRecharge  {
+	//dto 	:=make([]AccountRecharge,0)
 	dtoItem	:=AccountRecharge{}
-	for _,item :=range model {
-		dtoItem.Id=item.Id
-		dtoItem.No=item.No
-		dtoItem.Amount=item.Amount
-		dtoItem.Status=item.Status
-		dtoItem.Flag=item.Flag
-		dtoItem.Json=item.Json
-		dtoItem.Froms=item.Froms	
-		dto = append(dto,dtoItem)
-	}
-	return dto
+	//for _,item :=range model {
+		dtoItem.Id=model.Id
+		dtoItem.No=model.No
+		dtoItem.OpenId=model.OpenId
+		dtoItem.Amount=model.Amount
+		dtoItem.Status=model.Status
+		dtoItem.Flag=model.Flag
+		dtoItem.Json=model.Json
+		dtoItem.Froms=model.Froms		
+		dtoItem.Mobile=model.Mobile		
+		
+		dtoItem.CreateTime=time.Unix(model.CreateTimeUnix, 0).Format("2006-01-02 15:04:05")
+		
+		//dto = append(dto,dtoItem)
+	//}
+	return dtoItem
 }
 
 

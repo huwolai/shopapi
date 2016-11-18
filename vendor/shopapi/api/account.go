@@ -363,15 +363,83 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 func RechargeRecordByAdmin(c *gin.Context)  {
 	appId := security.GetAppId2(c.Request)
 	openId:=c.Param("open_id")
+	froms,err :=strconv.ParseInt(c.Query("froms"),10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"充值来源有误")
+		return
+	}
 	
-	rechargeRecord,err:=service.RechargeRecordByAdmin(openId,appId)
+	rechargeRecord,err:=service.RechargeRecordByAdmin(openId,appId,froms)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-	c.JSON(http.StatusOK,service.RechargeRecordFormat(rechargeRecord))
+	
+	dto 	:=make([]service.AccountRecharge,0)
+	for _,item :=range rechargeRecord  {
+		dto = append(dto,service.RechargeRecordFormat(item))
+	}
+	
+	c.JSON(http.StatusOK,dto)
 }
+//账户充值记录  后台 列表
+func RechargeRecordByAdmins(c *gin.Context)  {
+	appId := security.GetAppId2(c.Request)
+	froms,err :=strconv.ParseInt(c.Query("froms"),10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"充值来源有误")
+		return
+	}
+	
+	pIndex,pSize := page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+	
+	
+	rechargeRecord,err:=service.RechargeRecordByAdmins(appId,froms,pIndex,pSize)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	dto 	:=make([]service.AccountRecharge,0)
+	var dtoItem	service.AccountRecharge
+	account := dao.NewAccount()
+	for _,item :=range rechargeRecord  {	
+		dtoItem=service.RechargeRecordFormat(item)
+
+		if len(dtoItem.OpenId)>0 {
+			account,_ =account.AccountWithOpenId(dtoItem.OpenId,appId)		
+			dtoItem.Mobile=account.Mobile
+		}
+		dto = append(dto,dtoItem)
+	}
+
+	c.JSON(http.StatusOK,dto)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

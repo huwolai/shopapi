@@ -103,6 +103,10 @@ type OrderItemCouponDto struct {
 
 }
 
+type OrderNo struct {
+	orderNo	string   `json:"order_no"`
+}
+
 func OrderAdd(model *OrderModel) (*dao.Order,error)  {
 	sess :=db.NewSession()
 	tx,_ := sess.Begin()
@@ -1189,6 +1193,30 @@ func OrderDelete(orderNo string,appId string) error {
 	err = order.OrderDelete(orderNo,appId)
 	if err!=nil{		
 		return err
+	}
+	
+	return nil
+}
+//订单删除 批量
+func OrderDeleteBatch(orderNo []OrderNo,appId string) error {
+
+	order :=dao.NewOrder()
+	
+	for _,item :=range orderNo {
+		log.Error("删除订单",item.orderNo)	
+		
+		order,err :=order.OrderWithNo(item.orderNo,appId)
+		if err!=nil{
+			return err
+		}
+		
+		if order.OrderStatus!=comm.ORDER_STATUS_CANCELED {
+			return errors.New("订单未取消!")
+		}		
+		err = order.OrderDelete(item.orderNo,appId)
+		if err!=nil{		
+			return err
+		}	
 	}
 	
 	return nil

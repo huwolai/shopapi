@@ -220,7 +220,7 @@ func OrderPrePay(c *gin.Context)  {
 	orderNo := c.Param("order_no")
 	params.OrderNo = orderNo
 	params.AppId = appId
-
+	
 	resultMap,err := service.OrderPrePay(service.OrderPrePayDtoToModel(params))
 	if err!=nil{
 		log.Error(err)
@@ -797,6 +797,33 @@ func OrderDelete(c *gin.Context)  {
 	
 	util.ResponseSuccess(c.Writer)
 }
+//订单删除 批量
+func OrderDeleteBatch(c *gin.Context)  {
+	_,err := security.GetAuthUser(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}	
+	
+	var orderNo []service.OrderNo
+	c.BindJSON(&orderNo)
+	
+	appId := security.GetAppId2(c.Request)
+	/* var paramMap map[string]interface{}
+	err = c.BindJSON(&paramMap)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"参数有误!")
+		return
+	} */
+	
+	err =service.OrderDeleteBatch(orderNo,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	util.ResponseSuccess(c.Writer)
+}
 //单增加购买订单号
 func OrdersAddNum(c *gin.Context)  {
 	/* _,err := security.GetAuthUser(c.Request)
@@ -806,7 +833,6 @@ func OrdersAddNum(c *gin.Context)  {
 	}
 	*/
 	appId 		:= security.GetAppId2(c.Request)
-
 	//orderNo		:=c.PostForm("id")
 	//ordernum	:=c.PostForm("ordernum")
 	
