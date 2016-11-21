@@ -141,7 +141,7 @@ func (self *Order) With(searchs interface{},pageIndex uint64,pageSize uint64,app
 	}
 	if search.AddressMobile!="" {
 		//buider = buider.Where("address_mobile like ?",search.AddressMobile+"%")
-		buider = buider.Where("open_id in select open_id from account where mobile like ?)",search.AddressMobile+"%")
+		buider = buider.Where("open_id in ( select open_id from account where mobile like ?)",search.AddressMobile+"%")
 	}
 	switch search.PayStatus {
 		case 1://1，未付款；
@@ -196,7 +196,7 @@ func (self *Order) WithCount(searchs interface{},appId string) (int64,error)  {
 	}
 	if search.AddressMobile!="" {
 		//buider = buider.Where("address_mobile like ?",search.AddressMobile+"%")
-		buider = buider.Where("open_id in select open_id from account where mobile like ?)",search.AddressMobile+"%")
+		buider = buider.Where("open_id in (select open_id from account where mobile like ?)",search.AddressMobile+"%")
 	}
 	switch search.PayStatus {
 		case 1://1，未付款；
