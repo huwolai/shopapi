@@ -325,6 +325,8 @@ func main() {
 		flags := v1.Group("/flags")
 		{
 			flags.GET("/", api.FlagsWithTypes)
+			flags.GET("/json", api.FlagsGetJsonWithTypes)
+			flags.PUT("/json/set/:type", api.FlagsSetJsonWithTypes)
 		}
 		
 		//数据初始化

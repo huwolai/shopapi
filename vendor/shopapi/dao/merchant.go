@@ -176,13 +176,13 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where 1 order by id desc limit 1",longitude,latitude).LoadStructs(&mdetails)
 	
 	//首页固定20个
-	if len(mdetails)>19 {
+	if uint64(len(mdetails))>pageSize {
 		return mdetails,err
 	}
 	
 	//首页补充到20个
 	var mdetails20 []*MerchantDetail
-	l:=20-len(mdetails)	
+	l:=pageSize-uint64(len(mdetails))	
 	log.Info(l)
 	
 	//排除已存在的厨师

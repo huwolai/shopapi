@@ -10,6 +10,7 @@ type Flags struct  {
 	Name string
 	Flag string
 	Type string
+	Json string
 	BaseDModel
 }
 
@@ -39,3 +40,27 @@ func (self *Flags) WithTypes(stype []string,appId string,status []string) ([]*Fl
 	_,err :=builder.LoadStructs(&flags)
 	return flags,err
 }
+
+func (self *Flags) FlagsSetJsonWithTypes(types string,json string,appId string) error  {
+
+	_,err :=db.NewSession().Update("flags").Set("json",json).Where("type=?",types).Where("app_id=?",appId).Exec()
+
+	return err
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

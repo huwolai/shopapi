@@ -404,9 +404,12 @@ func MerchatNear(c *gin.Context)  {
 	latitude :=c.Query("latitude")
 	openId := security.GetOpenId(c.Request)
 	
+	pageSize:="20"
+	if len(c.Query("page_size"))>0 {		
+		pageSize=c.Query("page_size")
+	}
 	
-	
-	pIndex,pSize := page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+	pIndex,pSize := page.ToPageNumOrDefault(c.Query("page_index"),pageSize)
 	
 
 	flongitude,_ :=strconv.ParseFloat(longitude,20)
