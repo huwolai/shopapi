@@ -86,6 +86,7 @@ type ProductSearch struct {
 	IsRecom  	 uint64
 	PriceUp	 	 float64
 	PriceDown 	 float64
+	Show	 	 uint64
 }
 
 
@@ -144,6 +145,14 @@ func (self *ProductDetail) ProdDetailListWith(keywords interface{} ,merchantId i
 	if search.PriceDown>0 {
 		buider = buider.Where("product.price <= ?",search.PriceDown)
 	}
+	//show
+	if search.Show>0 {
+		if search.Show==1 {
+			buider = buider.Where("product.show = ?",1)
+		}else{
+			buider = buider.Where("product.show = ?",0)
+		}		
+	}	
 
 	if noflags!=nil {
 		buider = buider.Where("product.flag not in ?",noflags)
@@ -213,6 +222,14 @@ func (self *ProductDetail) ProdDetailListCountWith(keywords interface{},merchant
 	if search.PriceDown>0 {
 		buider = buider.Where("product.price <= ?",search.PriceDown)
 	}
+	//show
+	if search.Show>0 {
+		if search.Show==1 {
+			buider = buider.Where("product.show = ?",1)
+		}else{
+			buider = buider.Where("product.show = ?",0)
+		}		
+	}	
 
 	/* if isRecomm!="" {
 		buider = buider.Where("product.is_recomm=?",isRecomm)

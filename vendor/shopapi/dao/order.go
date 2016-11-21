@@ -97,6 +97,7 @@ type OrderSearch struct {
 	PayStatus 	 	uint64
 	OrderStatus		uint64
 	AddressMobile	string
+	Show			uint64
 }
 
 func NewOrder() *Order {
@@ -139,7 +140,8 @@ func (self *Order) With(searchs interface{},pageIndex uint64,pageSize uint64,app
 		buider = buider.Where("no = ?",search.OrderNo)
 	}
 	if search.AddressMobile!="" {
-		buider = buider.Where("address_mobile like ?",search.AddressMobile+"%")
+		//buider = buider.Where("address_mobile like ?",search.AddressMobile+"%")
+		buider = buider.Where("open_id in select open_id from account where mobile like ?)",search.AddressMobile+"%")
 	}
 	switch search.PayStatus {
 		case 1://1，未付款；
@@ -162,6 +164,15 @@ func (self *Order) With(searchs interface{},pageIndex uint64,pageSize uint64,app
 			buider = buider.Where("order_status = ?",4)
 	}
 	
+	//show
+	if search.Show>0 {
+		if search.Show==1 {
+			buider = buider.Where("`show` = ?",1)
+		}else{
+			buider = buider.Where("`show` = ?",0)
+		}		
+	}	
+	//log.Error(buider.ToSql())
 	_,err :=buider.Limit(pageSize).Offset((pageIndex-1)*pageSize).OrderDir("create_time",false).LoadStructs(&orders)
 	return orders,err
 }
@@ -184,7 +195,8 @@ func (self *Order) WithCount(searchs interface{},appId string) (int64,error)  {
 		buider = buider.Where("no = ?",search.OrderNo)
 	}
 	if search.AddressMobile!="" {
-		buider = buider.Where("address_mobile like ?",search.AddressMobile+"%")
+		//buider = buider.Where("address_mobile like ?",search.AddressMobile+"%")
+		buider = buider.Where("open_id in select open_id from account where mobile like ?)",search.AddressMobile+"%")
 	}
 	switch search.PayStatus {
 		case 1://1，未付款；
@@ -207,6 +219,15 @@ func (self *Order) WithCount(searchs interface{},appId string) (int64,error)  {
 			buider = buider.Where("order_status = ?",4)
 	}
 
+	//show
+	if search.Show>0 {
+		if search.Show==1 {
+			buider = buider.Where("`show` = ?",1)
+		}else{
+			buider = buider.Where("`show` = ?",0)
+		}		
+	}	
+	
 	err :=buider.LoadValue(&count)
 	
 	return count,err

@@ -529,7 +529,8 @@ func OrdersGet(c *gin.Context)  {
 	search.PayStatus,_ 		=strconv.ParseUint(c.Query("paystate"),10,64)
 	search.OrderStatus,_ 	=strconv.ParseUint(c.Query("orderstate"),10,64)
 	search.AddressMobile	=c.Query("address_mobile")
-
+	search.Show,_ 			=strconv.ParseUint(c.Query("show"),10,64)
+	
 	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 	appId :=security.GetAppId2(c.Request)
 	orders,err :=service.OrdersGet(search,pIndex,pSize,appId)

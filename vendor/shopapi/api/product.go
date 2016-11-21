@@ -263,6 +263,7 @@ func ProdDetailListWith(c *gin.Context)  {
 	keywords.IsRecom,_ 	=strconv.ParseUint(c.Query("tuijian"),10,64)
 	keywords.PriceUp,_ 	=strconv.ParseFloat(c.Query("jiageup"),64)
 	keywords.PriceDown,_=strconv.ParseFloat(c.Query("jiagedown"),64)
+	keywords.Show,_		=strconv.ParseUint(c.Query("show"),10,64)
 	
 	
 	prodList,err :=service.ProdDetailListWith(keywords,imerchantId,flagsArray,noflagsArray,orderBy,pindex,psize,appId)
