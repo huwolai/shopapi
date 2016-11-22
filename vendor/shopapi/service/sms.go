@@ -54,7 +54,7 @@ func SendSMSOfYunTongXun(mobile string,templateId string,datas []string) (error)
 		return err
 	}
 
-	log.Debug(resopnse.Body)
+	//log.Debug(resopnse.Body)
 
 	if resopnse.StatusCode==http.StatusOK {
 		var resutlMap map[string]interface{}

@@ -761,11 +761,8 @@ func orderDtoToModel(dto OrderDto) *service.OrderModel  {
 		for _,itemDto :=range items  {
 			itemmodels = append(itemmodels,orderItemToModel(itemDto))
 		}
-
 		model.Items = itemmodels
 	}
-
-
 	return model
 }
 
@@ -804,14 +801,20 @@ func OrderDelete(c *gin.Context)  {
 }
 //订单删除 批量
 func OrderDeleteBatch(c *gin.Context)  {
-	_,err := security.GetAuthUser(c.Request)
+	var err error
+
+	 _,err = security.GetAuthUser(c.Request)
 	if err!=nil{
 		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
 		return
-	}	
+	}
 	
-	var orderNo []service.OrderNo
-	c.BindJSON(&orderNo)
+	var orderNo service.OrderNo
+	err =c.BindJSON(&orderNo)	
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
+		return
+	}
 	
 	appId := security.GetAppId2(c.Request)
 	/* var paramMap map[string]interface{}
@@ -822,7 +825,7 @@ func OrderDeleteBatch(c *gin.Context)  {
 	} */
 	
 	err =service.OrderDeleteBatch(orderNo,appId)
-	if err!=nil{
+	if err!=nil{		
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}

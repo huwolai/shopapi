@@ -362,6 +362,13 @@ func main() {
 			changeshowstate.GET("/order/:id/:show", api.OrderChangeShowState)
 			changeshowstate.GET("/product/:id/:show", api.ProductChangeShowState)
 		}
+		//购物车
+		cart := v1.Group("/cart")
+		{
+			cart.GET("/:open_id", api.CartList)
+			cart.POST("/:open_id/add", api.CartAddToList)
+			cart.POST("/:open_id/delete/:id", api.CartDelFromList)
+		}
 	}
 
 	//设置上传目录

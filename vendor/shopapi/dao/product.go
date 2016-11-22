@@ -396,7 +396,7 @@ func FillProdImgs(appId string,prodList []*ProductDetail) error {
 			pdimgdetails= append(pdimgdetails,prodimgd)
 
 			prodimgsMap[key] = pdimgdetails
-			log.Debug(prodimgsMap)
+			//log.Debug(prodimgsMap)
 		}
 	}
 	for _,prod :=range prodList {
