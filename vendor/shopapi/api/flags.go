@@ -94,7 +94,7 @@ func FlagsSetJsonWithTypes(c *gin.Context)  {
 	
 	err:=service.FlagsSetJsonWithTypes(types,json.Json,appId)	
 	if err!=nil {
-		util.ResponseError400(c.Writer,err.Error())
+		util.ResponseError400(c.Writer,"操作失败!")
 		return
 	}
 	util.ResponseSuccess(c.Writer)
