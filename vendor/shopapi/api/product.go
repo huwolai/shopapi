@@ -133,7 +133,7 @@ type ProductDetailDto struct {
 	Show int `json:"show"`
 
 	ParentId int64 `json:"parent_id"`
-	Godsid string `json:"godsid"`
+	Goodsid string `json:"goodsid"`
 	
 	Items []*ProductDetailDto `json:"items"`
 }
@@ -845,7 +845,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.LimitNumd 	= model.LimitNumd
 	dto.Show 		= model.Show
 	dto.ParentId 	= model.ParentId
-	dto.Godsid 		= model.Godsid
+	dto.Goodsid 	= model.Goodsid
 	
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*ProdImgsDetailDto,0)

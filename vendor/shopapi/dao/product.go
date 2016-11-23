@@ -80,7 +80,7 @@ type ProductDetail struct {
 	Show int
 	
 	ParentId int64 
-	Godsid string 
+	Goodsid string 
 }
 
 type ProductSearch struct {
