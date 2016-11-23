@@ -394,8 +394,13 @@ func RechargeRecordByAdmins(c *gin.Context)  {
 	
 	pIndex,pSize := page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 	
+	var search dao.AccountRechargeSearch
+	search.No		=c.Query("no")
+	search.YdgyId	=c.Query("ydgy_id")
+	search.YdgyName	=c.Query("ydgy_name")
+	search.Mobile	=c.Query("mobile")
 	
-	rechargeRecord,total,err:=service.RechargeRecordByAdmins(appId,froms,pIndex,pSize)
+	rechargeRecord,total,err:=service.RechargeRecordByAdmins(appId,froms,pIndex,pSize,search)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
@@ -411,6 +416,8 @@ func RechargeRecordByAdmins(c *gin.Context)  {
 		if len(dtoItem.OpenId)>0 {
 			account,_ =account.AccountWithOpenId(dtoItem.OpenId,appId)		
 			dtoItem.Mobile=account.Mobile
+			dtoItem.YdgyId=account.YdgyId
+			dtoItem.YdgyName=account.YdgyName
 		}
 		dto = append(dto,dtoItem)
 	}

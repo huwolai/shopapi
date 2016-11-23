@@ -22,6 +22,13 @@ type AccountRecharge struct  {
 	BaseDModel
 }
 
+type AccountRechargeSearch struct {
+	No		 	 string
+	YdgyId  	 string
+	YdgyName  	 string
+	Mobile  	 string
+}
+
 func NewAccountRecharge() *AccountRecharge {
 
 	return &AccountRecharge{}
@@ -68,7 +75,7 @@ func (self *AccountRecharge) WithOpenId(openId string,appId string,froms int64) 
 	_,err :=buider.OrderDir("id",false).Limit(68).LoadStructs(&model)
 	return model,err
 }
-func (self *AccountRecharge) RecordWithUser(appId string,froms int64,pageIndex uint64,pageSize uint64) ([]*AccountRecharge,error)  {
+func (self *AccountRecharge) RecordWithUser(appId string,froms int64,pageIndex uint64,pageSize uint64, search AccountRechargeSearch) ([]*AccountRecharge,error)  {
 	var model []*AccountRecharge
 	
 	/* buider :=db.NewSession().Select("account_recharge.*,account.mobile,UNIX_TIMESTAMP(account_recharge.create_time) as create_time_unix").From("account_recharge").LeftJoin("account","account_recharge.open_id=account.open_id").Where("account_recharge.app_id=?",appId).Where("account.mobile is not null")
@@ -86,15 +93,41 @@ func (self *AccountRecharge) RecordWithUser(appId string,froms int64,pageIndex u
 		buider = buider.Where("froms=?",froms)
 	}
 	
+	if search.No!="" {
+		buider = buider.Where("no like ?",search.No+"%")
+	}
+	if search.YdgyId!="" {
+		buider = buider.Where("open_id in (select open_id from account where ydgy_id like ?)",search.YdgyId+"%")
+	}
+	if search.YdgyName!="" {
+		buider = buider.Where("open_id in (select open_id from account where ydgy_name like ?)",search.YdgyName+"%")
+	}
+	if search.Mobile!="" {
+		buider = buider.Where("open_id in (select open_id from account where mobile like ?)",search.Mobile+"%")	
+	}
+	
 	_,err :=buider.Limit(pageSize).Offset((pageIndex-1)*pageSize).OrderDir("id",false).LoadStructs(&model)
 	
 	return model,err
 }
-func (self *AccountRecharge) RecordWithUserCount(appId string,froms int64,pageIndex uint64,pageSize uint64) (int64,error)  {
+func (self *AccountRecharge) RecordWithUserCount(appId string,froms int64,pageIndex uint64,pageSize uint64, search AccountRechargeSearch) (int64,error)  {
 	buider :=db.NewSession().Select("count(id)").From("account_recharge").Where("app_id=?",appId)
 	
 	if froms>=0 {
 		buider = buider.Where("froms=?",froms)
+	}
+	
+	if search.No!="" {
+		buider = buider.Where("no like ?",search.No+"%")
+	}
+	if search.YdgyId!="" {
+		buider = buider.Where("open_id in (select open_id from account where ydgy_id like ?)",search.YdgyId+"%")
+	}
+	if search.YdgyName!="" {
+		buider = buider.Where("open_id in (select open_id from account where ydgy_name like ?)",search.YdgyName+"%")
+	}
+	if search.Mobile!="" {
+		buider = buider.Where("open_id in (select open_id from account where mobile like ?)",search.Mobile+"%")	
 	}
 	
 	var count int64

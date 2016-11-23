@@ -50,6 +50,8 @@ type OrderDto struct  {
 	AddressName string	 `json:"address_name"`
 	
 	Show int `json:"show"`
+	Mobile 	string	 `json:"mobile"`
+	YdgyName  	 string	 `json:"ydgy_name"`
 }
 
 type OrderDetailDto struct  {
@@ -552,9 +554,14 @@ func OrdersGet(c *gin.Context)  {
 	
 	if orders!=nil&&len(orders) > 0 {
 		var orderItem []*dao.OrderItem
+		account := dao.NewAccount()
 		
 		for _,od :=range orders {
-			orderItem,_=service.OrderItems(od.No);
+			account,_ =account.AccountWithOpenId(od.OpenId,appId)
+			od.Mobile	=account.Mobile
+			od.YdgyName	=account.YdgyName
+		
+			orderItem,_=service.OrderItems(od.No);			
 			if len(orderItem)>0 {
 				od.GmOrdernum	=orderItem[0].GmOrdernum
 				od.GmPassnum	=orderItem[0].GmPassnum
@@ -737,6 +744,8 @@ func orderToA(order *dao.Order) *OrderDto {
 	a.AddressName = order.AddressName
 	
 	a.Show = order.Show
+	a.Mobile = order.Mobile
+	a.YdgyName = order.YdgyName
 	
 
 	return a

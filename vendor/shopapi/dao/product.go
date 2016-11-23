@@ -32,6 +32,7 @@ type Product struct  {
 	LimitNum int64
 	
 	ParentId int64
+	Goodsid  string
 }
 
 type ProductDetail struct {
@@ -77,6 +78,9 @@ type ProductDetail struct {
 	LimitNumd int64
 	//是否显示
 	Show int
+	
+	ParentId int64 
+	Godsid string 
 }
 
 type ProductSearch struct {
@@ -108,7 +112,7 @@ func (self *ProductDetail) ProdDetailListWith(keywords interface{} ,merchantId i
 	var prodList []*ProductDetail
 	buider :=db.NewSession().Select("product.*,IFNULL(merchant.id,0) merchant_id,IFNULL(merchant.name,'') merchant_name,IFNULL(category.id,0) category_id,IFNULL(category.title,'') category_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id").LeftJoin("prod_category","prod_category.prod_id=product.id").LeftJoin("category","prod_category.category_id=category.id")
 	
-	buider = buider.Where("product.parent_id = ?",0)
+	//buider = buider.Where("product.parent_id = ?",0)
 	
 	if flags!=nil{
 		buider = buider.Where("product.flag in ?",flags)
@@ -253,7 +257,7 @@ func (self *Product) SoldNumInc(num int,prodId int64,tx *dbr.Tx) error  {
 
 func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 
-	result,err :=tx.InsertInto("product").Columns("title","sub_title","app_id","description","sold_num","price","dis_price","json","flag","status","is_recom","limit_num","parent_id").Record(self).Exec()
+	result,err :=tx.InsertInto("product").Columns("title","sub_title","app_id","description","sold_num","price","dis_price","json","flag","status","is_recom","limit_num","parent_id","goodsid").Record(self).Exec()
 	if err !=nil {
 
 		return 0,err
@@ -330,7 +334,7 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 	session := db.NewSession()
 	var prodList []*ProductDetail
 	
-	builder :=session.Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.status=?",1).Where("product.app_id=?",appId)
+	builder :=session.Select("product.*,merchant.id merchant_id,merchant.name merchant_name").From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.status=?",1).Where("product.parent_id=?",0).Where("product.app_id=?",appId)
 	if flags!=nil&&len(flags)>0{
 
 		builder = builder.Where("product.flag in ?",flags)

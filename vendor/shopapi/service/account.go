@@ -34,8 +34,10 @@ type AccountRecharge struct  {
 	Flag 		string	`json:"flag"`
 	Json 		string	`json:"json"`
 	Froms 		int		`json:"froms"`
-	CreateTime  string `json:"create_time"`
-	Mobile 	    string `json:"mobile"`
+	CreateTime  string  `json:"create_time"`
+	Mobile 	    string  `json:"mobile"`
+	YdgyId 		string	`json:"ydgy_id"`
+	YdgyName 	string	`json:"ydgy_name"`
 }
 
 type AccountDetailModel struct  {
@@ -418,12 +420,12 @@ func RechargeRecordByAdmin(openId string,appId string,froms int64) ([]*dao.Accou
 	accountRecharge :=dao.NewAccountRecharge()
 	return accountRecharge.WithOpenId(openId,appId,froms)
 }
-func RechargeRecordByAdmins(appId string,froms int64,pageIndex uint64,pageSize uint64) ([]*dao.AccountRecharge,int64,error) {
+func RechargeRecordByAdmins(appId string,froms int64,pageIndex uint64,pageSize uint64,search dao.AccountRechargeSearch ) ([]*dao.AccountRecharge,int64,error) {
 	accountRecharge :=dao.NewAccountRecharge()
 	
-	rechargeRecord,err:=accountRecharge.RecordWithUser(appId,froms,pageIndex,pageSize)
+	rechargeRecord,err:=accountRecharge.RecordWithUser(appId,froms,pageIndex,pageSize,search)
 	
-	count,err:=accountRecharge.RecordWithUserCount(appId,froms,pageIndex,pageSize)
+	count,err:=accountRecharge.RecordWithUserCount(appId,froms,pageIndex,pageSize,search)
 	
 	log.Info(err)
 	

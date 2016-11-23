@@ -51,6 +51,8 @@ type Order struct  {
 	UpdateTimeUnix int64
 	
 	Show int
+	Mobile 	string
+	YdgyName  	 string
 }
 
 type OrderDetail struct  {

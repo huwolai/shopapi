@@ -41,6 +41,8 @@ type ProductParam struct  {
 	LimitNum  int64 `json:"limit_num"`
 	//
 	ParentId  int64 `json:"parent_id"`
+	
+	Goodsid  string `json:"goodsid"`
 }
 
 type ProductImgParam struct {
@@ -129,6 +131,9 @@ type ProductDetailDto struct {
 	LimitNumd int64 `json:"limit_numd"`
 	//是否显示
 	Show int `json:"show"`
+
+	ParentId int64 `json:"parent_id"`
+	Godsid string `json:"godsid"`
 	
 	Items []*ProductDetailDto `json:"items"`
 }
@@ -791,6 +796,7 @@ func productParamToBLL(param *ProductParam) *service.ProdBLL {
 	prodBll.Json  = param.Json
 	prodBll.LimitNum  = param.LimitNum
 	prodBll.ParentId  = param.ParentId
+	prodBll.Goodsid  = param.Goodsid
 
 	imgsparams  := param.Imgs
 	if imgsparams!=nil {
@@ -838,6 +844,8 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.LimitNum 	= model.LimitNum
 	dto.LimitNumd 	= model.LimitNumd
 	dto.Show 		= model.Show
+	dto.ParentId 	= model.ParentId
+	dto.Godsid 		= model.Godsid
 	
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*ProdImgsDetailDto,0)

@@ -367,6 +367,8 @@ func main() {
 		{
 			cart.GET("/:open_id", api.CartList)
 			cart.POST("/:open_id/add", api.CartAddToList)
+			cart.POST("/:open_id/minus", api.CartMinusFromList)
+			cart.POST("/:open_id/update", api.CartUpdateList)
 			cart.POST("/:open_id/delete/:id", api.CartDelFromList)
 		}
 	}

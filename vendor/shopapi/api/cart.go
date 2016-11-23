@@ -17,7 +17,12 @@ func CartList(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-	c.JSON(http.StatusOK,cartList)
+	if len(cartList)<1 {
+		results :=make([]string,0)
+		c.JSON(http.StatusOK,results)
+	}else{
+		c.JSON(http.StatusOK,cartList)
+	}
 }
 
 func CartAddToList(c *gin.Context)  {	
@@ -30,6 +35,29 @@ func CartAddToList(c *gin.Context)  {
 	} 
 	
 	err = service.CartAddToList(cart)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	util.ResponseSuccess(c.Writer)
+}
+func CartMinusFromList(c *gin.Context)  {
+	var err error
+	/* _,err = security.GetAuthUser(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	} */
+	
+	var cart dao.Cart
+	err =c.BindJSON(&cart)	
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
+		return
+	} 
+	
+	err = service.CartMinusFromList(cart)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return
@@ -54,6 +82,29 @@ func CartDelFromList(c *gin.Context)  {
 	}
 	
 	err = service.CartDelFromList(open_id,id)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	util.ResponseSuccess(c.Writer)
+}
+func CartUpdateList(c *gin.Context)  {
+	var err error
+	/* _,err = security.GetAuthUser(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	} */
+	
+	var cart dao.Cart
+	err =c.BindJSON(&cart)	
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
+		return
+	} 
+	
+	err = service.CartUpdateList(cart)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return

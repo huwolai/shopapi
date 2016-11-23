@@ -539,6 +539,7 @@ func prodToModel(prodbll *ProdBLL) *dao.Product {
 	prod.Flag = prodbll.Flag
 	prod.LimitNum = prodbll.LimitNum
 	prod.ParentId = prodbll.ParentId
+	prod.Goodsid = prodbll.Goodsid
 
 	return prod
 }

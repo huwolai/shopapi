@@ -28,6 +28,7 @@ type ProdBLL struct {
 	LimitNum int64
 	
 	ParentId int64
+	Goodsid string
 }
 
 type ProdImgBLL struct {
