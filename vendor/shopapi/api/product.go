@@ -135,7 +135,11 @@ type ProductDetailDto struct {
 	ParentId int64 `json:"parent_id"`
 	Goodsid string `json:"goodsid"`
 	
+	ProdSkus []*ProdSkuDto `json:"prod_skus"`
+	
 	Items []*ProductDetailDto `json:"items"`
+	
+	Stock int `json:"stock"`
 }
 
 type ProdImgsDetailDto struct  {
@@ -854,6 +858,16 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 			detailDtos = append(detailDtos,prodImgsDetailToDto(prodimg))
 		}
 		dto.ProdImgs=detailDtos
+	}
+	
+	if model.ProdSkus!=nil{
+		detailDtos :=make([]*ProdSkuDto,0)
+
+		for _,prodSku :=range model.ProdSkus {
+			detailDtos = append(detailDtos,prodSkuToDto(prodSku))
+		}
+		dto.ProdSkus=detailDtos
+		dto.Stock=detailDtos[0].Stock
 	}
 
 	return dto

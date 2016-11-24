@@ -60,6 +60,12 @@ func (self *ProdSku) Insert() (int64,error)  {
 	return id,err
 }
 
+func (self *ProdSku) ProdSkuWithProdIds(prodIds []int64) ([]*ProdSku,error){
+	var prodSku []*ProdSku
+	_,err :=db.NewSession().SelectBySql("select * from prod_sku where prod_id in ?",prodIds).LoadStructs(&prodSku)
+	return  prodSku,err
+}
+
 func (self *ProdSku) WithSkuNo(skuNo string) (*ProdSku,error)   {
 	var prodSku *ProdSku
 	_,err :=db.NewSession().Select("*").From("prod_sku").Where("sku_no=?",skuNo).LoadStructs(&prodSku)

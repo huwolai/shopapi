@@ -81,6 +81,8 @@ type ProductDetail struct {
 	
 	ParentId int64 
 	Goodsid string 
+	
+	ProdSkus []*ProdSku
 }
 
 type ProductSearch struct {
@@ -363,12 +365,54 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 	
 	if prodList!=nil&&len(prodList)>0 {
 		err = FillProdImgs(appId,prodList)
+		err = FillProdSku(appId,prodList)
 	}	
 
 
 	return prodList,count,err
 }
+//SKU
+func FillProdSku(appId string,prodList []*ProductDetail) error {
+	prodids := make([]int64,0)
+	if prodList!=nil{
+		for _,prod :=range prodList {
+			prodids = append(prodids,prod.Id)
+		}
+	}
 
+	if len(prodids)<=0 {
+		return nil
+	}
+
+	prodSku := NewProdSku()
+	prodSkus,err := prodSku.ProdSkuWithProdIds(prodids)
+	if err!=nil{
+		return err
+	}	
+	prodSkusMap := make(map[int64][]*ProdSku)
+	if prodSkus!=nil{
+		for _,prodSkud :=range prodSkus {
+			key := prodSkud.ProdId
+			pdimgdetails :=prodSkusMap[key]
+			if pdimgdetails==nil{
+				pdimgdetails = make([]*ProdSku,0)
+			}
+
+
+			pdimgdetails= append(pdimgdetails,prodSkud)
+
+			prodSkusMap[key] = pdimgdetails
+			//log.Debug(prodSkusMap)
+		}
+	}
+	for _,prod :=range prodList {
+		key := prod.Id
+		prodSkus := prodSkusMap[key]
+		prod.ProdSkus = prodSkus
+	}
+
+	return nil
+}
 //填充商品图片数据
 func FillProdImgs(appId string,prodList []*ProductDetail) error {
 	prodids := make([]int64,0)
