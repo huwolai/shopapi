@@ -1145,11 +1145,11 @@ func UpdateToPayed(orderNo string,appId string) error  {
 		return err
 	}
 	//商户权重加1
-	err =MerchantWeightAdd(1,order.MerchantId,tx)
+	/* err =MerchantWeightAdd(1,order.MerchantId,tx)
 	if err!=nil{
 		tx.Rollback()
 		return errors.New("paycall:商户权重添加失败!")
-	}
+	} */
 	//修改订单状态
 	err =order.UpdateWithStatusTx(comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_SUCCESS,orderNo,tx)
 	if err!=nil{
