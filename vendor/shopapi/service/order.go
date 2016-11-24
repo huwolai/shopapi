@@ -566,20 +566,7 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	}
 	if order.PayStatus!=comm.ORDER_PAY_STATUS_PAYING {
 		return  errors.New("订单不是待付款状态!")
-	}
-	//支付预付款
-	params := map[string]interface{}{
-		"pay_token": payToken,
-		"open_id": order.OpenId,
-		"code": order.Code,
-		"out_trade_no":order.No,
-	}
-	resultMap,err := RequestPayApi("/pay/payimprest",params)
-	if err!=nil{
-		return err
-	}
-
-	subTradeNo :=resultMap["sub_trade_no"].(string)
+	}	
 
 	tx,_ :=db.NewSession().Begin()
 
@@ -623,8 +610,22 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		log.Error("订单号:",orderNo,"状态更新为支付成功的时候失败!")
 		tx.Rollback()
 		return errors.New("订单更新错误!")
+	}	
+	
+	//支付预付款
+	params := map[string]interface{}{
+		"pay_token": payToken,
+		"open_id": order.OpenId,
+		"code": order.Code,
+		"out_trade_no":order.No,
 	}
-
+	resultMap,err := RequestPayApi("/pay/payimprest",params)
+	if err!=nil{
+		return err
+	}
+	subTradeNo :=resultMap["sub_trade_no"].(string)
+	
+	
 	err =NotifyCouponServer(orderNo,appId,subTradeNo)
 	if err!=nil{
 		tx.Rollback()
