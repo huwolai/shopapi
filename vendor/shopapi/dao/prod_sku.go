@@ -101,6 +101,11 @@ func (self *ProdSku) UpdateStockWithSkuNo(stock int ,skuNo string) error {
 
 	return err
 }
+func (self *ProdSku) UpdateSoldNumWithSkuNo(soldNum int ,skuNo string) error {
+	_,err :=db.NewSession().Update("prod_sku").Set("sold_num",soldNum).Where("sku_no=?",skuNo).Exec()
+
+	return err
+}
 
 func (self *ProdSku) UpdatePriceWithSkuNo(price float64,disPrice float64,skuNo string) error  {
 	_,err :=db.NewSession().Update("prod_sku").Set("price",price).Set("dis_price",disPrice).Where("sku_no=?",skuNo).Exec()

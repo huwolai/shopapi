@@ -132,7 +132,7 @@ func ProdOrderCountWithId(prodId int64,OpenId string,Date string) (int64,error) 
 	return dao.ProdOrderCountWithId(prodId,OpenId,Date)
 }
 //修改SKU 库存
-func ProductUpdateStockWithProdId(prodId int64,stock int) error {
+func ProductUpdateStockWithProdId(prodId int64,stock int,soldNum int) error {
 	prodids := make([]int64,0)
 	prodids = append(prodids,prodId)
 	
@@ -145,6 +145,10 @@ func ProductUpdateStockWithProdId(prodId int64,stock int) error {
 	
 	for _,prodSkud :=range prodSkus {
 		err:=prodSkuDao.UpdateStockWithSkuNo(stock,prodSkud.SkuNo)
+		if err!=nil{		
+			return err 
+		}
+		err=prodSkuDao.UpdateSoldNumWithSkuNo(soldNum,prodSkud.SkuNo)
 		if err!=nil{		
 			return err 
 		}

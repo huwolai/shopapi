@@ -596,9 +596,10 @@ func ProductUpdateStockWithProdId(c *gin.Context)  {
 	var param map[string]interface{}
 	err = c.BindJSON(&param)
 	
-	stock,err:=strconv.Atoi(param["stock"].(string))
+	stock,err	:=strconv.Atoi(param["stock"].(string))
+	soldNum,err		:=strconv.Atoi(param["sold_num"].(string))
 	
-	err =service.ProductUpdateStockWithProdId(iprodId,stock)
+	err =service.ProductUpdateStockWithProdId(iprodId,stock,soldNum)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return
