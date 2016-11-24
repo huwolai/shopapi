@@ -19,6 +19,9 @@ type AccountRecharge struct  {
 	CreateTimeUnix  int64
 	Mobile string
 	
+	Opt string
+	Remark string
+	
 	BaseDModel
 }
 
@@ -36,7 +39,7 @@ func NewAccountRecharge() *AccountRecharge {
 
 func (self *AccountRecharge) InsertTx(tx *dbr.Tx) error  {
 
-	_,err :=tx.InsertInto("account_recharge").Columns("no","app_id","open_id","amount","status","flag","json","froms").Record(self).Exec()
+	_,err :=tx.InsertInto("account_recharge").Columns("no","app_id","open_id","amount","status","flag","json","froms","opt","remark").Record(self).Exec()
 
 	return err
 }

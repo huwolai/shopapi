@@ -185,6 +185,8 @@ func main() {
 			product.GET("/:prod_id/sku", api.ProductSkuWithProdIdAndSymbolPath)
 			product.GET("/:prod_id/imgs", api.ProdImgsWithProdId)
 			product.GET("/:prod_id/detail", api.ProdDetailWithProdId)
+			//修改SKU 库存
+			product.POST("/:prod_id/updatestock", api.ProductUpdateStockWithProdId)
 			//通过属性生成sku (特殊接口)
 			product.POST("/:prod_id/sku", api.ProductAndAttrAdd)
 			//通过属性key查询商品属性值

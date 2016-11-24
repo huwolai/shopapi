@@ -398,7 +398,6 @@ func FillProdSku(appId string,prodList []*ProductDetail) error {
 				pdimgdetails = make([]*ProdSku,0)
 			}
 
-
 			pdimgdetails= append(pdimgdetails,prodSkud)
 
 			prodSkusMap[key] = pdimgdetails

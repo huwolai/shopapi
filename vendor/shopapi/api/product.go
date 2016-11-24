@@ -140,6 +140,7 @@ type ProductDetailDto struct {
 	Items []*ProductDetailDto `json:"items"`
 	
 	Stock int `json:"stock"`
+	StockInc int `json:"stock_init"`
 }
 
 type ProdImgsDetailDto struct  {
@@ -180,6 +181,7 @@ type ProdSkuDto struct  {
 	DisPrice float64 `json:"dis_price"`
 	AttrSymbolPath string `json:"attr_symbol_path"`
 	Stock int `json:"stock"`
+	StockInc int `json:"stock_init"`
 	Json string `json:"json"`
 }
 
@@ -342,6 +344,7 @@ func prodSkuToDto(model *dao.ProdSku) *ProdSkuDto  {
 	prodSku.ProdId = model.ProdId
 	prodSku.AttrSymbolPath = model.AttrSymbolPath
 	prodSku.Stock = model.Stock
+	prodSku.StockInc = model.Stock+model.SoldNum
 	prodSku.SkuNo = model.SkuNo
 	prodSku.Id = model.Id
 	return prodSku
@@ -584,6 +587,25 @@ func ProdImgsWithProdId(c *gin.Context)  {
 	c.JSON(http.StatusOK,detailDtos)
 }
 
+//修改SKU 库存
+func ProductUpdateStockWithProdId(c *gin.Context)  {
+	prodId :=c.Param("prod_id")
+	iprodId,err := strconv.ParseInt(prodId,10,64)
+	
+	
+	var param map[string]interface{}
+	err = c.BindJSON(&param)
+	
+	stock,err:=strconv.Atoi(param["stock"].(string))
+	
+	err =service.ProductUpdateStockWithProdId(iprodId,stock)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	util.ResponseSuccess(c.Writer)
+}
 
 
 func ProductAndAttrAdd(c *gin.Context) {
@@ -868,6 +890,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 		}
 		dto.ProdSkus=detailDtos
 		dto.Stock=detailDtos[0].Stock
+		dto.StockInc=detailDtos[0].StockInc
 	}
 
 	return dto

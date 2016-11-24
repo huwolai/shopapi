@@ -30,7 +30,7 @@ type ProdSkuDetail struct  {
 	DisPrice float64
 	AttrSymbolPath string
 	Stock int
-	Json string
+	Json string	
 	
 	LimitNum int64
 }

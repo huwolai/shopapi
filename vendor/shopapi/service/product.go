@@ -104,8 +104,24 @@ func ProdDetailListCountWith(keywords interface{},merchantId int64,flags []strin
 
 //商品详情
 func ProdDetailWithProdId(prodId int64,appId string) (*dao.ProductDetail,error)  {
-	product := dao.NewProduct()
-	return product.ProductDetailWithId(prodId)
+	product := dao.NewProduct()	
+	prod,err:=product.ProductDetailWithId(prodId)
+	if err!=nil{		
+		return nil,err
+	}
+	
+	prodids := make([]int64,0)
+	prodids = append(prodids,prod.Id)
+	
+	prodSkuDao := dao.NewProdSku()
+	prodSkus,err:=prodSkuDao.ProdSkuWithProdIds(prodids)
+	if err!=nil{		
+		return nil,err
+	}
+	
+	prod.ProdSkus=prodSkus
+	
+	return prod,nil
 }
 func ProdDetailWithProdParentId(prodParentId int64,appId string) ([]*dao.ProductDetail,error)  {
 	product := dao.NewProduct()
@@ -114,6 +130,26 @@ func ProdDetailWithProdParentId(prodParentId int64,appId string) ([]*dao.Product
 //商品已购买数量
 func ProdOrderCountWithId(prodId int64,OpenId string,Date string) (int64,error) {
 	return dao.ProdOrderCountWithId(prodId,OpenId,Date)
+}
+//修改SKU 库存
+func ProductUpdateStockWithProdId(prodId int64,stock int) error {
+	prodids := make([]int64,0)
+	prodids = append(prodids,prodId)
+	
+	prodSkuDao := dao.NewProdSku()
+
+	prodSkus,err:=prodSkuDao.ProdSkuWithProdIds(prodids)
+	if err!=nil{		
+		return err
+	}
+	
+	for _,prodSkud :=range prodSkus {
+		err:=prodSkuDao.UpdateStockWithSkuNo(stock,prodSkud.SkuNo)
+		if err!=nil{		
+			return err 
+		}
+	}
+	return nil
 }
 
 //商品图片

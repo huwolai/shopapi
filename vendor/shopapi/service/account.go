@@ -38,6 +38,8 @@ type AccountRecharge struct  {
 	Mobile 	    string  `json:"mobile"`
 	YdgyId 		string	`json:"ydgy_id"`
 	YdgyName 	string	`json:"ydgy_name"`
+	Opt 		string	`json:"opt"`
+	Remark 		string	`json:"remark"`
 }
 
 type AccountDetailModel struct  {
@@ -56,7 +58,7 @@ type AccountDetailModel struct  {
 }
 
 //账户预充值
-func AccountPreRecharge(model *AccountRechargeModel,from int) (map[string]interface{},error) {
+func AccountPreRecharge(model *AccountRechargeModel,from int,opt string) (map[string]interface{},error) {
 
 	accountRecharge :=dao.NewAccountRecharge()
 	accountRecharge.Amount = model.Money
@@ -65,6 +67,9 @@ func AccountPreRecharge(model *AccountRechargeModel,from int) (map[string]interf
 	accountRecharge.Status = comm.ACCOUNT_RECHARGE_STATUS_WAIT
 	accountRecharge.OpenId = model.OpenId
 	accountRecharge.Froms = from
+	accountRecharge.Opt = opt
+	accountRecharge.Remark = model.Remark
+	
 	err :=accountRecharge.Insert()
 	if err!=nil{
 		log.Error(err)
@@ -322,7 +327,7 @@ func GetOnKey() (*dao.GetOnKey,error)   {
 	return GetOnKey,err
 }
 //账户预充值 减去 AccountPreRechargeMinus
-func AccountPreRechargeMinus(model *AccountRechargeModel,from int) (map[string]interface{},error) {
+func AccountPreRechargeMinus(model *AccountRechargeModel,from int,opt string) (map[string]interface{},error) {
 	
 	accountRecharge :=dao.NewAccountRecharge()
 	accountRecharge.Amount = 0-model.Money
@@ -331,6 +336,9 @@ func AccountPreRechargeMinus(model *AccountRechargeModel,from int) (map[string]i
 	accountRecharge.Status = comm.ACCOUNT_RECHARGE_STATUS_WAIT
 	accountRecharge.OpenId = model.OpenId
 	accountRecharge.Froms = from
+	accountRecharge.Opt = opt
+	accountRecharge.Remark = model.Remark
+	
 	err :=accountRecharge.Insert()
 	if err!=nil{
 		return nil,errors.New("充值记录插入失败!")
@@ -444,7 +452,10 @@ func RechargeRecordFormat(model *dao.AccountRecharge) AccountRecharge  {
 		dtoItem.Flag=model.Flag
 		dtoItem.Json=model.Json
 		dtoItem.Froms=model.Froms		
-		dtoItem.Mobile=model.Mobile		
+		dtoItem.Mobile=model.Mobile	
+		
+		dtoItem.Opt=model.Opt		
+		dtoItem.Remark=model.Remark		
 		
 		dtoItem.CreateTime=time.Unix(model.CreateTimeUnix, 0).Format("2006-01-02 15:04:05")
 		
