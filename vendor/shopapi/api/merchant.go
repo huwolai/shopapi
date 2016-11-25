@@ -310,6 +310,7 @@ func MerchantIs(c *gin.Context)  {
 		c.JSON(http.StatusOK,gin.H{
 			"is_merchant": 0,
 			"status"	 : merchant.Status,
+			"failres"	 : merchant.FailRes,
 		})
 	}else{
 		//厨师
@@ -317,6 +318,7 @@ func MerchantIs(c *gin.Context)  {
 			"is_merchant": 1,
 			"merchant_id":merchant.Id,
 			"status"	 : merchant.Status,
+			"failres"	 : merchant.FailRes,
 		})		
 	}
 }

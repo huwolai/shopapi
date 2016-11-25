@@ -27,6 +27,9 @@ type Merchant struct  {
 	Longitude float64
 	//维度
 	Latitude float64
+	
+	FailRes string
+	
 	BaseDModel
 }
 
