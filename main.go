@@ -122,6 +122,7 @@ func main() {
 			user.GET("/:open_id/merchant", api.MerchantWithOpenId)
 			user.POST("/:open_id/recharge", api.AccountPreRecharge)
 			user.POST("/:open_id/rechargebyadmin", api.AccountPreRechargeByAdmin)
+			user.POST("/:open_id/rechargebyadminok", api.AccountPreRechargeByAdminOK)
 			//用户账户信息
 			user.POST("/:open_id/account", api.AccountDetail)
 			//用户订单

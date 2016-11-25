@@ -298,7 +298,7 @@ func GetOnKey(c *gin.Context)  {
 	c.JSON(http.StatusOK,param)
 }
 
-//管理员后台-账户充值
+//管理员后台-账户变动记录
 func AccountPreRechargeByAdmin(c *gin.Context)  {
 	openId:=c.Param("open_id")
 	if openId!="wesdfsfsdf23323" {
@@ -329,7 +329,7 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 		return
 	}
 	
-	//log.Info(param)
+	//log.Info(param.Opt)
 	//param.OpenId = c.Param("open_id")
 		
 	appId := security.GetAppId2(c.Request)
@@ -338,10 +338,61 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 	model.OpenId = param.OpenId
 	model.PayType = 3 //param.PayType
 	model.AppId = appId
-	model.Remark = param.Remark
+	model.Remark = param.Remark	
+	model.Money	= param.Money
+	
+	err = service.AccountChangeRecord(model,1,param.Opt)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	util.ResponseSuccess(c.Writer)
+}
+
+//管理员后台-账户变动记录
+func AccountPreRechargeByAdminOK(c *gin.Context)  {
+	openId:=c.Param("open_id")
+	if openId!="wesdfsfsdf23323" {
+		util.ResponseError400(c.Writer,"权限不足！")
+		return
+	}	
+	
+	var paramMap map[string]interface{}
+	err := c.BindJSON(&paramMap)	
+	
+	if len(paramMap["no"].(string))<1 {
+		util.ResponseError400(c.Writer,"编号错误")
+		return
+	}	
+	
+	if len(paramMap["open_id"].(string))<1 {
+		util.ResponseError400(c.Writer,"opend_id错误")
+		return
+	}
+	
+	if len(paramMap["audit"].(string))<1 {
+		util.ResponseError400(c.Writer,"审核人员错误")
+		return
+	}
+	
+	_,err =strconv.ParseFloat(paramMap["amount"].(string),20)
+	if err!=nil {
+		util.ResponseError400(c.Writer,"金额错误！")
+		return
+	}
+	
+	appId := security.GetAppId2(c.Request)
 	
 	var resultMap map[string]interface{}
-	if param.Money<0 {
+	resultMap,err = service.AccountChangeRecordOK(paramMap,appId)
+	if err!=nil {
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}		
+	c.JSON(http.StatusOK,resultMap)	
+	
+	/* if param.Money<0 {
 		model.Money = 0-param.Money
 		resultMap,err = service.AccountPreRechargeMinus(model,1,param.Opt)
 		if err!=nil {
@@ -358,7 +409,7 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 			return
 		}
 	}
-	c.JSON(http.StatusOK,resultMap)
+	c.JSON(http.StatusOK,resultMap) */
 }
 //账户充值记录  后台
 func RechargeRecordByAdmin(c *gin.Context)  {

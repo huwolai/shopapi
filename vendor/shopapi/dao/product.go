@@ -273,7 +273,7 @@ func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 }
 
 func (self *Product) UpdateTx(tx *dbr.Tx) error {
-	_,err :=tx.Update("product").Set("title",self.Title).Set("sub_title",self.SubTitle).Set("description",self.Description).Set("price",self.Price).Set("dis_price",self.DisPrice).Set("json",self.Json).Where("id=?",self.Id).Exec()
+	_,err :=tx.Update("product").Set("title",self.Title).Set("sub_title",self.SubTitle).Set("description",self.Description).Set("price",self.Price).Set("dis_price",self.DisPrice).Set("json",self.Json).Set("goodsid",self.Goodsid).Where("id=?",self.Id).Exec()
 	return err
 }
 

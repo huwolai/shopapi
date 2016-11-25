@@ -46,7 +46,7 @@ func (self *AccountRecharge) InsertTx(tx *dbr.Tx) error  {
 
 func (self *AccountRecharge) Insert() error  {
 
-	_,err :=db.NewSession().InsertInto("account_recharge").Columns("no","app_id","open_id","amount","status","flag","json","froms").Record(self).Exec()
+	_,err :=db.NewSession().InsertInto("account_recharge").Columns("no","app_id","open_id","amount","status","flag","json","froms","opt","remark").Record(self).Exec()
 
 	return err
 }
@@ -62,6 +62,11 @@ func (self *AccountRecharge) WithNo(no string,appId string) (*AccountRecharge,er
 func (self *AccountRecharge) UpdateStatusWithNo(status int,no string,appId string) error {
 
 	_,err :=db.NewSession().Update("account_recharge").Set("status",status).Where("no=?",no).Where("app_id=?",appId).Exec()
+
+	return err
+}
+func (self *AccountRecharge) UpdateStatusAuditWithNo(status int,audit string,no string,appId string) error {
+	_,err :=db.NewSession().Update("account_recharge").Set("status",status).Set("audit",audit).Where("no=?",no).Where("app_id=?",appId).Exec()
 
 	return err
 }

@@ -13,6 +13,7 @@ import (
 	"shopapi/comm"
 	"shopapi/redis"
 	"time"
+	"strconv"
 )
 
 type AccountRechargeModel struct  {
@@ -464,11 +465,102 @@ func RechargeRecordFormat(model *dao.AccountRecharge) AccountRecharge  {
 	return dtoItem
 }
 
-
-
-
-
-
+//账户变动记录
+func AccountChangeRecord(model *AccountRechargeModel,from int,opt string) error {
+	
+	log.Info(opt)
+	
+	accountRecharge :=dao.NewAccountRecharge()
+	accountRecharge.Amount = model.Money
+	accountRecharge.No = util.GenerUUId()
+	accountRecharge.AppId = model.AppId
+	accountRecharge.Status = comm.ACCOUNT_RECHARGE_STATUS_WAIT
+	accountRecharge.OpenId = model.OpenId
+	accountRecharge.Froms = from
+	accountRecharge.Opt = opt
+	accountRecharge.Remark = model.Remark
+	
+	err :=accountRecharge.Insert()
+	if err!=nil{
+		return errors.New("充值记录插入失败!")
+	}
+	return nil
+}
+//账户变动记录
+func AccountChangeRecordOK(model map[string]interface{},appId string) (map[string]interface{},error) {	
+	rechargeRecord:=dao.NewAccountRecharge()
+	
+	record,err:=rechargeRecord.WithNo(model["no"].(string),appId)
+	if err!=nil || record==nil{
+		return nil,errors.New("无记录!")
+	}	
+	
+	if record.Status>0 {
+		return nil,errors.New("已审核!!") 
+	}
+	
+	amount,_ :=strconv.ParseFloat(model["amount"].(string),20)
+	if record.Amount!=amount {
+		return nil,errors.New("金额错误!!") 
+	}
+	
+	rechargeRecord.UpdateStatusAuditWithNo(1,model["audit"].(string),model["no"].(string),appId)
+	
+	if record.Amount>0 {
+		params := map[string]interface{}{
+			"out_trade_no": record.No,
+			"out_trade_type": comm.Trade_Type_Recharge,
+			"open_id": record.OpenId,
+			"amount": int64(record.Amount*100),
+			"trade_type": comm.Trade_Type_Recharge,
+			"pay_type": 3,
+			"title": record.Remark,
+			"client_ip": "127.0.0.1",
+			"notify_url": config.GetValue("notify_url").ToString(),
+			"remark": record.Remark,
+		}
+		resultMap,err :=RequestPayApi("/pay/makeprepay",params)
+		return resultMap,err
+	}else{
+		account := dao.NewAccount()
+		account,err =account.AccountWithOpenId(record.OpenId,appId)
+		if err!=nil{
+			return nil,err
+		}
+		//制作预付款
+		payparams := map[string]interface{}{
+			"open_id":record.OpenId,
+			"type": 1,
+			"amount": int64(record.Amount*100),
+			"title": record.Remark,
+			"remark": record.Remark,
+		}
+		resultImprestMap,err := RequestPayApi("/pay/makeimprest",payparams)
+		if err!=nil{
+			log.Error(err)
+			return nil,err
+		}
+		//payToken
+		payparams = map[string]interface{}{
+			"open_id": record.OpenId,
+			"password": account.Password,
+		}
+		resultMap,err := RequestPayApi("/pay/token",payparams)
+		if err!=nil{
+			return nil,err
+		}
+		//支付预付款
+		payparams = map[string]interface{}{
+			"pay_token": resultMap["pay_token"].(string),
+			"open_id": record.OpenId,
+			"code": resultImprestMap["code"],
+			"out_trade_no":"",
+		}
+		resultMap,err = RequestPayApi("/pay/payimprest",payparams)
+		return resultMap,err
+	}	
+	return nil,errors.New("操作错误!") 
+}
 
 
 
