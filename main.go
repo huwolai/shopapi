@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"gitlab.qiyunxin.com/tangtao/utils/config"
-	//"gitlab.qiyunxin.com/tangtao/utils/queue"
+	"gitlab.qiyunxin.com/tangtao/utils/queue"
 	"gitlab.qiyunxin.com/tangtao/utils/startup"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"os"
@@ -64,7 +64,7 @@ func main() {
 	err := config.Init(false)
 	util.CheckErr(err)
 	err = startup.InitDBData()
-	//util.CheckErr(err)
+	util.CheckErr(err)
 	env := os.Getenv("GO_ENV")
 	if env == "tests" {
 		gin.SetMode(gin.DebugMode)
@@ -87,7 +87,7 @@ func main() {
 	security.Setup() */
 
 	//安装消息队列
-	//queue.SetupAMQP(config.GetValue("amqp_url").ToString())
+	queue.SetupAMQP(config.GetValue("amqp_url").ToString())
 
 	//开启定时器
 	task.StartCron ()
