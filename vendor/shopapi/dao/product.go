@@ -33,6 +33,8 @@ type Product struct  {
 	
 	ParentId int64
 	Goodsid  string
+	
+	IsLimit  int64
 }
 
 type ProductDetail struct {
@@ -81,6 +83,7 @@ type ProductDetail struct {
 	
 	ParentId int64 
 	Goodsid string 
+	IsLimit string 
 	
 	ProdSkus []*ProdSku
 }
@@ -93,6 +96,15 @@ type ProductSearch struct {
 	PriceUp	 	 float64
 	PriceDown 	 float64
 	Show	 	 uint64
+}
+
+type ProdPurchaseCodes struct  {
+	AppId string `json:"app_id"`
+	Id 		int64 `json:"id"`
+	ProdId	int64 `json:"prod_id"`
+	Sku 	string `json:"sku"`
+	Codes 	string `json:"codes"`
+	Num 	int `json:"num"`
 }
 
 
@@ -259,7 +271,7 @@ func (self *Product) SoldNumInc(num int,prodId int64,tx *dbr.Tx) error  {
 
 func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 
-	result,err :=tx.InsertInto("product").Columns("title","sub_title","app_id","description","sold_num","price","dis_price","json","flag","status","is_recom","limit_num","parent_id","goodsid").Record(self).Exec()
+	result,err :=tx.InsertInto("product").Columns("title","sub_title","app_id","description","sold_num","price","dis_price","json","flag","status","is_recom","limit_num","parent_id","goodsid","is_limit").Record(self).Exec()
 	if err !=nil {
 
 		return 0,err
@@ -498,7 +510,24 @@ func (self *Product) ProductChangeShowState(appId string,id int64,show int64) er
 	_,err :=db.NewSession().Update("product").Set("show",show).Where("id=?",id).Where("app_id=?",appId).Exec()
 	return err
 }
+//一元购生成购买码
+func (self *Product) ProductAndPurchaseCodesAdd(prodPurchaseCodes *ProdPurchaseCodes) error {
+	_,err :=db.NewSession().InsertInto("prod_purchase_codes").Columns("sku","app_id","prod_id","codes","num").Record(prodPurchaseCodes).Exec()
+	return err
+}
+//一元购减去购买码
+func (self *Product) ProductAndPurchaseCodesMinus(tx *dbr.Tx,id int64,num int,newNum int,newCodes string) error  {
 
+	_,err :=tx.UpdateBySql("update prod_purchase_codes set codes=?,num=? where id=? and num=?",newCodes,newNum,id,num).Exec()
+
+	return err
+}
+//一元购购买码
+func (self *Product) ProductAndPurchaseCodes(prodPurchaseCodes *ProdPurchaseCodes,tx *dbr.Tx) (*ProdPurchaseCodes,error)  {
+	var codes *ProdPurchaseCodes
+	_,err :=tx.Select("*").From("prod_purchase_codes").Where("sku=?",prodPurchaseCodes.Sku).Where("app_id=?",prodPurchaseCodes.AppId).Where("prod_id=?",prodPurchaseCodes.ProdId).LoadStructs(&codes)
+	return codes,err
+}
 
 
 

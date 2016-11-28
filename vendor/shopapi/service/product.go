@@ -6,9 +6,12 @@ import (
 	"shopapi/comm"
 	"github.com/gocraft/dbr"
 	"errors"
-	"strconv"
+	"strconv"	
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
+	
+	"strings"
+	"fmt"
 )
 
 type ProdAndAttrDto struct  {
@@ -56,8 +59,6 @@ type ProdSku struct  {
 }
 
 func ProdSkuAdd(prodSku *ProdSku) (*ProdSku,error)  {
-
-
 
 	pSku :=dao.NewProdSku()
 
@@ -580,6 +581,7 @@ func prodToModel(prodbll *ProdBLL) *dao.Product {
 	prod.LimitNum = prodbll.LimitNum
 	prod.ParentId = prodbll.ParentId
 	prod.Goodsid = prodbll.Goodsid
+	prod.IsLimit = prodbll.IsLimit
 
 	return prod
 }
@@ -629,3 +631,81 @@ func ProductAndAddLink(appId string,prodId uint64,shopurl string) error  {
 func ProductChangeShowState(appId string,id int64,show int64) error  {	
 	return dao.NewProduct().ProductChangeShowState(appId,id,show)
 }
+//一元购生成购买码
+func ProductAndPurchaseCodesAdd(ProdPurchaseCodes *dao.ProdPurchaseCodes) error {
+	codeMap:=make(map[int]string)
+	for i := 1; i <= ProdPurchaseCodes.Num; i++ {
+		codeMap[i]=fmt.Sprintf("%06d",i)
+	}
+	code:=make([]string,0)
+	for _,v := range codeMap {
+		code=append(code,v)
+	}
+	//============
+	ProdPurchaseCodes.Codes=strings.Join(code,",")
+	
+	return dao.NewProduct().ProductAndPurchaseCodesAdd(ProdPurchaseCodes)
+}
+//一元购减去购买码
+func ProductAndPurchaseCodesMinus(ProdPurchaseCodes *dao.ProdPurchaseCodes) (string,error) {
+	session := db.NewSession()
+	tx,_ :=session.Begin()
+	defer func() {
+		if err :=recover();err!=nil{
+			tx.Rollback()
+			panic(err)
+		}
+	}()
+	
+	productDao:=dao.NewProduct()
+	
+	codes,err:=productDao.ProductAndPurchaseCodes(ProdPurchaseCodes,tx)
+	if err!=nil || codes==nil{
+		tx.Rollback()
+		return "",err
+	}
+	
+	if(codes.Num<ProdPurchaseCodes.Num){
+		tx.Rollback()
+		return "",errors.New("购买数量大于库存数量!")
+	}	
+	//============================
+	s:=strings.Split(codes.Codes, ",")
+	ns:=s[ProdPurchaseCodes.Num:]
+	
+	ls:=s[0:ProdPurchaseCodes.Num]
+	
+	err=productDao.ProductAndPurchaseCodesMinus(tx,codes.Id,codes.Num,len(ns),strings.Join(ns,","))
+	if err!=nil{
+		tx.Rollback()
+		return "",err
+	}
+	
+	err = tx.Commit()
+	if err!=nil{
+		tx.Rollback()
+		return "",err
+	}
+	
+	return strings.Join(ls,","),nil
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

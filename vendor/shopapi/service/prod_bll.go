@@ -29,6 +29,8 @@ type ProdBLL struct {
 	
 	ParentId int64
 	Goodsid string
+	
+	IsLimit int64
 }
 
 type ProdImgBLL struct {

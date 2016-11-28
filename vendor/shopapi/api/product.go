@@ -43,6 +43,8 @@ type ProductParam struct  {
 	ParentId  int64 `json:"parent_id"`
 	
 	Goodsid  string `json:"goodsid"`
+	
+	IsLimit  int64 `json:"is_limit"`
 }
 
 type ProductImgParam struct {
@@ -134,6 +136,7 @@ type ProductDetailDto struct {
 
 	ParentId int64 `json:"parent_id"`
 	Goodsid string `json:"goodsid"`
+	IsLimit string `json:"is_limit"`
 	
 	ProdSkus []*ProdSkuDto `json:"prod_skus"`
 	
@@ -824,6 +827,7 @@ func productParamToBLL(param *ProductParam) *service.ProdBLL {
 	prodBll.LimitNum  = param.LimitNum
 	prodBll.ParentId  = param.ParentId
 	prodBll.Goodsid  = param.Goodsid
+	prodBll.IsLimit  = param.IsLimit
 
 	imgsparams  := param.Imgs
 	if imgsparams!=nil {
@@ -873,6 +877,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.Show 		= model.Show
 	dto.ParentId 	= model.ParentId
 	dto.Goodsid 	= model.Goodsid
+	dto.IsLimit 	= model.IsLimit
 	
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*ProdImgsDetailDto,0)
@@ -1001,7 +1006,83 @@ func ProductChangeShowState(c *gin.Context)  {
 	
 	util.ResponseSuccess(c.Writer)
 }
+//一元购生成购买码
+func ProductAndPurchaseCodesAdd(c *gin.Context) {
 
+	param := &dao.ProdPurchaseCodes{}
+	err :=c.BindJSON(&param)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
 
+	prodId :=c.Param("prod_id")
+
+	if prodId=="" {
+		util.ResponseError400(c.Writer,"商品ID不能为空!")
+		return
+	}
+
+	iprodId,err := strconv.ParseInt(prodId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商品ID格式有误!")
+		return
+	}
+	
+	if param.Sku=="" {
+		util.ResponseError400(c.Writer,"SKU值不能为空!")
+		return
+	}
+
+	param.ProdId=iprodId
+	param.AppId = security.GetAppId2(c.Request)
+
+	err =service.ProductAndPurchaseCodesAdd(param)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	util.ResponseSuccess(c.Writer)
+}
+//一元购减去购买码
+/* func ProductAndPurchaseCodesMinus(c *gin.Context) {
+
+	param := &dao.ProdPurchaseCodes{}
+	err :=c.BindJSON(&param)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+
+	prodId :=c.Param("prod_id")
+
+	if prodId=="" {
+		util.ResponseError400(c.Writer,"商品ID不能为空!")
+		return
+	}
+
+	iprodId,err := strconv.ParseInt(prodId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商品ID格式有误!")
+		return
+	}
+	
+	if param.Sku=="" {
+		util.ResponseError400(c.Writer,"SKU值不能为空!")
+		return
+	}
+
+	param.ProdId=iprodId
+	param.AppId = security.GetAppId2(c.Request)
+
+	_,err =service.ProductAndPurchaseCodesMinus(param)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	util.ResponseSuccess(c.Writer)
+} */
 
 

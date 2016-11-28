@@ -610,7 +610,15 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		log.Error("订单号:",orderNo,"状态更新为支付成功的时候失败!")
 		tx.Rollback()
 		return errors.New("订单更新错误!")
-	}	
+	}
+	
+	//一元购
+	/* err = purchaseCodes(orderItems,appId,tx)
+	if err!=nil{
+		tx.Rollback()
+		return err
+	} */
+	
 	
 	//支付预付款
 	params := map[string]interface{}{
@@ -623,8 +631,7 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	if err!=nil{
 		return err
 	}
-	subTradeNo :=resultMap["sub_trade_no"].(string)
-	
+	subTradeNo :=resultMap["sub_trade_no"].(string)	
 	
 	err =NotifyCouponServer(orderNo,appId,subTradeNo)
 	if err!=nil{
@@ -820,6 +827,15 @@ func ProdSKUStockSubWithOrder(orderItems []*dao.OrderItem,tx *dbr.Tx) error  {
 	}
 	return nil
 }
+
+//减商品购买码
+func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error  {
+	return nil
+	//purchaseCodes := &dao.ProdPurchaseCodes{}	
+	//purchaseCodes.AppId=appId
+}
+
+
 
 func OrderAutoCancel(orderNo string,appId string)error  {
 	order :=dao.NewOrder()

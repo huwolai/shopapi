@@ -190,6 +190,9 @@ func main() {
 			product.POST("/:prod_id/updatestock", api.ProductUpdateStockWithProdId)
 			//通过属性生成sku (特殊接口)
 			product.POST("/:prod_id/sku", api.ProductAndAttrAdd)
+			//一元购生成购买码
+			product.POST("/:prod_id/purchase_codes", api.ProductAndPurchaseCodesAdd)
+			//product.POST("/:prod_id/purchase_codes/minus", api.ProductAndPurchaseCodesMinus)
 			//通过属性key查询商品属性值
 			product.GET("/:prod_id/attr/:attr_key", api.ProductAttrValues)
 			//修改商品状态
