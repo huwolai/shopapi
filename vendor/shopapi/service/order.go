@@ -613,11 +613,11 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	}
 	
 	//一元购
-	/* err = purchaseCodes(orderItems,appId,tx)
+	/*  err = purchaseCodes(orderItems,appId,tx)
 	if err!=nil{
 		tx.Rollback()
 		return err
-	}	 */
+	} */
 	
 	//支付预付款
 	params := map[string]interface{}{
@@ -858,12 +858,12 @@ func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 			return errors.New("购买数量大于库存数量!")
 		}
 		//购买完成 设置开奖时间
-		/* if(codes.Num==ProdPurchaseCodes.Num){
-			err=dao.ProductAndPurchaseCodesOpen(tx,ProdPurchaseCodes,"openId",fmt.Sprintf("%d",time.Now().Unix()+300))//5分钟
+		if(codes.Num==ProdPurchaseCodes.Num){
+			err=dao.ProductAndPurchaseCodesOpen(tx,ProdPurchaseCodes,fmt.Sprintf("%d",time.Now().Unix()+300))//5分钟
 			if err!=nil{
 				return err
 			}
-		} */
+		}
 		//============================
 		s:=strings.Split(codes.Codes, ",")
 		ns:=s[ProdPurchaseCodes.Num:]	

@@ -164,6 +164,7 @@ func main() {
 		category := v1.Group("/category")
 		{
 			category.GET("/:category_id/products", api.ProductListWithCategory)
+			category.GET("/:category_id/products/islimit", api.ProductListWithCategoryIsLimit)
 		}
 
 		skus := v1.Group("/skus")

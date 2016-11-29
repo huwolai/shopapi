@@ -315,7 +315,6 @@ func ProductListWithCategory(appId string,categoryId int64,flags []string,noflag
 	if err!=nil {
 		return nil,0,err
 	}
-
 	return prodList,count,nil
 }
 

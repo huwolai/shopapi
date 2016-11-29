@@ -43,8 +43,6 @@ type ProductParam struct  {
 	ParentId  int64 `json:"parent_id"`
 	
 	Goodsid  string `json:"goodsid"`
-	
-	IsLimit  int64 `json:"is_limit"`
 }
 
 type ProductImgParam struct {
@@ -136,7 +134,6 @@ type ProductDetailDto struct {
 
 	ParentId int64 `json:"parent_id"`
 	Goodsid string `json:"goodsid"`
-	IsLimit string `json:"is_limit"`
 	
 	ProdSkus []*ProdSkuDto `json:"prod_skus"`
 	
@@ -530,6 +527,87 @@ func ProductListWithCategory(c *gin.Context)  {
 
 	c.JSON(http.StatusOK,prodListDtos)
 }
+func ProductListWithCategoryIsLimit(c *gin.Context)  {
+	categoryId :=c.Param("category_id")
+
+	flags :=c.Query("flags")
+	noflags := c.Query("noflags")
+
+	flagsArray,noflagsArray := GetFlagsAndNoFlags(flags,noflags)
+	
+	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+
+	icategoryId,_ := strconv.Atoi(categoryId)
+	appId := security.GetAppId2(c.Request)
+	prodList,count,err := service.ProductListWithCategory(appId,int64(icategoryId),flagsArray,noflagsArray,pIndex,pSize)
+	if err!=nil {
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询失败!")
+		return
+	}
+	
+	
+	type ProductDetailDtoIsLimit struct {
+		ProductDetailDto
+		
+		IsLimit		 int64 `json:"is_limit"` 
+		CreateTime   string `json:"create_time"` 
+	}	
+	prodListDtos :=make([]*ProductDetailDtoIsLimit,0)
+	if prodList!=nil {
+		for _,prodDetail :=range prodList {
+			dto :=&ProductDetailDtoIsLimit{}
+			dto.Id 				= prodDetail.Id
+			dto.DisPrice		= prodDetail.DisPrice
+			dto.Json 			= prodDetail.Json
+			dto.Flag 			= prodDetail.Flag
+			dto.Title 			= prodDetail.Title
+			dto.SubTitle 		= prodDetail.SubTitle
+			dto.AppId 			= prodDetail.AppId
+			dto.MerchantId 		= prodDetail.MerchantId
+			dto.CategoryId 		= prodDetail.CategoryId
+			dto.CategoryName 	= prodDetail.CategoryName
+			dto.MerchantName 	= prodDetail.MerchantName
+			dto.Price 			= prodDetail.Price
+			dto.Status			= prodDetail.Status
+			dto.IsRecom 		= prodDetail.IsRecom
+			dto.Description 	= prodDetail.Description
+			dto.SoldNum 		= prodDetail.SoldNum
+			dto.Shopurl 		= prodDetail.Shopurl
+			dto.TotalPage 		= count
+			dto.LimitNum 		= prodDetail.LimitNum
+			dto.LimitNumd 		= prodDetail.LimitNumd
+			dto.Show 			= prodDetail.Show
+			dto.ParentId 		= prodDetail.ParentId
+			dto.Goodsid 		= prodDetail.Goodsid
+			dto.IsLimit 		= prodDetail.IsLimit
+			dto.CreateTime 		= time.Unix(prodDetail.CreateTimeUnix, 0).Format("2006-01-02 15:04:05")
+			
+			if prodDetail.ProdImgs!=nil{
+				detailDtos :=make([]*ProdImgsDetailDto,0)
+
+				for _,prodimg :=range prodDetail.ProdImgs {
+					detailDtos = append(detailDtos,prodImgsDetailToDto(prodimg))
+				}
+				dto.ProdImgs=detailDtos
+			}
+			
+			if prodDetail.ProdSkus!=nil{
+				detailDtos :=make([]*ProdSkuDto,0)
+
+				for _,prodSku :=range prodDetail.ProdSkus {
+					detailDtos = append(detailDtos,prodSkuToDto(prodSku))
+				}
+				dto.ProdSkus=detailDtos
+				dto.Stock=detailDtos[0].Stock
+				dto.StockInc=detailDtos[0].StockInc
+			}
+			prodListDtos = append(prodListDtos,dto)
+		}
+	}
+
+	c.JSON(http.StatusOK,prodListDtos)
+}
 
 //商品详情
 func ProdDetailWithProdId(c *gin.Context)  {
@@ -828,7 +906,6 @@ func productParamToBLL(param *ProductParam) *service.ProdBLL {
 	prodBll.LimitNum  = param.LimitNum
 	prodBll.ParentId  = param.ParentId
 	prodBll.Goodsid  = param.Goodsid
-	prodBll.IsLimit  = param.IsLimit
 
 	imgsparams  := param.Imgs
 	if imgsparams!=nil {
@@ -878,7 +955,6 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.Show 		= model.Show
 	dto.ParentId 	= model.ParentId
 	dto.Goodsid 	= model.Goodsid
-	dto.IsLimit 	= model.IsLimit
 	
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*ProdImgsDetailDto,0)

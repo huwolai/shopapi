@@ -56,12 +56,12 @@ func ProductAndPurchaseCodes(prodPurchaseCodes *ProdPurchaseCodes,tx *dbr.Tx) (*
 	return codes,err
 }
 //开奖
-func ProductAndPurchaseCodesOpen(tx *dbr.Tx,prodPurchaseCodes *ProdPurchaseCodes,openId string, openTime string) error  {
+func ProductAndPurchaseCodesOpen(tx *dbr.Tx,prodPurchaseCodes *ProdPurchaseCodes,openTime string) error  {
 	//_,err :=tx.UpdateBySql("update prod_purchase_codes set open_id=?,open_time=? where sku=? and num=?",openId,openTime,id,num).Exec()
 	
 	builder:=tx.Update("prod_purchase_codes")
 	
-	builder = builder.Set("open_id",openId)
+	//builder = builder.Set("open_id",openId)
 	builder = builder.Set("open_time",openTime)
 	
 	builder = builder.Where("sku=?",prodPurchaseCodes.Sku)
