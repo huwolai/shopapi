@@ -88,7 +88,7 @@ func ProdSkuAdd(prodSku *ProdSku) (*ProdSku,error)  {
 
 func ProdSkuUpdate(prodSku *ProdSku) (*ProdSku,error) {
 	pSku :=dao.NewProdSku()
-	err :=pSku.UpdatePriceWithProdIdAndSymbolPath(prodSku.Price,prodSku.DisPrice,prodSku.AttrSymbolPath,prodSku.ProdId)
+	err :=pSku.UpdatePriceWithProdIdAndSymbolPath(prodSku.Price,prodSku.DisPrice,prodSku.AttrSymbolPath,prodSku.ProdId,prodSku.Stock)
 
 	return prodSku,err
 }
@@ -635,7 +635,7 @@ func ProductChangeShowState(appId string,id int64,show int64) error  {
 func ProductAndPurchaseCodesAdd(ProdPurchaseCodes *dao.ProdPurchaseCodes) error {
 	codeMap:=make(map[int]string)
 	for i := 1; i <= ProdPurchaseCodes.Num; i++ {
-		codeMap[i]=fmt.Sprintf("%06d",i)
+		codeMap[i]=fmt.Sprintf("1%07d",i)
 	}
 	code:=make([]string,0)
 	for _,v := range codeMap {
@@ -644,10 +644,11 @@ func ProductAndPurchaseCodesAdd(ProdPurchaseCodes *dao.ProdPurchaseCodes) error 
 	//============
 	ProdPurchaseCodes.Codes=strings.Join(code,",")
 	
-	return dao.NewProduct().ProductAndPurchaseCodesAdd(ProdPurchaseCodes)
+	return dao.ProductAndPurchaseCodesAdd(ProdPurchaseCodes)
 }
+
 //一元购减去购买码
-func ProductAndPurchaseCodesMinus(ProdPurchaseCodes *dao.ProdPurchaseCodes) (string,error) {
+/* func ProductAndPurchaseCodesMinus(ProdPurchaseCodes *dao.ProdPurchaseCodes) (string,error) {
 	session := db.NewSession()
 	tx,_ :=session.Begin()
 	defer func() {
@@ -671,8 +672,7 @@ func ProductAndPurchaseCodesMinus(ProdPurchaseCodes *dao.ProdPurchaseCodes) (str
 	}	
 	//============================
 	s:=strings.Split(codes.Codes, ",")
-	ns:=s[ProdPurchaseCodes.Num:]
-	
+	ns:=s[ProdPurchaseCodes.Num:]	
 	ls:=s[0:ProdPurchaseCodes.Num]
 	
 	err=productDao.ProductAndPurchaseCodesMinus(tx,codes.Id,codes.Num,len(ns),strings.Join(ns,","))
@@ -688,7 +688,7 @@ func ProductAndPurchaseCodesMinus(ProdPurchaseCodes *dao.ProdPurchaseCodes) (str
 	}
 	
 	return strings.Join(ls,","),nil
-}
+} */
 
 
 

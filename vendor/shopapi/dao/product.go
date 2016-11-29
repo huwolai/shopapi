@@ -98,16 +98,6 @@ type ProductSearch struct {
 	Show	 	 uint64
 }
 
-type ProdPurchaseCodes struct  {
-	AppId string `json:"app_id"`
-	Id 		int64 `json:"id"`
-	ProdId	int64 `json:"prod_id"`
-	Sku 	string `json:"sku"`
-	Codes 	string `json:"codes"`
-	Num 	int `json:"num"`
-}
-
-
 func NewProductDetail() *ProductDetail {
 
 	return &ProductDetail{}
@@ -189,6 +179,7 @@ func (self *ProductDetail) ProdDetailListWith(keywords interface{} ,merchantId i
 		return nil,err
 	}
 	err = FillProdImgs(appId,prodList)
+	err = FillProdSku(appId,prodList)
 
 	return prodList,err
 }
@@ -222,7 +213,7 @@ func (self *ProductDetail) ProdDetailListCountWith(keywords interface{},merchant
 			buider = buider.Where("product.status = ?",1)
 		}else{
 			buider = buider.Where("product.status = ?",0)
-		}		
+		}
 	}
 	//是否推荐 ( 1 是 2 否)
 	if search.IsRecom>0 {
@@ -285,7 +276,21 @@ func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 }
 
 func (self *Product) UpdateTx(tx *dbr.Tx) error {
-	_,err :=tx.Update("product").Set("title",self.Title).Set("sub_title",self.SubTitle).Set("description",self.Description).Set("price",self.Price).Set("dis_price",self.DisPrice).Set("json",self.Json).Set("goodsid",self.Goodsid).Where("id=?",self.Id).Exec()
+	//_,err :=tx.Update("product").Set("title",self.Title).Set("sub_title",self.SubTitle).Set("description",self.Description).Set("price",self.Price).Set("dis_price",self.DisPrice).Set("json",self.Json).Set("goodsid",self.Goodsid).Where("id=?",self.Id).Exec()
+	
+	
+	builder :=tx.Update("product").Set("title",self.Title).Set("sub_title",self.SubTitle).Set("description",self.Description).Set("price",self.Price).Set("dis_price",self.DisPrice).Set("json",self.Json).Set("goodsid",self.Goodsid)
+	
+	if self.LimitNum>0{
+		builder = builder.Set("limit_num",self.LimitNum)
+	}
+	
+	if self.IsLimit>0{
+		builder = builder.Set("is_limit",self.IsLimit)
+	}
+	
+	_,err :=builder.Where("id=?",self.Id).Exec()
+	
 	return err
 }
 
@@ -510,25 +515,6 @@ func (self *Product) ProductChangeShowState(appId string,id int64,show int64) er
 	_,err :=db.NewSession().Update("product").Set("show",show).Where("id=?",id).Where("app_id=?",appId).Exec()
 	return err
 }
-//一元购生成购买码
-func (self *Product) ProductAndPurchaseCodesAdd(prodPurchaseCodes *ProdPurchaseCodes) error {
-	_,err :=db.NewSession().InsertInto("prod_purchase_codes").Columns("sku","app_id","prod_id","codes","num").Record(prodPurchaseCodes).Exec()
-	return err
-}
-//一元购减去购买码
-func (self *Product) ProductAndPurchaseCodesMinus(tx *dbr.Tx,id int64,num int,newNum int,newCodes string) error  {
-
-	_,err :=tx.UpdateBySql("update prod_purchase_codes set codes=?,num=? where id=? and num=?",newCodes,newNum,id,num).Exec()
-
-	return err
-}
-//一元购购买码
-func (self *Product) ProductAndPurchaseCodes(prodPurchaseCodes *ProdPurchaseCodes,tx *dbr.Tx) (*ProdPurchaseCodes,error)  {
-	var codes *ProdPurchaseCodes
-	_,err :=tx.Select("*").From("prod_purchase_codes").Where("sku=?",prodPurchaseCodes.Sku).Where("app_id=?",prodPurchaseCodes.AppId).Where("prod_id=?",prodPurchaseCodes.ProdId).LoadStructs(&codes)
-	return codes,err
-}
-
 
 
 

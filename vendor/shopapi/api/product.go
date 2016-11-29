@@ -237,10 +237,11 @@ func ProdSkuUpdate(c *gin.Context)  {
 	prodSku.Price = prodSkuDto.Price
 	prodSku.DisPrice = prodSkuDto.DisPrice
 	prodSku.SkuNo = prodSkuDto.SkuNo
+	prodSku.Stock = prodSkuDto.Stock
 	prodSku,err = service.ProdSkuUpdate(prodSku)
 	if err!=nil{
 		log.Error(err)
-		util.ResponseError400(c.Writer,"添加失败!")
+		util.ResponseError400(c.Writer,"更新失败!")
 		return
 	}
 

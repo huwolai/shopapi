@@ -617,8 +617,7 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	if err!=nil{
 		tx.Rollback()
 		return err
-	} */
-	
+	}	 */
 	
 	//支付预付款
 	params := map[string]interface{}{
@@ -653,7 +652,6 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 			log.Warn("发送订单事件失败:", err)
 		}
 	}()
-
 
 	return nil
 }
@@ -829,10 +827,69 @@ func ProdSKUStockSubWithOrder(orderItems []*dao.OrderItem,tx *dbr.Tx) error  {
 }
 
 //减商品购买码
-func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error  {
+func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
+	ProdPurchaseCodes := &dao.ProdPurchaseCodes{}	
+	
+	if len(orderItems)>1 {
+		return errors.New("商品购买错误!")
+	}
+	
+	for _,oItem :=range orderItems {
+		goodsType,_:=dao.JsonToMap(oItem.Json);
+		if goodsType["goods_type"]!="mall_yyg"{
+			return nil
+		}
+	
+		ProdPurchaseCodes.AppId	=oItem.AppId
+		ProdPurchaseCodes.Id	=oItem.Id
+		ProdPurchaseCodes.ProdId=oItem.ProdId
+		ProdPurchaseCodes.Sku	=oItem.SkuNo
+		ProdPurchaseCodes.Num	=oItem.Num
+		
+		//productDao:=dao.NewProduct()
+		
+		codes,err:=dao.ProductAndPurchaseCodes(ProdPurchaseCodes,tx)
+		if err!=nil || codes==nil{
+			log.Error(err)
+			return errors.New("数据库错误!")
+		}
+		
+		if(codes.Num<ProdPurchaseCodes.Num){
+			return errors.New("购买数量大于库存数量!")
+		}
+		//购买完成 设置开奖时间
+		/* if(codes.Num==ProdPurchaseCodes.Num){
+			err=dao.ProductAndPurchaseCodesOpen(tx,ProdPurchaseCodes,"openId",fmt.Sprintf("%d",time.Now().Unix()+300))//5分钟
+			if err!=nil{
+				return err
+			}
+		} */
+		//============================
+		s:=strings.Split(codes.Codes, ",")
+		ns:=s[ProdPurchaseCodes.Num:]	
+		ls:=s[0:ProdPurchaseCodes.Num]
+		
+		err=dao.ProductAndPurchaseCodesMinus(tx,codes.Id,codes.Num,len(ns),strings.Join(ns,","))
+		if err!=nil{
+			return err
+		}
+		
+		for _,codesItem :=range ls {
+			err=dao.OrderItemPurchaseCodesAdd(tx,oItem.Id,oItem.No,oItem.ProdId,codesItem)//strings.Join(ls,",")
+			if err!=nil{
+				return err
+			}
+		}
+		
+		err = tx.Commit()
+		if err!=nil{
+			return err
+		}
+		
+		//strings.Join(ls,",")
+		return nil	
+	}
 	return nil
-	//purchaseCodes := &dao.ProdPurchaseCodes{}	
-	//purchaseCodes.AppId=appId
 }
 
 

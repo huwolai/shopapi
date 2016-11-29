@@ -113,9 +113,18 @@ func (self *ProdSku) UpdatePriceWithSkuNo(price float64,disPrice float64,skuNo s
 	return err
 }
 
-func (self *ProdSku) UpdatePriceWithProdIdAndSymbolPath(price float64,disPrice float64,attrSymbolPath string,prodId int64) error  {
-	_,err :=db.NewSession().Update("prod_sku").Set("price",price).Set("dis_price",disPrice).Where("attr_symbol_path=?",attrSymbolPath).Where("prod_id=?",prodId).Exec()
+func (self *ProdSku) UpdatePriceWithProdIdAndSymbolPath(price float64,disPrice float64,attrSymbolPath string,prodId int64,stock int) error  {
+	//_,err :=db.NewSession().Update("prod_sku").Set("price",price).Set("dis_price",disPrice).Where("attr_symbol_path=?",attrSymbolPath).Where("prod_id=?",prodId).Exec()
 
+	
+	builder :=db.NewSession().Update("prod_sku").Set("price",price).Set("dis_price",disPrice)
+	
+	if stock>0{
+		builder = builder.Set("stock",stock)
+	}
+	
+	_,err :=builder.Where("attr_symbol_path=?",attrSymbolPath).Where("prod_id=?",prodId).Exec()
+	
 	return err
 }
 
