@@ -46,7 +46,7 @@ func  StartCron() {
 // 订单结算
 func OrderFetchMoney() {
 	order := dao.NewOrder()
-	tm := time.Now().Add(-time.Minute * ORDER_CAL_MAX_TIME_MALL)
+	tm := time.Now().Add(-time.Minute * ORDER_CAL_MAX_TIME_CHEF)
 	stm := qtime.ToyyyyMMddHHmm(tm)
 	log.Info("-----------时间--------", stm)
 	orders, err := order.OrderWithStatusLTTime(comm.ORDER_PAY_STATUS_SUCCESS, comm.ORDER_STATUS_WAIT_SURE, stm)
