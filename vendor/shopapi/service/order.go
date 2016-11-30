@@ -895,11 +895,17 @@ func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 			}
 		}
 		
+		log.Info("6@@@@@@@@@@@@@@@@@@@@")
+		log.Info(err)
+		
 		err = tx.Commit()
 		if err!=nil{
 			return err
 		}
-		return nil	
+		
+		log.Info("7@@@@@@@@@@@@@@@@@@@@")
+		log.Info(err)
+		break
 	}
 	return nil
 }
