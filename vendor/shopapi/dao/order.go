@@ -411,10 +411,12 @@ func fillOrderItemDetail(orders []*OrderDetail)  error {
 		for _,order :=range orders {
 			order.Items = orderItemDetailMap[order.No]
 			if len(orderItemDetailMap)>0{
-				order.GmOrdernum=orderItemDetailMap[order.No][0].GmOrdernum
-				order.GmPassnum=orderItemDetailMap[order.No][0].GmPassnum
-				order.GmPassway=orderItemDetailMap[order.No][0].GmPassway
-				order.WayStatus=orderItemDetailMap[order.No][0].WayStatus
+				if(len(orderItemDetailMap[order.No])>0){
+					order.GmOrdernum=orderItemDetailMap[order.No][0].GmOrdernum
+					order.GmPassnum=orderItemDetailMap[order.No][0].GmPassnum
+					order.GmPassway=orderItemDetailMap[order.No][0].GmPassway
+					order.WayStatus=orderItemDetailMap[order.No][0].WayStatus
+				}
 			}			
 		}		
 	}
