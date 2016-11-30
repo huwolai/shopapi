@@ -212,7 +212,7 @@ func cal(order *dao.Order, calMoney float64, openId string, mark string) error {
 //订单自动取消
 func OrderAutoCancel() {	
 	order := dao.NewOrder()
-	tm := time.Now().Add(-time.Minute * ORDER_AUTO_CANCEL_TIME_MALL)
+	tm := time.Now().Add(-time.Minute * ORDER_AUTO_CANCEL_TIME_CHEF)
 	stm := qtime.ToyyyyMMddHHmm(tm)
 	orders, err := order.OrderWithNoPayAndLTTime(stm)
 	if err != nil {
