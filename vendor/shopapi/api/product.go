@@ -43,6 +43,8 @@ type ProductParam struct  {
 	ParentId  int64 `json:"parent_id"`
 	
 	Goodsid  string `json:"goodsid"`
+	
+	IsLimit  int64 `json:"is_limit"`
 }
 
 type ProductImgParam struct {
@@ -995,6 +997,7 @@ func productParamToBLL(param *ProductParam) *service.ProdBLL {
 	prodBll.LimitNum  = param.LimitNum
 	prodBll.ParentId  = param.ParentId
 	prodBll.Goodsid  = param.Goodsid
+	prodBll.IsLimit  = param.IsLimit
 
 	imgsparams  := param.Imgs
 	if imgsparams!=nil {
