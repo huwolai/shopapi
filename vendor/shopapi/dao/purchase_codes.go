@@ -9,7 +9,7 @@ import (
 
 type OrderItemPurchaseCode struct  {
 	Id 			int64
-	orderItemId	int64
+	OrderItemId	int64
 	No			string
 	Codes 		string
 	ProdId 		int64
@@ -29,14 +29,14 @@ type ProdPurchaseCode struct  {
 }
 //==
 func OrderItemPurchaseCodesAdd(tx *dbr.Tx,orderItemId int64,no string,prodId int64,codes string) error {
-	var orderItemPurchaseCode *OrderItemPurchaseCode
-	orderItemPurchaseCode.orderItemId	=orderItemId
+	var orderItemPurchaseCode OrderItemPurchaseCode
+	orderItemPurchaseCode.OrderItemId	=orderItemId
 	orderItemPurchaseCode.No			=no
 	orderItemPurchaseCode.Codes			=codes
 	orderItemPurchaseCode.ProdId		=prodId
 	orderItemPurchaseCode.BuyTime		=fmt.Sprintf("%d",time.Now().UnixNano()/1e6)
 	
-	_,err :=tx.InsertInto("order_item_purchase_codes").Columns("order_item_id","no","codes","prod_id").Record(orderItemPurchaseCode).Exec()
+	_,err :=tx.InsertInto("order_item_purchase_codes").Columns("order_item_id","no","codes","prod_id","buy_time").Record(orderItemPurchaseCode).Exec()
 	return err
 }
 //==
