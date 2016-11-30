@@ -829,18 +829,14 @@ func ProdSKUStockSubWithOrder(orderItems []*dao.OrderItem,tx *dbr.Tx) error  {
 //减商品购买码
 func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 	ProdPurchaseCode := &dao.ProdPurchaseCode{}	
-	
-	log.Info("0@@@@@@@@@@@@@@@@@@@@")
-	log.Info(len(orderItems))
-		
+			
 	if len(orderItems)>1 {
 		return errors.New("商品购买错误!")
 	}
 	
 	for _,oItem :=range orderItems {
 		goodsType,_:=dao.JsonToMap(oItem.Json);
-		log.Info("1@@@@@@@@@@@@@@@@@@@@")
-		log.Info(goodsType["goods_type"])
+		
 		if goodsType["goods_type"]!="mall_yyg"{
 			return nil
 		}
@@ -855,8 +851,6 @@ func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 		
 		codes,err:=dao.ProductAndPurchaseCodesTx(ProdPurchaseCode,tx)
 		if err!=nil || codes==nil{
-			log.Info("2@@@@@@@@@@@@@@@@@@@@")
-			log.Info(err)
 			return errors.New("数据库错误!")
 		}
 		
@@ -864,9 +858,6 @@ func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 			return errors.New("购买数量大于库存数量!")
 		}
 		//购买完成 设置开奖时间
-		log.Info("3@@@@@@@@@@@@@@@@@@@@")
-		log.Info(codes.Num)
-		log.Info(ProdPurchaseCode.Num)
 		if(codes.Num==ProdPurchaseCode.Num){
 			err=dao.ProductAndPurchaseCodesOpening(tx,ProdPurchaseCode,fmt.Sprintf("%d",time.Now().Unix()+300))//5分钟
 			if err!=nil{
@@ -879,14 +870,9 @@ func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 		ls:=s[0:ProdPurchaseCode.Num]		
 		
 		err=dao.ProductAndPurchaseCodesMinus(tx,codes.Id,codes.Num,len(ns),strings.Join(ns,","))
-		log.Info("4@@@@@@@@@@@@@@@@@@@@")
-		log.Info(err)
 		if err!=nil{
 			return err
 		}
-		
-		log.Info("5@@@@@@@@@@@@@@@@@@@@")
-		log.Info(len(ls))
 		
 		for _,codesItem :=range ls {
 			err=dao.OrderItemPurchaseCodesAdd(tx,oItem.Id,oItem.No,oItem.ProdId,codesItem)//strings.Join(ls,",")
@@ -895,16 +881,6 @@ func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 			}
 		}
 		
-		log.Info("6@@@@@@@@@@@@@@@@@@@@")
-		log.Info(err)
-		
-		err = tx.Commit()
-		if err!=nil{
-			return err
-		}
-		
-		log.Info("7@@@@@@@@@@@@@@@@@@@@")
-		log.Info(err)
 		break
 	}
 	return nil
