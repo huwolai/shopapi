@@ -921,11 +921,12 @@ func OrderChangeShowState(c *gin.Context)  {
 		return
 	}	
 	
-	id,err :=strconv.ParseInt(c.Param("id"),10,64)
+	no:=c.Param("no")
+	/* id,err :=strconv.ParseInt(c.Param("id"),10,64)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"id格式错误")
 		return
-	}
+	} */
 	
 	show,err :=strconv.ParseInt(c.Param("show"),10,64)
 	if err!=nil{
@@ -933,7 +934,7 @@ func OrderChangeShowState(c *gin.Context)  {
 		return
 	}	
 	
-	err =service.OrderChangeShowState(appId,id,show)	
+	err =service.OrderChangeShowState(appId,no,show)	
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return

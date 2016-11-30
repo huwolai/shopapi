@@ -187,6 +187,7 @@ func main() {
 			product.GET("/:prod_id/sku", api.ProductSkuWithProdIdAndSymbolPath)
 			product.GET("/:prod_id/imgs", api.ProdImgsWithProdId)
 			product.GET("/:prod_id/detail", api.ProdDetailWithProdId)
+			product.GET("/:prod_id/detail/yyg",api.ProdDetailYygWithProdId)
 			//修改SKU 库存
 			product.POST("/:prod_id/updatestock", api.ProductUpdateStockWithProdId)
 			//通过属性生成sku (特殊接口)
@@ -205,7 +206,6 @@ func main() {
 			product.PUT("/:prod_id",api.ProductUpdate)
 			//录入商品链接
 			product.POST("/:prod_id/addlink", api.ProductAndAddLink)
-
 		}
 		merchants := v1.Group("/merchants")
 		{
@@ -366,7 +366,7 @@ func main() {
 		//应用
 		changeshowstate := v1.Group("/changeshowstate")
 		{
-			changeshowstate.GET("/order/:id/:show", api.OrderChangeShowState)
+			changeshowstate.GET("/order/:no/:show", api.OrderChangeShowState)
 			changeshowstate.GET("/product/:id/:show", api.ProductChangeShowState)
 		}
 		//购物车

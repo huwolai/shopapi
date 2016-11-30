@@ -613,11 +613,11 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	}
 	
 	//一元购
-	/*  err = purchaseCodes(orderItems,appId,tx)
+	err = purchaseCodes(orderItems,appId,tx)
 	if err!=nil{
 		tx.Rollback()
 		return err
-	} */
+	}
 	
 	//支付预付款
 	params := map[string]interface{}{
@@ -1402,8 +1402,8 @@ func ExpressDelivery(logisticCode string,shipperCode string) (string,error)  {
 }
 
 //changeshowstate
-func OrderChangeShowState(appId string,id int64,show int64) error  {	
-	return dao.NewOrder().OrderChangeShowState(appId,id,show)
+func OrderChangeShowState(appId string,no string,show int64) error  {	
+	return dao.NewOrder().OrderChangeShowState(appId,no,show)
 }
 
 

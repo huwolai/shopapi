@@ -10,6 +10,7 @@ import (
 	"shopapi/service"
 	"time"
 	"strconv"
+	"fmt"
 )
 
 const (
@@ -40,6 +41,8 @@ func  StartCron() {
 	//商品 售出数量 定时增加
 	c.AddFunc("0 0 1 * * ?", ProductAddNum)
 
+	c.AddFunc("0 0/1 * * * ?", PurchaseCodesOpen)
+	
 	c.Start()
 }
 
@@ -301,3 +304,58 @@ func ProductAddNum()  {
 	log.Info("商品 售出数量 定时增加!")
 	dao.ProductAddNum()
 }
+//定时开奖
+func PurchaseCodesOpen()  {
+	log.Info("定时开奖")
+	prodOpening,_:=dao.ProdPurchaseCodeWithOpenStatus(1)
+	for _, prod := range prodOpening {
+		orderItem,_:=dao.OrderItemPurchaseCodes(prod.ProdId,50)
+		
+		var c int64 =0
+		for _, tSum := range orderItem {
+			t1Sum,_ :=strconv.ParseInt(RightSubstr(tSum.BuyTime,3),10,64)
+			c=c+t1Sum		
+		}
+		openCode:=c%100+10000007
+		
+		openId,_:=dao.GetOpenIdbyOpenCode(prod.ProdId,fmt.Sprintf("%d",openCode))		
+		
+		dao.ProductAndPurchaseCodesOpened(prod.ProdId,openId)
+	}
+}
+func RightSubstr(str string, length int) string {
+	rs := []rune(str)
+	start := len(rs)-length-1
+	
+	return string(rs[start:])	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

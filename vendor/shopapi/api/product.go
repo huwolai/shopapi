@@ -656,6 +656,85 @@ func ProdDetailWithProdId(c *gin.Context)  {
 	c.JSON(http.StatusOK,productDto)
 }
 
+//商品详情 yyg
+func ProdDetailYygWithProdId(c *gin.Context)  {
+	prodId := c.Param("prod_id")
+	iprodId,_ := strconv.ParseInt(prodId,10,64)
+	appId := security.GetAppId2(c.Request)
+	product,err := service.ProdDetailWithProdId(iprodId,appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"查询商品失败!")
+		return
+	}
+
+	if product==nil {
+		util.ResponseError400(c.Writer,"商品没找到!")
+		return
+	}
+	if len(c.Query("open_id"))>0 {
+		product.LimitNumd,_=service.ProdOrderCountWithId(iprodId,c.Query("open_id"),fmt.Sprintf(time.Now().Format("2006-01-02")))
+	}	
+	
+	code,err:=dao.ProdPurchaseCodeWithProdId(product.Id)
+	if err!=nil || code==nil{
+		util.ResponseError400(c.Writer,"查询商品中奖码!")
+		return
+	}
+	
+	type ProductDetailyygDto struct {
+		ProductDetailDto
+		
+		OpenId 		string 	`json:"open_id"`
+		OpenStatus 	int64 	`json:"open_status"`
+		OpenTime 	int64 	`json:"Open_time"`
+		Mobile 		string 	`json:"mobile"`
+		Memo 		string 	`json:"meom"`
+		
+	}
+	productDto 				:=&ProductDetailyygDto{}
+	productDto.Id 			= product.Id
+	productDto.DisPrice		= product.DisPrice
+	productDto.Json 		= product.Json
+	productDto.Flag 		= product.Flag
+	productDto.Title 		= product.Title
+	productDto.SubTitle 	= product.SubTitle
+	productDto.AppId		= product.AppId
+	productDto.MerchantId 	= product.MerchantId
+	productDto.CategoryId 	= product.CategoryId
+	productDto.CategoryName = product.CategoryName
+	productDto.MerchantName = product.MerchantName
+	productDto.Price 		= product.Price
+	productDto.Status 		= product.Status
+	productDto.IsRecom		= product.IsRecom
+	productDto.Description 	= product.Description
+	productDto.SoldNum 		= product.SoldNum
+	productDto.Shopurl 		= product.Shopurl
+	productDto.TotalPage 	= product.TotalPage
+	productDto.LimitNum 	= product.LimitNum
+	productDto.LimitNumd 	= product.LimitNumd
+	productDto.Show 		= product.Show
+	productDto.ParentId 	= product.ParentId
+	productDto.Goodsid 		= product.Goodsid
+	productDto.IsLimit 		= product.IsLimit
+	
+	productDto.OpenId 		= code.OpenId
+	productDto.OpenStatus 	= code.OpenStatus
+	productDto.OpenTime 	= code.OpenTime
+	
+	if product.ProdSkus!=nil{
+		detailDtos :=make([]*ProdSkuDto,0)
+		for _,prodSku :=range product.ProdSkus {
+			detailDtos = append(detailDtos,prodSkuToDto(prodSku))
+		}
+		productDto.ProdSkus=detailDtos
+		productDto.Stock=detailDtos[0].Stock
+		productDto.StockInc=detailDtos[0].StockInc
+	}
+	//productDto:=productDetailToDto(product)
+	
+	c.JSON(http.StatusOK,productDto)
+}
+
 //商品图片
 func ProdImgsWithProdId(c *gin.Context)  {
 
