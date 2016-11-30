@@ -613,13 +613,13 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	}
 	
 	//一元购
-	err = purchaseCodes(orderItems,appId,tx)
+	/* err = purchaseCodes(orderItems,appId,tx)
 	if err!=nil{
 		log.Info("@@@@@@@@@@@@@@")
 		log.Info(err)
 		tx.Rollback()
 		return err
-	}
+	} */
 	
 	//支付预付款
 	params := map[string]interface{}{
