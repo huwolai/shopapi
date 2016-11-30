@@ -141,6 +141,8 @@ type ProductDetailDto struct {
 	
 	Stock int `json:"stock"`
 	StockInc int `json:"stock_init"`
+	
+	IsLimit int64 `json:"is_limit"`
 }
 
 type ProdImgsDetailDto struct  {
@@ -539,7 +541,7 @@ func ProductListWithCategoryIsLimit(c *gin.Context)  {
 
 	icategoryId,_ := strconv.Atoi(categoryId)
 	appId := security.GetAppId2(c.Request)
-	prodList,count,err := service.ProductListWithCategory(appId,int64(icategoryId),flagsArray,noflagsArray,pIndex,pSize)
+	prodList,count,err := service.ProductListWithCategoryIsLimit(appId,int64(icategoryId),flagsArray,noflagsArray,pIndex,pSize)
 	if err!=nil {
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询失败!")
@@ -552,6 +554,8 @@ func ProductListWithCategoryIsLimit(c *gin.Context)  {
 		
 		IsLimit		 int64 `json:"is_limit"` 
 		CreateTime   string `json:"create_time"` 
+		
+		OpenStatus	 int64 `json:"open_status"` //开奖状态
 	}	
 	prodListDtos :=make([]*ProductDetailDtoIsLimit,0)
 	if prodList!=nil {
@@ -592,6 +596,10 @@ func ProductListWithCategoryIsLimit(c *gin.Context)  {
 				dto.ProdImgs=detailDtos
 			}
 			
+			if prodDetail.ProdPurchaseCodes!=nil{
+				dto.OpenStatus=prodDetail.ProdPurchaseCodes[0].OpenStatus
+			}
+			
 			if prodDetail.ProdSkus!=nil{
 				detailDtos :=make([]*ProdSkuDto,0)
 
@@ -602,6 +610,8 @@ func ProductListWithCategoryIsLimit(c *gin.Context)  {
 				dto.Stock=detailDtos[0].Stock
 				dto.StockInc=detailDtos[0].StockInc
 			}
+			
+			
 			prodListDtos = append(prodListDtos,dto)
 		}
 	}
@@ -955,6 +965,7 @@ func productDetailToDto(model *dao.ProductDetail) *ProductDetailDto  {
 	dto.Show 		= model.Show
 	dto.ParentId 	= model.ParentId
 	dto.Goodsid 	= model.Goodsid
+	dto.IsLimit 	= model.IsLimit
 	
 	if model.ProdImgs!=nil{
 		detailDtos :=make([]*ProdImgsDetailDto,0)
@@ -1086,7 +1097,7 @@ func ProductChangeShowState(c *gin.Context)  {
 //一元购生成购买码
 func ProductAndPurchaseCodesAdd(c *gin.Context) {
 
-	param := &dao.ProdPurchaseCodes{}
+	param := &dao.ProdPurchaseCode{}
 	err :=c.BindJSON(&param)
 	if err!=nil{
 		log.Error(err)
@@ -1125,7 +1136,7 @@ func ProductAndPurchaseCodesAdd(c *gin.Context) {
 //一元购减去购买码
 /* func ProductAndPurchaseCodesMinus(c *gin.Context) {
 
-	param := &dao.ProdPurchaseCodes{}
+	param := &dao.ProdPurchaseCode{}
 	err :=c.BindJSON(&param)
 	if err!=nil{
 		log.Error(err)

@@ -317,6 +317,14 @@ func ProductListWithCategory(appId string,categoryId int64,flags []string,noflag
 	}
 	return prodList,count,nil
 }
+func ProductListWithCategoryIsLimit(appId string,categoryId int64,flags []string,noflags []string,pageIndex uint64,pageSize uint64) ([]*dao.ProductDetail,int,error)   {
+	productDetail :=dao.NewProductDetail()
+	prodList,count,err := productDetail.ProductListWithCategoryIsLimit(appId,categoryId,flags,noflags,pageIndex,pageSize)
+	if err!=nil {
+		return nil,0,err
+	}
+	return prodList,count,nil
+}
 
 //查询商品指定key的属性值
 func ProductAttrValues(vsearch string,attrKey string,prodId int64) ([]*dao.ProdAttrVal,error)  {
@@ -631,9 +639,9 @@ func ProductChangeShowState(appId string,id int64,show int64) error  {
 	return dao.NewProduct().ProductChangeShowState(appId,id,show)
 }
 //一元购生成购买码
-func ProductAndPurchaseCodesAdd(ProdPurchaseCodes *dao.ProdPurchaseCodes) error {
+func ProductAndPurchaseCodesAdd(ProdPurchaseCode *dao.ProdPurchaseCode) error {
 	codeMap:=make(map[int]string)
-	for i := 1; i <= ProdPurchaseCodes.Num; i++ {
+	for i := 1; i <= ProdPurchaseCode.Num; i++ {
 		codeMap[i]=fmt.Sprintf("1%07d",i)
 	}
 	code:=make([]string,0)
@@ -641,13 +649,13 @@ func ProductAndPurchaseCodesAdd(ProdPurchaseCodes *dao.ProdPurchaseCodes) error 
 		code=append(code,v)
 	}
 	//============
-	ProdPurchaseCodes.Codes=strings.Join(code,",")
+	ProdPurchaseCode.Codes=strings.Join(code,",")
 	
-	return dao.ProductAndPurchaseCodesAdd(ProdPurchaseCodes)
+	return dao.ProductAndPurchaseCodesAdd(ProdPurchaseCode)
 }
 
 //一元购减去购买码
-/* func ProductAndPurchaseCodesMinus(ProdPurchaseCodes *dao.ProdPurchaseCodes) (string,error) {
+/* func ProductAndPurchaseCodesMinus(ProdPurchaseCode *dao.ProdPurchaseCode) (string,error) {
 	session := db.NewSession()
 	tx,_ :=session.Begin()
 	defer func() {
@@ -659,20 +667,20 @@ func ProductAndPurchaseCodesAdd(ProdPurchaseCodes *dao.ProdPurchaseCodes) error 
 	
 	productDao:=dao.NewProduct()
 	
-	codes,err:=productDao.ProductAndPurchaseCodes(ProdPurchaseCodes,tx)
+	codes,err:=productDao.ProductAndPurchaseCodes(ProdPurchaseCode,tx)
 	if err!=nil || codes==nil{
 		tx.Rollback()
 		return "",err
 	}
 	
-	if(codes.Num<ProdPurchaseCodes.Num){
+	if(codes.Num<ProdPurchaseCode.Num){
 		tx.Rollback()
 		return "",errors.New("购买数量大于库存数量!")
 	}	
 	//============================
 	s:=strings.Split(codes.Codes, ",")
-	ns:=s[ProdPurchaseCodes.Num:]	
-	ls:=s[0:ProdPurchaseCodes.Num]
+	ns:=s[ProdPurchaseCode.Num:]	
+	ls:=s[0:ProdPurchaseCode.Num]
 	
 	err=productDao.ProductAndPurchaseCodesMinus(tx,codes.Id,codes.Num,len(ns),strings.Join(ns,","))
 	if err!=nil{

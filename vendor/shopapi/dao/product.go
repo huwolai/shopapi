@@ -85,7 +85,8 @@ type ProductDetail struct {
 	Goodsid string 
 	IsLimit int64 
 	
-	ProdSkus []*ProdSku
+	ProdSkus []*ProdSku	
+	ProdPurchaseCodes []*ProdPurchaseCode
 	
 	CreateTimeUnix int64 
 }
@@ -181,7 +182,7 @@ func (self *ProductDetail) ProdDetailListWith(keywords interface{} ,merchantId i
 		return nil,err
 	}
 	err = FillProdImgs(appId,prodList)
-	err = FillProdSku(appId,prodList)
+	err = FillProdSkus(appId,prodList)
 
 	return prodList,err
 }
@@ -319,6 +320,7 @@ func (self *ProductDetail) ProductListWithRecomm(appId string,pageIndex uint64,p
 	}
 
 	err = FillProdImgs(appId,prodList)
+	err = FillProdSkus(appId,prodList)
 
 	return prodList,count,err
 }
@@ -383,14 +385,53 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 	
 	if prodList!=nil&&len(prodList)>0 {
 		err = FillProdImgs(appId,prodList)
-		err = FillProdSku(appId,prodList)
+		err = FillProdSkus(appId,prodList)
 	}	
 
 
 	return prodList,count,err
 }
+
+func (self *ProductDetail) ProductListWithCategoryIsLimit(appId string,categoryId int64,flags []string,noflags []string,pageIndex uint64,pageSize uint64) ([]*ProductDetail,int , error)  {
+	session := db.NewSession()
+	var prodList []*ProductDetail
+	
+	builder :=session.Select("product.*,UNIX_TIMESTAMP(product.create_time) as create_time_unix,merchant.id merchant_id,merchant.name merchant_name").From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.status=?",1).Where("product.parent_id=?",0).Where("product.app_id=?",appId)
+	if flags!=nil&&len(flags)>0{
+		builder = builder.Where("product.flag in ?",flags)
+	}
+	if noflags!=nil&&len(noflags) >0 {
+		builder = builder.Where("product.flag not in ?",noflags)
+	}
+	_,err := builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&prodList)
+	if err!=nil{
+		return nil,0,err
+	}
+	
+	var count int
+	builder =session.Select("count(product.id)").From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.status=?",1).Where("product.app_id=?",appId)
+	if flags!=nil&&len(flags)>0{
+
+		builder = builder.Where("product.flag in ?",flags)
+	}
+	if noflags!=nil&&len(noflags) >0 {
+		builder = builder.Where("product.flag not in ?",noflags)
+	}
+	_,err = builder.Limit(1).LoadStructs(&count)
+	if err!=nil{
+		return nil,0,err
+	}
+	
+	if prodList!=nil&&len(prodList)>0 {
+		err = FillProdImgs(appId,prodList)
+		err = FillProdSkus(appId,prodList)
+		err = FillProdPurchaseCodes(appId,prodList)
+	}
+
+	return prodList,count,err
+}
 //SKU
-func FillProdSku(appId string,prodList []*ProductDetail) error {
+func FillProdSkus(appId string,prodList []*ProductDetail) error {
 	prodids := make([]int64,0)
 	if prodList!=nil{
 		for _,prod :=range prodList {
@@ -411,14 +452,14 @@ func FillProdSku(appId string,prodList []*ProductDetail) error {
 	if prodSkus!=nil{
 		for _,prodSkud :=range prodSkus {
 			key := prodSkud.ProdId
-			pdimgdetails :=prodSkusMap[key]
-			if pdimgdetails==nil{
-				pdimgdetails = make([]*ProdSku,0)
+			val :=prodSkusMap[key]
+			if val==nil{
+				val = make([]*ProdSku,0)
 			}
 
-			pdimgdetails= append(pdimgdetails,prodSkud)
+			val= append(val,prodSkud)
 
-			prodSkusMap[key] = pdimgdetails
+			prodSkusMap[key] = val
 			//log.Debug(prodSkusMap)
 		}
 	}
@@ -426,6 +467,45 @@ func FillProdSku(appId string,prodList []*ProductDetail) error {
 		key := prod.Id
 		prodSkus := prodSkusMap[key]
 		prod.ProdSkus = prodSkus
+	}
+
+	return nil
+}
+//purchase_codes
+func FillProdPurchaseCodes(appId string,prodList []*ProductDetail) error {
+	prodids := make([]int64,0)
+	if prodList!=nil{
+		for _,prod :=range prodList {
+			prodids = append(prodids,prod.Id)
+		}
+	}
+
+	if len(prodids)<=0 {
+		return nil
+	}
+
+	codes,err := ProdPurchaseCodeWithProdIds(prodids)
+	if err!=nil{
+		return err
+	}	
+	codesMap := make(map[int64][]*ProdPurchaseCode)
+	if codes!=nil{
+		for _,code :=range codes {
+			key := code.ProdId
+			val :=codesMap[key]
+			if val==nil{
+				val = make([]*ProdPurchaseCode,0)
+			}
+
+			val= append(val,code)
+
+			codesMap[key] = val
+		}
+	}
+	for _,prod :=range prodList {
+		key := prod.Id
+		ProdPurchaseCodes := codesMap[key]
+		prod.ProdPurchaseCodes = ProdPurchaseCodes
 	}
 
 	return nil

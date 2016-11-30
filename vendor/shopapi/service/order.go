@@ -828,7 +828,7 @@ func ProdSKUStockSubWithOrder(orderItems []*dao.OrderItem,tx *dbr.Tx) error  {
 
 //减商品购买码
 func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
-	ProdPurchaseCodes := &dao.ProdPurchaseCodes{}	
+	ProdPurchaseCode := &dao.ProdPurchaseCode{}	
 	
 	if len(orderItems)>1 {
 		return errors.New("商品购买错误!")
@@ -840,34 +840,34 @@ func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 			return nil
 		}
 	
-		ProdPurchaseCodes.AppId	=oItem.AppId
-		ProdPurchaseCodes.Id	=oItem.Id
-		ProdPurchaseCodes.ProdId=oItem.ProdId
-		ProdPurchaseCodes.Sku	=oItem.SkuNo
-		ProdPurchaseCodes.Num	=oItem.Num
+		ProdPurchaseCode.AppId	=oItem.AppId
+		ProdPurchaseCode.Id	=oItem.Id
+		ProdPurchaseCode.ProdId=oItem.ProdId
+		ProdPurchaseCode.Sku	=oItem.SkuNo
+		ProdPurchaseCode.Num	=oItem.Num
 		
 		//productDao:=dao.NewProduct()
 		
-		codes,err:=dao.ProductAndPurchaseCodes(ProdPurchaseCodes,tx)
+		codes,err:=dao.ProductAndPurchaseCodesTx(ProdPurchaseCode,tx)
 		if err!=nil || codes==nil{
 			log.Error(err)
 			return errors.New("数据库错误!")
 		}
 		
-		if(codes.Num<ProdPurchaseCodes.Num){
+		if(codes.Num<ProdPurchaseCode.Num){
 			return errors.New("购买数量大于库存数量!")
 		}
 		//购买完成 设置开奖时间
-		if(codes.Num==ProdPurchaseCodes.Num){
-			err=dao.ProductAndPurchaseCodesOpen(tx,ProdPurchaseCodes,fmt.Sprintf("%d",time.Now().Unix()+300))//5分钟
+		if(codes.Num==ProdPurchaseCode.Num){
+			err=dao.ProductAndPurchaseCodesOpening(tx,ProdPurchaseCode,fmt.Sprintf("%d",time.Now().Unix()+300))//5分钟
 			if err!=nil{
 				return err
 			}
 		}
 		//============================
 		s:=strings.Split(codes.Codes, ",")
-		ns:=s[ProdPurchaseCodes.Num:]	
-		ls:=s[0:ProdPurchaseCodes.Num]
+		ns:=s[ProdPurchaseCode.Num:]	
+		ls:=s[0:ProdPurchaseCode.Num]
 		
 		err=dao.ProductAndPurchaseCodesMinus(tx,codes.Id,codes.Num,len(ns),strings.Join(ns,","))
 		if err!=nil{
