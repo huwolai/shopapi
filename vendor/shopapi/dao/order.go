@@ -86,6 +86,10 @@ type OrderDetail struct  {
 	GmPassnum string
 	GmPassway string
 	WayStatus int64
+	
+	Itemsyyg *ProdPurchaseCode
+	
+	ItemsyygBuyCodes []string
 }
 
 type OrderCount struct  {

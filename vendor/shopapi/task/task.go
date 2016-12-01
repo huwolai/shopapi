@@ -306,28 +306,30 @@ func ProductAddNum()  {
 }
 //定时开奖
 func PurchaseCodesOpen()  {
+	//公式 
 	log.Info("定时开奖")
-	prodOpening,_:=dao.ProdPurchaseCodeWithOpenStatus(1)
-	for _, prod := range prodOpening {
-		orderItem,_:=dao.OrderItemPurchaseCodes(prod.ProdId,50)
+	prodOpening,_	:=dao.ProdPurchaseCodeWithOpenStatus(1)	
+	for _, prod := range prodOpening {		
+		orderItem,_:=dao.OrderItemPurchaseCodesWithTime(prod.OpenTime,50)
 		
-		var c int64 =0
+		codeCount,_:=dao.OrderItemPurchaseCodesWithProdId(prod.ProdId)//商品份数
+		
+		var c int64 = 0		
 		for _, tSum := range orderItem {
-			t1Sum,_ :=strconv.ParseInt(RightSubstr(tSum.BuyTime,3),10,64)
+			t1Sum:=tSum.BuyTime%1000
 			c=c+t1Sum		
 		}
-		openCode:=c%100+10000007
+		openCode:=fmt.Sprintf("%d",c%codeCount+10000001)
 		
-		openId,_:=dao.GetOpenIdbyOpenCode(prod.ProdId,fmt.Sprintf("%d",openCode))		
+		user,err:=dao.GetOpenIdbyOpenCode(prod.ProdId,openCode)		
+		if err!=nil {
+			log.Error(err)
+		}
 		
-		dao.ProductAndPurchaseCodesOpened(prod.ProdId,openId)
+		dao.ProductAndPurchaseCodesOpened(prod.ProdId,user.OpenId,user.Mobile,openCode)
 	}
-}
-func RightSubstr(str string, length int) string {
-	rs := []rune(str)
-	start := len(rs)-length-1
-	
-	return string(rs[start:])	
+	//开奖状态更新
+	dao.ProductAndPurchaseCodesOpenedStatus()
 }
 
 

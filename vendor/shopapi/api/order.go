@@ -83,8 +83,15 @@ type OrderDetailDto struct  {
 	GmPassnum string   `json:"passnum"`
 	GmPassway string `json:"passway"`
 	WayStatus int64 `json:"way_status"`
+	
+	Yyg	*OrderItemYygDto `json:"yyg"`
 }
-
+type OrderItemYygDto struct  {
+	OpenCode   string `json:"open_code"`
+	OpenStatus int64 `json:"open_status"`
+	OpenMobile string `json:"open_mobile"`
+	BuyCodes   []string `json:"buy_codes"`
+}
 type OrderItemDetailDto struct  {
 	Id int64 `json:"id"`
 	No string `json:"no"`
@@ -514,7 +521,6 @@ func OrderDetailWithNo(c *gin.Context)  {
 		return
 	}
 	if orderDetail!=nil {
-
 		c.JSON(http.StatusOK,orderDetailToDto(orderDetail))
 	}else{
 		util.ResponseError400(c.Writer,"没有找到订单详情!")
@@ -684,6 +690,15 @@ func orderDetailToDto(model *dao.OrderDetail) *OrderDetailDto {
 		}
 		dto.Items = itemsDto
 	}
+	
+	if model.Itemsyyg!=nil {
+		itemsDto :=&OrderItemYygDto{}
+		itemsDto.OpenCode   = model.Itemsyyg.OpenCode
+		itemsDto.OpenStatus = model.Itemsyyg.OpenStatus
+		itemsDto.OpenMobile = model.Itemsyyg.OpenMobile
+		itemsDto.BuyCodes   = model.ItemsyygBuyCodes
+		dto.Yyg = itemsDto
+	}	
 
 	return dto
 }

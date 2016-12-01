@@ -4,7 +4,8 @@ import (
 	"github.com/gocraft/dbr"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
 	"time"
-	"fmt"
+	//"fmt"
+	//"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 type OrderItemPurchaseCode struct  {
@@ -13,7 +14,7 @@ type OrderItemPurchaseCode struct  {
 	No			string
 	Codes 		string
 	ProdId 		int64
-	BuyTime 	string
+	BuyTime 	int64
 }
 
 type ProdPurchaseCode struct  {
@@ -26,6 +27,12 @@ type ProdPurchaseCode struct  {
 	OpenId 		string `json:"open_id"`
 	OpenStatus 	int64 `json:"open_status"`
 	OpenTime 	int64 `json:"Open_time"`
+	OpenCode	string `json:"Open_code"`
+	OpenMobile	string `json:"Open_mobile"`
+}
+type UserOpen struct  {
+	OpenId string
+	Mobile string
 }
 //==
 func OrderItemPurchaseCodesAdd(tx *dbr.Tx,orderItemId int64,no string,prodId int64,codes string) error {
@@ -34,16 +41,28 @@ func OrderItemPurchaseCodesAdd(tx *dbr.Tx,orderItemId int64,no string,prodId int
 	orderItemPurchaseCode.No			=no
 	orderItemPurchaseCode.Codes			=codes
 	orderItemPurchaseCode.ProdId		=prodId
-	orderItemPurchaseCode.BuyTime		=fmt.Sprintf("%d",time.Now().UnixNano()/1e6)
+	//orderItemPurchaseCode.BuyTime		=fmt.Sprintf("%d",time.Now().UnixNano()/1e6)
+	orderItemPurchaseCode.BuyTime		=time.Now().UnixNano()/1e6
 	
 	_,err :=tx.InsertInto("order_item_purchase_codes").Columns("order_item_id","no","codes","prod_id","buy_time").Record(orderItemPurchaseCode).Exec()
 	return err
 }
 //==
-func OrderItemPurchaseCodes(prodId int64,limit int64)  ([]*OrderItemPurchaseCode,error)  {
+func OrderItemPurchaseCodesWithTime(time int64,limit int64)  ([]*OrderItemPurchaseCode,error)  {
 	var orderItemPurchaseCode []*OrderItemPurchaseCode
-	_,err :=db.NewSession().SelectBySql("select * from order_item_purchase_codes where prod_id = ? order by id desc limit ?",prodId,limit).LoadStructs(&orderItemPurchaseCode)
+	//buy_time 毫秒
+	_,err :=db.NewSession().SelectBySql("select * from order_item_purchase_codes where buy_time <= ? order by id desc limit ?",time*1000+999,limit).LoadStructs(&orderItemPurchaseCode)
 	return  orderItemPurchaseCode,err
+}
+func OrderItemPurchaseCodesWithProdId(prodId int64)  (int64,error)  {
+	var count int64
+	_,err :=db.NewSession().SelectBySql("select count(id) from order_item_purchase_codes where prod_id =?",prodId).LoadStructs(&count)
+	return  count,err
+}
+func OrderItemPurchaseCodesWithNo(orderNo string)  ([]string,error)  {
+	var codes []string
+	_,err :=db.NewSession().SelectBySql("select codes from order_item_purchase_codes where no = ?",orderNo).LoadStructs(&codes)
+	return  codes,err
 }
 //一元购生成购买码
 func ProductAndPurchaseCodesAdd(prodPurchaseCode *ProdPurchaseCode) error {
@@ -91,25 +110,29 @@ func ProductAndPurchaseCodesOpening(tx *dbr.Tx,prodPurchaseCode *ProdPurchaseCod
 	return err
 }
 //开奖
-func ProductAndPurchaseCodesOpened(prodId int64,openId string) error  {
+func ProductAndPurchaseCodesOpened(prodId int64,openId string,mobile string,openCode string) error  {
 	//_,err :=tx.UpdateBySql("update prod_purchase_codes set open_id=?,open_time=? where sku=? and num=?",openId,openTime,id,num).Exec()	
 	builder:=db.NewSession().Update("prod_purchase_codes")	
-	builder = builder.Set("open_status",2)
+	//builder = builder.Set("open_status",2)
+	builder = builder.Set("open_code",openCode)
 	builder = builder.Set("open_id",openId)
+	builder = builder.Set("open_mobile",mobile)
 	builder = builder.Where("prod_id=?",prodId)		
 	_,err :=builder.Exec()
 	return err
 }
+//开奖状态
+func ProductAndPurchaseCodesOpenedStatus() error  {
+	_,err :=db.NewSession().UpdateBySql("update prod_purchase_codes set open_status=? where open_time<=UNIX_TIMESTAMP()",2).Exec()	
+	return err
+}
 //开奖
-func GetOpenIdbyOpenCode(prodId int64,openCode string) (string,error)  {
-	builder :=db.NewSession().Select("open_id").From("order_item_purchase_codes").Join("order","order_item_purchase_codes.no=order.no")
-	builder = builder.Where("order_item_purchase_codes.prod_id =",prodId)
-	builder = builder.Where("order_item_purchase_codes.codes =",openCode)
+func GetOpenIdbyOpenCode(prodId int64,openCode string) (*UserOpen,error)  {
+	var user *UserOpen
 	
-	var openId string
-	err :=builder.LoadValue(&openId)
-
-	return openId,err	
+	_,err :=db.NewSession().SelectBySql("SELECT order.open_id,account.mobile FROM order_item_purchase_codes JOIN `order` ON order_item_purchase_codes.no=`order`.no  JOIN `account` ON `order`.open_id=account.open_id WHERE (order_item_purchase_codes.prod_id =?) AND (order_item_purchase_codes.codes =?)",prodId,openCode).LoadStructs(&user)
+	
+	return user,err	
 }
 
 

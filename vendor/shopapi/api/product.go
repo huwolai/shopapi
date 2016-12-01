@@ -558,6 +558,8 @@ func ProductListWithCategoryIsLimit(c *gin.Context)  {
 		CreateTime   string `json:"create_time"` 
 		
 		OpenStatus	 int64 `json:"open_status"` //开奖状态
+		OpenCode	 string `json:"open_code"` //
+		OpenMobile	 string `json:"open_mobile"` //
 	}	
 	prodListDtos :=make([]*ProductDetailDtoIsLimit,0)
 	if prodList!=nil {
@@ -599,7 +601,9 @@ func ProductListWithCategoryIsLimit(c *gin.Context)  {
 			}
 			
 			if prodDetail.ProdPurchaseCodes!=nil{
-				dto.OpenStatus=prodDetail.ProdPurchaseCodes[0].OpenStatus
+				dto.OpenStatus	=prodDetail.ProdPurchaseCodes[0].OpenStatus
+				dto.OpenCode	=prodDetail.ProdPurchaseCodes[0].OpenCode
+				dto.OpenMobile	=prodDetail.ProdPurchaseCodes[0].OpenMobile
 			}
 			
 			if prodDetail.ProdSkus!=nil{
@@ -679,7 +683,7 @@ func ProdDetailYygWithProdId(c *gin.Context)  {
 	
 	code,err:=dao.ProdPurchaseCodeWithProdId(product.Id)
 	if err!=nil || code==nil{
-		util.ResponseError400(c.Writer,"查询商品中奖码!")
+		util.ResponseError400(c.Writer,"查询商品中奖码失败!")
 		return
 	}
 	
@@ -688,9 +692,10 @@ func ProdDetailYygWithProdId(c *gin.Context)  {
 		
 		OpenId 		string 	`json:"open_id"`
 		OpenStatus 	int64 	`json:"open_status"`
-		OpenTime 	int64 	`json:"Open_time"`
-		Mobile 		string 	`json:"mobile"`
+		OpenTime 	int64 	`json:"open_time"`
+		OpenMobile 	string 	`json:"open_mobile"`
 		Memo 		string 	`json:"meom"`
+		OpenCode 	string 	`json:"open_code"`
 		
 	}
 	productDto 				:=&ProductDetailyygDto{}
@@ -722,6 +727,8 @@ func ProdDetailYygWithProdId(c *gin.Context)  {
 	productDto.OpenId 		= code.OpenId
 	productDto.OpenStatus 	= code.OpenStatus
 	productDto.OpenTime 	= code.OpenTime
+	productDto.OpenMobile 	= code.OpenMobile
+	productDto.OpenCode 	= code.OpenCode
 	
 	if product.ProdSkus!=nil{
 		detailDtos :=make([]*ProdSkuDto,0)

@@ -3,7 +3,7 @@ package dao
 import (
 	"github.com/gocraft/dbr"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
-	"gitlab.qiyunxin.com/tangtao/utils/log"
+	//"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 type OrderItem struct  {
@@ -142,7 +142,7 @@ func fillOrderItemImg(orderItems []*OrderItemDetail) error  {
 			imgDetailMap[prodimgDetal.ProdId]=prodimgDetals
 		}
 	}
-	log.Debug(imgDetailMap)
+	//log.Debug(imgDetailMap)
 	for _,orderItem :=range orderItems {
 		imgs := imgDetailMap[orderItem.ProdId]
 		if imgs!=nil&&len(imgs)>0{

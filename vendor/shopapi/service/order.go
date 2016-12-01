@@ -522,7 +522,22 @@ func HandleCoupon(order *dao.Order,coupotokens []string,tx *dbr.Tx) (float64,err
 func OrderByUser(openId string,orderStatus []int,payStatus []int,appId string,pageIndex uint64,pageSize uint64)  ([]*dao.OrderDetail,error)  {
 
 	orderDetail :=dao.NewOrderDetail()
-	orderDetails,err := orderDetail.OrderDetailWithUser(openId,orderStatus,payStatus,appId,pageIndex,pageSize)
+	orderDetails,err := orderDetail.OrderDetailWithUser(openId,orderStatus,payStatus,appId,pageIndex,pageSize)	
+	
+	for k,item :=range orderDetails {
+		if len(item.Items)>0 {
+			if req2map, err := dao.JsonToMap(item.Items[0].Json); err == nil {
+				if req2map["goods_type"]=="mall_yyg"{
+					//中奖的号码
+					prodPurchaseCode,_:=dao.ProdPurchaseCodeWithProdId(item.Items[0].ProdId)
+					orderDetails[k].Itemsyyg=prodPurchaseCode
+					//购买的号码
+					buyCodes,_:=dao.OrderItemPurchaseCodesWithNo(item.Items[0].No)
+					orderDetails[k].ItemsyygBuyCodes=buyCodes
+				}
+			}
+		}		
+	}
 
 	return orderDetails,err
 }
@@ -547,6 +562,19 @@ func OrderDetailWithMerchantId(merchantId int64,orderStatus []int,payStatus []in
 func OrderDetailWithNo(orderNo string,appId string) (*dao.OrderDetail,error)  {
 	orderDetail :=dao.NewOrderDetail()
 	orderDetail,err := orderDetail.OrderDetailWithNo(orderNo,appId)
+	
+	if len(orderDetail.Items)>0 {
+		if req2map, err := dao.JsonToMap(orderDetail.Items[0].Json); err == nil {
+			if req2map["goods_type"]=="mall_yyg"{
+				prodPurchaseCode,_:=dao.ProdPurchaseCodeWithProdId(orderDetail.Items[0].ProdId)
+				orderDetail.Itemsyyg=prodPurchaseCode
+				
+				buyCodes,_:=dao.OrderItemPurchaseCodesWithNo(orderDetail.Items[0].No)
+				orderDetail.ItemsyygBuyCodes=buyCodes
+			}
+		}
+	}
+	
 	return orderDetail,err
 }
 
