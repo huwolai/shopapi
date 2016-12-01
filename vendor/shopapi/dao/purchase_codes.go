@@ -123,7 +123,7 @@ func ProductAndPurchaseCodesOpened(prodId int64,openId string,mobile string,open
 }
 //开奖状态
 func ProductAndPurchaseCodesOpenedStatus() error  {
-	_,err :=db.NewSession().UpdateBySql("update prod_purchase_codes set open_status=? where open_time<=UNIX_TIMESTAMP() and open_status=1 and open_time>0",2).Exec()	
+	_,err :=db.NewSession().UpdateBySql("update prod_purchase_codes set open_status=? where open_time<=UNIX_TIMESTAMP()+60 and open_status=1 and open_time>0",2).Exec()	
 	return err
 }
 //开奖
