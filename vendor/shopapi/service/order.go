@@ -902,8 +902,10 @@ func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 			return err
 		}
 		
+		var index int64 = 0
 		for _,codesItem :=range ls {
-			err=dao.OrderItemPurchaseCodesAdd(tx,oItem.Id,oItem.No,oItem.ProdId,codesItem)//strings.Join(ls,",")
+			index++
+			err=dao.OrderItemPurchaseCodesAdd(tx,oItem.Id,oItem.No,oItem.ProdId,codesItem,index)//strings.Join(ls,",")
 			if err!=nil{
 				return err
 			}

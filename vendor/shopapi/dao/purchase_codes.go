@@ -9,12 +9,16 @@ import (
 )
 
 type OrderItemPurchaseCode struct  {
-	Id 			int64
-	OrderItemId	int64
-	No			string
-	Codes 		string
-	ProdId 		int64
-	BuyTime 	int64
+	Id 			int64	`json:"id"`
+	OrderItemId	int64	`json:"order_item_id"`
+	No			string	`json:"no"`
+	Codes 		string	`json:"codes"`
+	ProdId 		int64	`json:"prod_id"`
+	BuyTime 	int64	`json:"buy_time"`
+}
+type OrderItemPurchaseCodeRrecord struct  {
+	OrderItemPurchaseCode
+	Mobile	string	`json:"mobile"`
 }
 
 type ProdPurchaseCode struct  {
@@ -35,14 +39,14 @@ type UserOpen struct  {
 	Mobile string
 }
 //==
-func OrderItemPurchaseCodesAdd(tx *dbr.Tx,orderItemId int64,no string,prodId int64,codes string) error {
+func OrderItemPurchaseCodesAdd(tx *dbr.Tx,orderItemId int64,no string,prodId int64,codes string,index int64) error {
 	var orderItemPurchaseCode OrderItemPurchaseCode
 	orderItemPurchaseCode.OrderItemId	=orderItemId
 	orderItemPurchaseCode.No			=no
 	orderItemPurchaseCode.Codes			=codes
 	orderItemPurchaseCode.ProdId		=prodId
 	//orderItemPurchaseCode.BuyTime		=fmt.Sprintf("%d",time.Now().UnixNano()/1e6)
-	orderItemPurchaseCode.BuyTime		=time.Now().UnixNano()/1e6
+	orderItemPurchaseCode.BuyTime		=time.Now().UnixNano()/1e6+index
 	
 	_,err :=tx.InsertInto("order_item_purchase_codes").Columns("order_item_id","no","codes","prod_id","buy_time").Record(orderItemPurchaseCode).Exec()
 	return err
@@ -53,6 +57,13 @@ func OrderItemPurchaseCodesWithTime(time int64,limit int64)  ([]*OrderItemPurcha
 	//buy_time 毫秒
 	_,err :=db.NewSession().SelectBySql("select * from order_item_purchase_codes where buy_time <= ? order by id desc limit ?",time*1000+999,limit).LoadStructs(&orderItemPurchaseCode)
 	return  orderItemPurchaseCode,err
+}
+//==
+func OrderItemPurchaseCodesRrecordWithTime(time int64,limit int64)  ([]*OrderItemPurchaseCodeRrecord,error)  {
+	var items []*OrderItemPurchaseCodeRrecord
+	//buy_time 毫秒
+	_,err :=db.NewSession().SelectBySql("select c.*,order.address_mobile as mobile from order_item_purchase_codes as c left join `order` on c.`no`=`order`.`no` where c.buy_time <= ? order by id desc limit ?",time*1000+999,limit).LoadStructs(&items)
+	return  items,err
 }
 func OrderItemPurchaseCodesWithProdId(prodId int64)  (int64,error)  {
 	var count int64
@@ -123,7 +134,7 @@ func ProductAndPurchaseCodesOpened(prodId int64,openId string,mobile string,open
 }
 //开奖状态
 func ProductAndPurchaseCodesOpenedStatus() error  {
-	_,err :=db.NewSession().UpdateBySql("update prod_purchase_codes set open_status=? where open_time<=UNIX_TIMESTAMP()+60 and open_status=1 and open_time>0",2).Exec()	
+	_,err :=db.NewSession().UpdateBySql("update prod_purchase_codes set open_status=? where open_time<=UNIX_TIMESTAMP()+52 and open_status=1 and open_time>0",2).Exec()	
 	return err
 }
 //开奖

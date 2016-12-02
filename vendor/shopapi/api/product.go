@@ -1261,5 +1261,59 @@ func ProductAndPurchaseCodesAdd(c *gin.Context) {
 	}
 	util.ResponseSuccess(c.Writer)
 } */
+//参与计算一元购产品计算中奖号的条数
+func ProductBuyCodesWithProdId(c *gin.Context) {
+
+	prodId :=c.Param("prod_id")
+
+	if prodId=="" {
+		util.ResponseError400(c.Writer,"商品ID不能为空!")
+		return
+	}
+
+	iprodId,err := strconv.ParseInt(prodId,10,64)
+	if err!=nil{
+		util.ResponseError400(c.Writer,"商品ID格式有误!")
+		return
+	}
+	
+	codes,err :=service.ProductBuyCodesWithProdId(iprodId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	type BuyCodes struct {
+		Mobile 		string  `json:"mobile"`
+		BuyTime 	string  `json:"buy_time"`
+		Millisecond string  `json:"milli_second"`
+	}
+	dtos :=make([]*BuyCodes,0)
+	for _,code :=range codes {
+		dto 			:=&BuyCodes{}		
+		dto.BuyTime 	= time.Unix(code.BuyTime/1000, 0).Format("2006-01-02 15:04:05")
+		dto.Millisecond = fmt.Sprintf("%d",code.BuyTime%1000)
+		dto.Mobile		= code.Mobile
+		
+		dtos = append(dtos,dto)
+	}	
+	
+	c.JSON(http.StatusOK,dtos)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -195,6 +195,7 @@ func main() {
 			//一元购生成购买码
 			product.POST("/:prod_id/purchase_codes", api.ProductAndPurchaseCodesAdd)
 			//product.POST("/:prod_id/purchase_codes/minus", api.ProductAndPurchaseCodesMinus)
+			product.GET("/:prod_id/buy_codes", api.ProductBuyCodesWithProdId)
 			//通过属性key查询商品属性值
 			product.GET("/:prod_id/attr/:attr_key", api.ProductAttrValues)
 			//修改商品状态

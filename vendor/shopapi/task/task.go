@@ -310,14 +310,15 @@ func PurchaseCodesOpen()  {
 	log.Info("定时开奖")
 	prodOpening,_	:=dao.ProdPurchaseCodeWithOpenStatus(1)	
 	for _, prod := range prodOpening {		
-		orderItem,_:=dao.OrderItemPurchaseCodesWithTime(prod.OpenTime,50)
-		
+		orderItem,_:=dao.OrderItemPurchaseCodesWithTime(prod.OpenTime,comm.PRODUCT_YYG_BUY_CODES)
 		codeCount,_:=dao.OrderItemPurchaseCodesWithProdId(prod.ProdId)//商品份数
+		//codeCount++
 		
-		var c int64 = 0		
+		var c  int64 = 0
 		for _, tSum := range orderItem {
-			t1Sum:=tSum.BuyTime%1000
-			c=c+t1Sum		
+			s1	:=fmt.Sprintf("%s%d",time.Unix(int64(tSum.BuyTime/1e3), 0).Format("150405"),tSum.BuyTime%1e3)
+			i1,_:=strconv.ParseInt(s1,10,64)			
+			c	 =c+i1
 		}
 		openCode:=fmt.Sprintf("%d",c%codeCount+10000001)
 		

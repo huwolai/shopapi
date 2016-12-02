@@ -696,6 +696,32 @@ func ProductAndPurchaseCodesAdd(ProdPurchaseCode *dao.ProdPurchaseCode) error {
 	
 	return strings.Join(ls,","),nil
 } */
+//参与计算一元购产品计算中奖号的条数
+func ProductBuyCodesWithProdId(prodId int64) ([]*dao.OrderItemPurchaseCodeRrecord,error) {
+	prod,_:=dao.ProdPurchaseCodeWithProdId(prodId)
+	if prod==nil {
+		return nil,errors.New("产品不是一元购产品!")
+	}
+	return dao.OrderItemPurchaseCodesRrecordWithTime(prod.OpenTime,comm.PRODUCT_YYG_BUY_CODES)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
