@@ -539,6 +539,10 @@ func OrdersGet(c *gin.Context)  {
 	search.AddressMobile	=c.Query("address_mobile")
 	search.Show,_ 			=strconv.ParseUint(c.Query("show"),10,64)
 	
+	if len(c.Query("order_type"))>0 {
+		search.OrderType	=strings.Split(c.Query("order_type"), ",")
+	}	
+	
 	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 	appId :=security.GetAppId2(c.Request)
 	orders,err :=service.OrdersGet(search,pIndex,pSize,appId)
@@ -578,9 +582,7 @@ func OrdersGet(c *gin.Context)  {
 				}
 				od.DetailTitle	=detailTitle
 				detailTitle=make([]string,0)
-			}else{
-				log.Info("========")				
-			}	
+			}
 			results = append(results,orderToA(od))
 		}
 	}

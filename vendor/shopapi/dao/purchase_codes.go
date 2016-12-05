@@ -38,6 +38,8 @@ type UserOpen struct  {
 	OpenId string
 	Mobile string
 }
+type OrdersYygSearch struct {
+}
 //==
 func OrderItemPurchaseCodesAdd(tx *dbr.Tx,orderItemId int64,no string,prodId int64,codes string,index int64) error {
 	var orderItemPurchaseCode OrderItemPurchaseCode
@@ -107,6 +109,15 @@ func ProdPurchaseCodeWithOpenStatus(openStatus int64) ([]*ProdPurchaseCode,error
 	var prodPurchaseCode []*ProdPurchaseCode
 	_,err :=db.NewSession().SelectBySql("select * from prod_purchase_codes where open_status = ?",openStatus).LoadStructs(&prodPurchaseCode)
 	return  prodPurchaseCode,err
+}
+func ProdPurchaseCodes(search OrdersYygSearch,pIndex uint64,pSize uint64) ([]*ProdPurchaseCode,error){
+	var prodPurchaseCode []*ProdPurchaseCode
+	_,err :=db.NewSession().SelectBySql("select * from prod_purchase_codes order by id desc limit ?,? ",pIndex,pSize).LoadStructs(&prodPurchaseCode)
+	return  prodPurchaseCode,err
+}
+func ProdPurchaseCodesCount(search OrdersYygSearch) (int64,error){
+	count, err :=db.NewSession().SelectBySql("select count(id) from prod_purchase_codes").ReturnInt64()
+	return  count,err
 }
 //开奖中
 func ProductAndPurchaseCodesOpening(tx *dbr.Tx,prodPurchaseCode *ProdPurchaseCode,openTime string) error  {

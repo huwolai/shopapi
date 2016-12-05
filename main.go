@@ -177,7 +177,7 @@ func main() {
 		products := v1.Group("/products")
 		{
 			products.POST("/:merchant_id", api.ProductAdd)
-			products.GET("/", api.ProdDetailListWith)			
+			products.GET("/", api.ProdDetailListWith)				
 		}
 
 		//商品
@@ -323,12 +323,15 @@ func main() {
 
 		admin := v1.Group("/admin")
 		{
-			admin.GET("/orders", api.OrdersGet)
+			admin.GET("/orders", api.OrdersGet)			
+			
 			admin.POST("/orders/addordernum", api.OrdersAddNum)
 			admin.POST("/orders/addpassnum", api.OrdersAddPassnum)
 			
 			admin.GET("/merchants", api.MerchantWith)
-			admin.GET("/product/:prod_id/detail", api.ProdDetailWithProdId)			
+			admin.GET("/product/:prod_id/detail", api.ProdDetailWithProdId)	
+
+			admin.GET("/orders/yyg/win", api.OrdersYygWin) //中奖管理
 		}
 		flags := v1.Group("/flags")
 		{

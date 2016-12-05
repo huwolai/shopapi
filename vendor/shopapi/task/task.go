@@ -61,7 +61,8 @@ func OrderFetchMoney() {
 		cancel:=0
 		for _, order := range orders {
 			//========================================
-			orderType,err:=order.OrderType(order.No,order.AppId)
+			//orderType,err:=order.OrderTypes(order.No,order.AppId)
+			orderType,err:=dao.NewOrderItem().OrderItemWithOrderNo(order.No)
 			if err != nil {
 				log.Error(err)
 				continue
@@ -226,7 +227,8 @@ func OrderAutoCancel() {
 	if orders != nil && len(orders) > 0 {
 		for _, order := range orders {
 			//========================================
-			orderType,err:=order.OrderType(order.No,order.AppId)
+			//orderType,err:=order.OrderTypes(order.No,order.AppId)
+			orderType,err:=dao.NewOrderItem().OrderItemWithOrderNo(order.No)
 			if err != nil {
 				log.Error(err)
 				continue

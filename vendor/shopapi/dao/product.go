@@ -288,7 +288,7 @@ func (self *Product) UpdateTx(tx *dbr.Tx) error {
 		builder = builder.Set("limit_num",self.LimitNum)
 	}
 	
-	if self.IsLimit>0{
+	if self.IsLimit>=0{
 		builder = builder.Set("is_limit",self.IsLimit)
 	}
 	

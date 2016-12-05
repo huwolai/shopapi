@@ -1122,6 +1122,15 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 	if items==nil || len(items)<=0 {
 		return nil,errors.New("订单项不能为空!")
 	}
+	//订单类型
+	orderJson, err := dao.JsonToMap(items[0].Json); 
+	if err != nil {
+		return nil,errors.New("订单类型错误!")
+	}
+	order.OrderType =orderJson["goods_type"].(string)
+		
+	
+	
 	totalActPrice := 0.0
 	totalPrice :=0.0
 	for _,item :=range items  {

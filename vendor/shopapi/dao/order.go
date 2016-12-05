@@ -50,9 +50,10 @@ type Order struct  {
 	
 	UpdateTimeUnix int64
 	
-	Show int
-	Mobile 	string
-	YdgyName  	 string
+	Show 			int
+	Mobile 			string
+	YdgyName  		string	
+	OrderType	  	string
 }
 
 type OrderDetail struct  {
@@ -104,6 +105,7 @@ type OrderSearch struct {
 	OrderStatus		uint64
 	AddressMobile	string
 	Show			uint64
+	OrderType		[]string
 }
 
 func NewOrder() *Order {
@@ -148,6 +150,9 @@ func (self *Order) With(searchs interface{},pageIndex uint64,pageSize uint64,app
 	if search.AddressMobile!="" {
 		//buider = buider.Where("address_mobile like ?",search.AddressMobile+"%")
 		buider = buider.Where("open_id in ( select open_id from account where mobile like ?)",search.AddressMobile+"%")
+	}
+	if len(search.OrderType)>0 {
+		buider = buider.Where("order_type in ?",search.OrderType)
 	}
 	switch search.PayStatus {
 		case 1://1，未付款；
@@ -204,6 +209,9 @@ func (self *Order) WithCount(searchs interface{},appId string) (int64,error)  {
 		//buider = buider.Where("address_mobile like ?",search.AddressMobile+"%")
 		buider = buider.Where("open_id in (select open_id from account where mobile like ?)",search.AddressMobile+"%")
 	}
+	if len(search.OrderType)>0 {
+		buider = buider.Where("order_type in ?",search.OrderType)
+	}
 	switch search.PayStatus {
 		case 1://1，未付款；
 			buider = buider.Where("pay_status = ?",0)
@@ -248,7 +256,7 @@ func (self *Order) OrderWithNoPayAndLTTime(time string) ([]*Order,error) {
 }
 
 func (self *Order) InsertTx(tx *dbr.Tx) (int64,error)  {
-	result,err :=tx.InsertInto("order").Columns("no","prepay_no","address_id","address","address_name","address_mobile","merchant_id","merchant_name","m_open_id","payapi_no","code","open_id","app_id","title","coupon_amount","dbn_amount","merchant_amount","real_price","pay_price","omit_money","price","order_status","pay_status","flag","json").Record(self).Exec()
+	result,err :=tx.InsertInto("order").Columns("no","prepay_no","address_id","address","address_name","address_mobile","merchant_id","merchant_name","m_open_id","payapi_no","code","open_id","app_id","title","coupon_amount","dbn_amount","merchant_amount","real_price","pay_price","omit_money","price","order_status","pay_status","flag","json","order_type").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
@@ -523,9 +531,9 @@ func (self *Order) OrderDelete(orderNo string,appId string) error {
 	
 	return nil
 }
-func (self *Order) OrderType(orderNo string,appId string)([]*OrderItem,error)  {
+/* func (self *Order) OrderTypes(orderNo string,appId string)([]*OrderItem,error)  {
 	return NewOrderItem().OrderItemWithOrderNo(orderNo)
-}
+} */
 //changeshowstate
 func (self *Order) OrderChangeShowState(appId string,no string,show int64) error  {	
 	_,err :=db.NewSession().Update("order").Set("show",show).Where("no=?",no).Where("app_id=?",appId).Exec()
