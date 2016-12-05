@@ -318,7 +318,7 @@ func PurchaseCodesOpen()  {
 		
 		var c  int64 = 0
 		for _, tSum := range orderItem {
-			s1	:=fmt.Sprintf("%s%d",time.Unix(int64(tSum.BuyTime/1e3), 0).Format("150405"),tSum.BuyTime%1e3)
+			s1	:=fmt.Sprintf("%s%s",time.Unix(int64(tSum.BuyTime/1e3), 0).Format("150405"),dao.Right(fmt.Sprintf("%d",tSum.BuyTime),3))
 			i1,_:=strconv.ParseInt(s1,10,64)			
 			c	 =c+i1
 		}
