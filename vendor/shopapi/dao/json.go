@@ -15,6 +15,13 @@ func  JsonToMap( s string) (map[string]interface{},error) {
     }
     return result, nil
 }
-
+func Right(str string, length int) string {
+    rs := []rune(str)
+    rl := len(rs)
+   
+	start:=rl-length
+   
+    return string(rs[start:])
+}
 
 

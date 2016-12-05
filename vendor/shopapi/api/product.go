@@ -1292,7 +1292,8 @@ func ProductBuyCodesWithProdId(c *gin.Context) {
 	for _,code :=range codes {
 		dto 			:=&BuyCodes{}		
 		dto.BuyTime 	= time.Unix(code.BuyTime/1000, 0).Format("2006-01-02 15:04:05")
-		dto.Millisecond = fmt.Sprintf("%d",code.BuyTime%1000)
+		//dto.Millisecond = fmt.Sprintf("%d",code.BuyTime%1000)
+		dto.Millisecond = dao.Right(fmt.Sprintf("%d",code.BuyTime),3)
 		dto.Mobile		= code.Mobile
 		
 		dtos = append(dtos,dto)
