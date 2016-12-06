@@ -568,8 +568,10 @@ func OrdersGet(c *gin.Context)  {
 		
 		for _,od :=range orders {
 			account,_ =account.AccountWithOpenId(od.OpenId,appId)
-			od.Mobile	=account.Mobile
-			od.YdgyName	=account.YdgyName
+			if account!=nil {
+				od.Mobile	=account.Mobile
+				od.YdgyName	=account.YdgyName
+			}
 		
 			orderItem,_=service.OrderItems(od.No);			
 			if len(orderItem)>0 {

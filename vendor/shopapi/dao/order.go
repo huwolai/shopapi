@@ -56,6 +56,10 @@ type Order struct  {
 	OrderType	  	string
 }
 
+type OrderYyg struct  {
+	BuyCode string
+	Order
+}
 type OrderDetail struct  {
 	Id int64
 	No string
@@ -207,7 +211,7 @@ func (self *Order) WithCount(searchs interface{},appId string) (int64,error)  {
 	}
 	if search.AddressMobile!="" {
 		//buider = buider.Where("address_mobile like ?",search.AddressMobile+"%")
-		buider = buider.Where("open_id in (select open_id from account where mobile like ?)",search.AddressMobile+"%")
+		buider = buider.Where("open_id in ( select open_id from account where mobile like ?)",search.AddressMobile+"%")
 	}
 	if len(search.OrderType)>0 {
 		buider = buider.Where("order_type in ?",search.OrderType)
@@ -232,7 +236,7 @@ func (self *Order) WithCount(searchs interface{},appId string) (int64,error)  {
 		case 5://5，退货
 			buider = buider.Where("order_status = ?",4)
 	}
-
+	
 	//show
 	if search.Show>0 {
 		if search.Show==1 {
@@ -539,7 +543,23 @@ func (self *Order) OrderChangeShowState(appId string,no string,show int64) error
 	_,err :=db.NewSession().Update("order").Set("show",show).Where("no=?",no).Where("app_id=?",appId).Exec()
 	return err
 }
+func (self *Order) OrderWithPordYyg(prodId int64) (*Order,error)  {
+	var orders *Order
 
+	builder :=db.NewSession().Select("*").From("`order`")
+	
+	builder =builder.Where("`no` in (select `no` from order_item_purchase_codes where prod_id =?)",prodId)
+	
+	_,err :=builder.LoadStructs(&orders)
+	return orders,err
+}
+func (self *Order) OrdersWithPordYyg(prodId string) ([]*OrderYyg,error)  {
+	var orders []*OrderYyg	
+	
+	_,err :=db.NewSession().SelectBySql("select a.codes as buy_code,b.* from `order_item_purchase_codes` a left join `order` b on a.`no`=b.`no` where  a.`prod_id` = ?",prodId).LoadStructs(&orders)
+	
+	return orders,err
+}
 
 
 

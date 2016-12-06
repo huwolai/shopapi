@@ -331,7 +331,8 @@ func main() {
 			admin.GET("/merchants", api.MerchantWith)
 			admin.GET("/product/:prod_id/detail", api.ProdDetailWithProdId)	
 
-			admin.GET("/orders/yyg/win", api.OrdersYygWin) //中奖管理
+			admin.GET("/yygorders", api.OrdersYygWin) //中奖管理
+			admin.GET("/yygdetail/:prod_id", api.OrdersYygRecord)
 		}
 		flags := v1.Group("/flags")
 		{
