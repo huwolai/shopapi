@@ -4,6 +4,7 @@ import (
 	"shopapi/dao"	
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 	"fmt"
+	"strings"
 )
 
 type ProdPurchaseCode struct  {
@@ -11,8 +12,8 @@ type ProdPurchaseCode struct  {
 	ProdId		int64  `json:"prod_id"`
 	Sku 		string `json:"sku"`
 	OpenStatus 	int64  `json:"open_status"`	
-	PordTitle 	string  `json:"prod_title"`
-	Order	 	*OrderDto  `json:"order"`
+	PordTitle 	string `json:"pord_title"`	
+	OrderDto	 	
 }
 type OrderDto struct  {
 	Json string `json:"json"`
@@ -98,8 +99,7 @@ func OrdersYygWin(search dao.OrdersYygSearch,appId string,pIndex uint64,pSize ui
 				order.DetailTitle	=detailTitle
 				detailTitle=make([]string,0)
 			}
-			dto.Order		=orderToA(order)
-			dto.PordTitle	=order.DetailTitle[0]
+			orderToA(dto,order)
 		}
 		itemsDto = append(itemsDto,dto)
 	}
@@ -113,41 +113,41 @@ func OrdersYygRecord(prodId string,appId string,pIndex uint64,pSize uint64) ([]*
 	}
 	return order,nil
 }
-func orderToA(order *dao.Order) *OrderDto {
-	a :=&OrderDto{}
-	a.AddressId = order.AddressId
-	a.AppId = order.AppId
-	a.CancelReason = order.CancelReason
-	a.Json = order.Json
-	a.MerchantId = order.MerchantId
-	a.MerchantName = order.MerchantName
-	a.MOpenId = order.MOpenId
-	a.OpenId = order.OpenId
-	a.OrderNo = order.No
-	a.Title = order.Title
-	a.PayStatus = order.PayStatus
-	a.OrderStatus = order.OrderStatus
-	a.RealPrice = order.RealPrice
-	a.PayPrice = order.PayPrice
-	a.CreateTime = qtime.ToyyyyMMddHHmm(order.CreateTime)
-	a.GmOrdernum = order.GmOrdernum
-	a.GmPassnum = order.GmPassnum
-	a.GmPassway = order.GmPassway
-	a.WayStatus = order.WayStatus
-	a.DetailTitle = order.DetailTitle
+func orderToA(dto *ProdPurchaseCode,order *dao.Order) *ProdPurchaseCode {
+
+	dto.AddressId 			= order.AddressId
+	dto.AppId 				= order.AppId
+	dto.CancelReason 		= order.CancelReason
+	dto.Json				= order.Json
+	dto.MerchantId 			= order.MerchantId
+	dto.MerchantName 		= order.MerchantName
+	dto.MOpenId 			= order.MOpenId
+	dto.OpenId 				= order.OpenId
+	dto.OrderNo 			= order.No
+	dto.Title 				= order.Title
+	dto.PayStatus 			= order.PayStatus
+	dto.OrderStatus 		= order.OrderStatus
+	dto.RealPrice 			= order.RealPrice
+	dto.PayPrice 			= order.PayPrice
+	dto.CreateTime 			= qtime.ToyyyyMMddHHmm(order.CreateTime)
+	dto.GmOrdernum 			= order.GmOrdernum
+	dto.GmPassnum 			= order.GmPassnum
+	dto.GmPassway 			= order.GmPassway
+	dto.WayStatus 			= order.WayStatus
+	dto.DetailTitle 		= order.DetailTitle
 	
-	a.Address = order.Address
-	a.AddressMobile = order.AddressMobile
-	a.AddressName = order.AddressName
+	dto.Address 			= order.Address
+	dto.AddressMobile 		= order.AddressMobile
+	dto.AddressName 		= order.AddressName
 	
-	a.Show = order.Show
-	a.Mobile = order.Mobile
-	a.YdgyName = order.YdgyName
+	dto.Show 				= order.Show
+	dto.Mobile 				= order.Mobile
+	dto.YdgyName 			= order.YdgyName
 	
-//	a.YygCode = order.YygCode
+	dto.PordTitle 			= strings.Join(order.DetailTitle, " ")
 	
 
-	return a
+	return 	dto
 }
 
 

@@ -39,6 +39,7 @@ type UserOpen struct  {
 	Mobile string
 }
 type OrdersYygSearch struct {
+	ProdTitle string
 }
 //==
 func OrderItemPurchaseCodesAdd(tx *dbr.Tx,orderItemId int64,no string,prodId int64,codes string,index int64) error {
@@ -112,11 +113,24 @@ func ProdPurchaseCodeWithOpenStatus(openStatus int64) ([]*ProdPurchaseCode,error
 }
 func ProdPurchaseCodes(search OrdersYygSearch,pIndex uint64,pSize uint64) ([]*ProdPurchaseCode,error){
 	var prodPurchaseCode []*ProdPurchaseCode
-	_,err :=db.NewSession().SelectBySql("select * from prod_purchase_codes order by id desc limit ?,? ",(pIndex-1)*pSize,pSize).LoadStructs(&prodPurchaseCode)
+	builder:=db.NewSession().Select("*").From("prod_purchase_codes")
+	
+	if len(search.ProdTitle)>0 {
+		builder = builder.Where("prod_id in (select id from product where title like ?)","%"+search.ProdTitle+"%")
+	}
+	
+	_,err :=builder.OrderDir("id",false).Limit(pSize).Offset((pIndex-1)*pSize).LoadStructs(&prodPurchaseCode)
+	//_,err :=db.NewSession().SelectBySql("select * from prod_purchase_codes order by id desc limit ?,? ",(pIndex-1)*pSize,pSize).LoadStructs(&prodPurchaseCode)
 	return  prodPurchaseCode,err
 }
 func ProdPurchaseCodesCount(search OrdersYygSearch) (int64,error){
-	count, err :=db.NewSession().SelectBySql("select count(id) from prod_purchase_codes").ReturnInt64()
+	builder:=db.NewSession().Select("count(id)").From("prod_purchase_codes")
+	
+	if len(search.ProdTitle)>0 {
+		builder = builder.Where("prod_id in (select id from product where title like ?)","%"+search.ProdTitle+"%")
+	}
+	
+	count,err :=builder.ReturnInt64()
 	return  count,err
 }
 //开奖中

@@ -15,6 +15,7 @@ func OrdersYygWin(c *gin.Context)  {
 	appId :=security.GetAppId2(c.Request)
 	
 	var search dao.OrdersYygSearch
+	search.ProdTitle=c.Query("prod_title")
 	
 	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 	pords,total,err :=service.OrdersYygWin(search,appId,pIndex,pSize)

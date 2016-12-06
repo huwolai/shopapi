@@ -396,14 +396,14 @@ func (self *ProductDetail) ProductListWithCategoryIsLimit(appId string,categoryI
 	session := db.NewSession()
 	var prodList []*ProductDetail
 	
-	builder :=session.Select("product.*,UNIX_TIMESTAMP(product.create_time) as create_time_unix,merchant.id merchant_id,merchant.name merchant_name").From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.status=?",1).Where("product.parent_id=?",0).Where("product.app_id=?",appId)
+	builder :=session.Select("product.*,UNIX_TIMESTAMP(product.create_time) as create_time_unix,merchant.id merchant_id,merchant.name merchant_name").From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Join("prod_purchase_codes","product.id = prod_purchase_codes.prod_id").Where("prod_category.category_id=?",categoryId).Where("product.status=?",1).Where("product.parent_id=?",0).Where("product.app_id=?",appId)
 	if flags!=nil&&len(flags)>0{
 		builder = builder.Where("product.flag in ?",flags)
 	}
 	if noflags!=nil&&len(noflags) >0 {
 		builder = builder.Where("product.flag not in ?",noflags)
 	}
-	_,err := builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&prodList)
+	_,err := builder.OrderDir("prod_purchase_codes.open_status",true).Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&prodList)
 	if err!=nil{
 		return nil,0,err
 	}
