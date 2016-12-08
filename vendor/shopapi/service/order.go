@@ -859,7 +859,7 @@ func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 	ProdPurchaseCode := &dao.ProdPurchaseCode{}	
 			
 	if len(orderItems)>1 {
-		return errors.New("商品购买错误!")
+		return nil;
 	}
 	
 	for _,oItem :=range orderItems {
