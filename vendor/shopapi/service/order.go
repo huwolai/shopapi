@@ -641,11 +641,13 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	}
 	
 	//一元购
-	err = purchaseCodes(orderItems,appId,tx)
-	if err!=nil{
-		tx.Rollback()
-		return err
-	}
+	if len(orderItems)>1 {
+		err = purchaseCodes(orderItems,appId,tx)
+		if err!=nil{
+			tx.Rollback()
+			return err
+		}
+	}	
 	
 	//支付预付款
 	params := map[string]interface{}{
