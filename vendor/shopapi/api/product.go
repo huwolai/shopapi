@@ -1301,9 +1301,26 @@ func ProductBuyCodesWithProdId(c *gin.Context) {
 	
 	c.JSON(http.StatusOK,dtos)
 }
+//重置重新上架的商品数据
+func ProductInitPro(c *gin.Context) {
+	prodId :=c.Param("prod_id")
+	iprodId,err := strconv.ParseInt(prodId,10,64)
 
+	type InitPro struct  {
+		InitNum int  `json:"init_num"`
+	}
 
+	var param InitPro
+	err = c.BindJSON(&param)
+	
+	err =service.ProductUpdateStockWithProdId(iprodId,param.InitNum,0)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
 
+	util.ResponseSuccess(c.Writer)
+}
 
 
 

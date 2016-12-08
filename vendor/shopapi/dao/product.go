@@ -592,11 +592,14 @@ func ProductAndAddLink(appId string,prodId uint64,shopurl string) error  {
 	return err
 }
 //changeshowstate
-func (self *Product) ProductChangeShowState(appId string,id int64,show int64) error  {	
-	_,err :=db.NewSession().Update("product").Set("show",show).Where("id=?",id).Where("app_id=?",appId).Exec()
+func (self *Product) ProductChangeShowState(appId string,prodId int64,show int64) error  {	
+	_,err :=db.NewSession().Update("product").Set("show",show).Where("id=?",prodId).Where("app_id=?",appId).Exec()
 	return err
 }
-
+func (self *Product) UpdateSoldNumWithSkuNo(soldNum int ,prodId int64) error {
+	_,err :=db.NewSession().Update("product").Set("sold_num",soldNum).Set("sold_num_init",soldNum).Where("id=?",prodId).Exec()
+	return err
+}
 
 
 

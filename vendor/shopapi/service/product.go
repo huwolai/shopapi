@@ -154,7 +154,7 @@ func ProductUpdateStockWithProdId(prodId int64,stock int,soldNum int) error {
 			return err 
 		}
 	}
-	return nil
+	return dao.NewProduct().UpdateSoldNumWithSkuNo(soldNum,prodId)
 }
 
 //商品图片

@@ -207,6 +207,8 @@ func main() {
 			product.PUT("/:prod_id",api.ProductUpdate)
 			//录入商品链接
 			product.POST("/:prod_id/addlink", api.ProductAndAddLink)
+			//重置重新上架的商品数据
+			product.POST("/:prod_id/initpro", api.ProductInitPro)
 		}
 		merchants := v1.Group("/merchants")
 		{
@@ -383,6 +385,10 @@ func main() {
 			cart.POST("/:open_id/update", api.CartUpdateList)
 			cart.POST("/:open_id/delete/:id", api.CartDelFromList)
 		}
+		/* test := v1.Group("/test")
+		{
+			test.GET("/", api.Test)
+		} */
 	}
 
 	//设置上传目录
