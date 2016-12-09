@@ -641,13 +641,15 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	}
 	
 	//一元购
-	if len(orderItems)>1 {
+	goodsType,_:=dao.JsonToMap(orderItems[0].Json);		
+	if goodsType["goods_type"]!="mall_yyg"{
 		err = purchaseCodes(orderItems,appId,tx)
 		if err!=nil{
 			tx.Rollback()
 			return err
 		}
-	}	
+	}
+	
 	
 	//支付预付款
 	params := map[string]interface{}{
@@ -859,10 +861,6 @@ func ProdSKUStockSubWithOrder(orderItems []*dao.OrderItem,tx *dbr.Tx) error  {
 //减商品购买码
 func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 	ProdPurchaseCode := &dao.ProdPurchaseCode{}	
-			
-	if len(orderItems)>1 {
-		return nil;
-	}
 	
 	for _,oItem :=range orderItems {
 		goodsType,_:=dao.JsonToMap(oItem.Json);
