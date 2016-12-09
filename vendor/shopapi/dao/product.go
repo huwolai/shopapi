@@ -404,7 +404,7 @@ func (self *ProductDetail) ProductListWithCategoryIsLimit(appId string,categoryI
 		builder = builder.Where("product.flag not in ?",noflags)
 	}
 	//_,err := builder.OrderDir("prod_purchase_codes.open_status",true).Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&prodList)
-	_,err := builder.OrderDir("prod_purchase_codes.num",true).Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&prodList)
+	_,err := builder.OrderDir("prod_purchase_codes.open_status",true).OrderDir("prod_purchase_codes.num",true).Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&prodList)
 	if err!=nil{
 		return nil,0,err
 	}

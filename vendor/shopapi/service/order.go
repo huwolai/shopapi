@@ -863,11 +863,11 @@ func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 	ProdPurchaseCode := &dao.ProdPurchaseCode{}	
 	
 	for _,oItem :=range orderItems {
-		goodsType,_:=dao.JsonToMap(oItem.Json);
+		/* goodsType,_:=dao.JsonToMap(oItem.Json);
 		
 		if goodsType["goods_type"]!="mall_yyg"{
 			return nil
-		}
+		} */
 	
 		ProdPurchaseCode.AppId	=oItem.AppId
 		ProdPurchaseCode.Id	=oItem.Id
