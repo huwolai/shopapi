@@ -310,12 +310,8 @@ func ProductAddNum()  {
 func PurchaseCodesOpen()  {
 	//公式 
 	log.Info("定时开奖")
-	prodOpening,_	:=dao.ProdPurchaseCodeWithOpenStatus(1)
-	for _, prod := range prodOpening {
-		if len(prod.OpenMobile)>0 {
-			continue
-		}
-		
+	prodOpening,_	:=dao.ProdPurchaseCodeWithOpenStatus(1)	
+	for _, prod := range prodOpening {		
 		orderItem,_:=dao.OrderItemPurchaseCodesWithTime(prod.OpenTime,comm.PRODUCT_YYG_BUY_CODES)
 		codeCount,_:=dao.OrderItemPurchaseCodesWithProdId(prod.ProdId)//商品份数
 		//codeCount++
