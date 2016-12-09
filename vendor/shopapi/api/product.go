@@ -1263,6 +1263,7 @@ func ProductAndPurchaseCodesAdd(c *gin.Context) {
 } */
 //参与计算一元购产品计算中奖号的条数
 func ProductBuyCodesWithProdId(c *gin.Context) {
+	appId:=security.GetAppId2(c.Request)
 
 	prodId :=c.Param("prod_id")
 
@@ -1287,14 +1288,20 @@ func ProductBuyCodesWithProdId(c *gin.Context) {
 		Mobile 		string  `json:"mobile"`
 		BuyTime 	string  `json:"buy_time"`
 		Millisecond string  `json:"milli_second"`
+		//OpenId 		string  `json:"open_id"`
 	}
 	dtos :=make([]*BuyCodes,0)
+	accountDao:=dao.NewAccount()
 	for _,code :=range codes {
-		dto 			:=&BuyCodes{}		
+		dto 			:=&BuyCodes{}	
 		dto.BuyTime 	= time.Unix(code.BuyTime/1000, 0).Format("2006-01-02 15:04:05")
 		//dto.Millisecond = fmt.Sprintf("%d",code.BuyTime%1000)
 		dto.Millisecond = dao.Right(fmt.Sprintf("%d",code.BuyTime),3)
-		dto.Mobile		= code.Mobile
+		
+		account,_		:=accountDao.AccountWithOpenId(code.OpenId,appId)
+		//log.Info(account)
+		dto.Mobile		= account.Mobile	
+		
 		
 		dtos = append(dtos,dto)
 	}	

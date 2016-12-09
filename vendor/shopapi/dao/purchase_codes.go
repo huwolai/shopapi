@@ -19,6 +19,7 @@ type OrderItemPurchaseCode struct  {
 type OrderItemPurchaseCodeRrecord struct  {
 	OrderItemPurchaseCode
 	Mobile	string	`json:"mobile"`
+	OpenId	string	`json:"open_id"`
 }
 
 type ProdPurchaseCode struct  {
@@ -65,7 +66,7 @@ func OrderItemPurchaseCodesWithTime(time int64,limit int64)  ([]*OrderItemPurcha
 func OrderItemPurchaseCodesRrecordWithTime(time int64,limit int64)  ([]*OrderItemPurchaseCodeRrecord,error)  {
 	var items []*OrderItemPurchaseCodeRrecord
 	//buy_time 毫秒
-	_,err :=db.NewSession().SelectBySql("select c.*,order.address_mobile as mobile from order_item_purchase_codes as c left join `order` on c.`no`=`order`.`no` where c.buy_time <= ? order by id desc limit ?",time*1000+999,limit).LoadStructs(&items)
+	_,err :=db.NewSession().SelectBySql("select c.*,order.address_mobile as mobile,order.open_id from order_item_purchase_codes as c left join `order` on c.`no`=`order`.`no` where c.buy_time <= ? order by id desc limit ?",time*1000+999,limit).LoadStructs(&items)
 	return  items,err
 }
 func OrderItemPurchaseCodesWithProdId(prodId int64)  (int64,error)  {

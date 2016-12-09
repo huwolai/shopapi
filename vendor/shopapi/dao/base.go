@@ -6,8 +6,8 @@ type BaseDModel  struct{
 
 	Id int64
 
-	CreateTime time.Time
-	UpdateTime time.Time
+	CreateTime time.Time	`json:"create_time"`
+	UpdateTime time.Time	`json:"update_time"`
 
 
 }

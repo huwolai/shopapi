@@ -3,8 +3,9 @@ package service
 import (
 	"shopapi/dao"	
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
-	"fmt"
-	"strings"
+	//"gitlab.qiyunxin.com/tangtao/utils/log"
+	//"fmt"
+	//"strings"
 )
 
 type ProdPurchaseCode struct  {
@@ -66,7 +67,7 @@ func OrdersYygWin(search dao.OrdersYygSearch,appId string,pIndex uint64,pSize ui
 	
 	itemsDto :=make([]*ProdPurchaseCode,0)
 	orderDao :=dao.NewOrder()
-	detailTitle :=make([]string,0)
+	prodDao	 :=dao.NewProduct()
 	var orderItem []*dao.OrderItem
 	//account := dao.NewAccount()
 	for _,item :=range prods {
@@ -75,43 +76,45 @@ func OrdersYygWin(search dao.OrdersYygSearch,appId string,pIndex uint64,pSize ui
 		dto.ProdId		=item.ProdId
 		dto.Sku			=item.Sku
 		dto.OpenStatus	=item.OpenStatus
+		//OpenCode
 	
-	
-		order,err:=orderDao.OrderWithPordYyg(item.ProdId)
-		if err!=nil {		
-			return nil,0,err
-		}
-		if order!=nil {
-			//account,_ =account.AccountWithOpenId(order.OpenId,appId)
-			//order.Mobile	=account.Mobile
-			//order.YdgyName	=account.YdgyName
-			
-			orderItem,_=OrderItems(order.No);			
-			if len(orderItem)>0 {
-				order.GmOrdernum	=orderItem[0].GmOrdernum
-				order.GmPassnum	=orderItem[0].GmPassnum
-				order.GmPassway	=orderItem[0].GmPassway
-				order.WayStatus	=orderItem[0].WayStatus
-				
-				for _,odItem :=range orderItem {
-					detailTitle=append(detailTitle,fmt.Sprintf("%s*%d", odItem.Title,odItem.Num))
-				}
-				order.DetailTitle	=detailTitle
-				detailTitle=make([]string,0)
+		
+		prod,_:=prodDao.ProductWithId(item.ProdId,appId)
+		if prod!=nil {		
+			dto.PordTitle 			= prod.Title
+		}		
+		
+		if item.OpenStatus==2 {
+			order,err:=orderDao.OrderWithPordYyg(item.OpenCode)
+			if err!=nil {		
+				return nil,0,err
 			}
-			orderToA(dto,order)
+			if order!=nil {
+				//account,_ =account.AccountWithOpenId(order.OpenId,appId)
+				//order.Mobile	=account.Mobile
+				//order.YdgyName	=account.YdgyName
+				
+				orderItem,_=OrderItems(order.No);			
+				if len(orderItem)>0 {
+					order.GmOrdernum	=orderItem[0].GmOrdernum
+					order.GmPassnum	=orderItem[0].GmPassnum
+					order.GmPassway	=orderItem[0].GmPassway
+					order.WayStatus	=orderItem[0].WayStatus								
+				}
+				orderToA(dto,order)
+			}
 		}
 		itemsDto = append(itemsDto,dto)
 	}
 	
 	return itemsDto,count,nil
 }
-func OrdersYygRecord(prodId string,appId string,pIndex uint64,pSize uint64) ([]*dao.OrderYyg,error) {
-	order,err:=dao.NewOrder().OrdersWithPordYyg(prodId)
+func OrdersYygRecord(prodId string,appId string,pIndex uint64,pSize uint64) ([]*dao.OrderYyg,int64,error) {
+	order,count,err:=dao.NewOrder().OrdersWithPordYyg(prodId,pIndex,pSize)
 	if err!=nil {		
-		return nil,err
+		return nil,0,err
 	}
-	return order,nil
+	return order,count,nil
 }
 func orderToA(dto *ProdPurchaseCode,order *dao.Order) *ProdPurchaseCode {
 
@@ -144,7 +147,7 @@ func orderToA(dto *ProdPurchaseCode,order *dao.Order) *ProdPurchaseCode {
 	dto.Mobile 				= order.Mobile
 	dto.YdgyName 			= order.YdgyName
 	
-	dto.PordTitle 			= strings.Join(order.DetailTitle, " ")
+	
 	
 
 	return 	dto

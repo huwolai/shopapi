@@ -8,56 +8,56 @@ import (
 )
 
 type Order struct  {
-	Id int64
-	No string
-	Code  string
+	Id 					int64		`json:"id"`	
+	No 					string		`json:"no"`
+	Code  				string		`json:"code"`
 	//预付款编号(主要针对第三方支付的)
-	PrepayNo string
-	PayapiNo string
-	DbnAmount float64
+	PrepayNo 			string		`json:"prepay_no"`
+	PayapiNo 			string		`json:"payapi_no"`
+	DbnAmount 			float64		`json:"dbn_amount"`
 	//商户应得金额
-	MerchantAmount float64
-	//优惠金额
-	CouponAmount float64
-	OpenId string
-	MerchantId int64
-	MerchantName string
-	MOpenId string
-	AppId string
-	AddressId int64
-	Address string
-	AddressMobile string
-	AddressName string
-	Title string
-	Price float64
-	RealPrice float64
-	PayPrice float64
-	OmitMoney float64
-	Flag string
-	RejectCancelReason string
-	CancelReason string
-	OrderStatus int
-	PayStatus int
-	Json string
+	MerchantAmount		float64		`json:"merchant_amount"`
+	//优惠金额	
+	CouponAmount 		float64		`json:"coupon_amount"`
+	OpenId 				string		`json:"open_id"`
+	MerchantId 			int64		`json:"merchant_id"`
+	MerchantName 		string		`json:"merchant_name"`
+	MOpenId 			string		`json:"mopen_id"`
+	AppId 				string		`json:"app_id"`
+	AddressId 			int64		`json:"address_id"`
+	Address 			string		`json:"address"`
+	AddressMobile 		string		`json:"address_mobile"`
+	AddressName 		string		`json:"address_name"`
+	Title 				string		`json:"title"`
+	Price 				float64		`json:"price"`
+	RealPrice 			float64		`json:"real_price"`
+	PayPrice 			float64		`json:"pay_price"`
+	OmitMoney 			float64		`json:"omit_money"`
+	Flag 				string		`json:"flag"`
+	RejectCancelReason 	string		`json:"reject_cancel_reason"`
+	CancelReason 		string		`json:"cancel_reason"`
+	OrderStatus 		int			`json:"order_status"`
+	PayStatus 			int			`json:"pay_status"`
+	Json 				string		`json:"json"`
 	BaseDModel	
 	
-	GmOrdernum string
-	GmPassnum string
-	GmPassway string
-	WayStatus int64
+	GmOrdernum 			string		`json:"gm_ordernum"`
+	GmPassnum 			string		`json:"gm_passnum"`
+	GmPassway 			string		`json:"gm_passway"`
+	WayStatus 			int64		`json:"way_status"`
 	
-	DetailTitle []string
+	DetailTitle 		[]string	`json:"detail_title"`
 	
-	UpdateTimeUnix int64
+	UpdateTimeUnix 		int64		`json:"update_time_unix"`
 	
-	Show 			int
-	Mobile 			string
-	YdgyName  		string	
-	OrderType	  	string
+	Show 				int			`json:"show"`
+	Mobile 				string		`json:"mobile"`
+	YdgyName  			string		`json:"tdgy_name"`
+	OrderType	  		string		`json:"order_type"`
 }
 
 type OrderYyg struct  {
-	BuyCode string
+	BuyCode string	`json:"buy_code"`
 	Order
 }
 type OrderDetail struct  {
@@ -545,22 +545,24 @@ func (self *Order) OrderChangeShowState(appId string,no string,show int64) error
 	_,err :=db.NewSession().Update("order").Set("show",show).Where("no=?",no).Where("app_id=?",appId).Exec()
 	return err
 }
-func (self *Order) OrderWithPordYyg(prodId int64) (*Order,error)  {
+func (self *Order) OrderWithPordYyg(OpenCode string) (*Order,error)  {
 	var orders *Order
 
 	builder :=db.NewSession().Select("*").From("`order`")
 	
-	builder =builder.Where("`no` in (select `no` from order_item_purchase_codes where prod_id =?)",prodId)
+	builder =builder.Where("`no` in (select `no` from order_item_purchase_codes where codes =?)",OpenCode)
 	
 	_,err :=builder.LoadStructs(&orders)
 	return orders,err
 }
-func (self *Order) OrdersWithPordYyg(prodId string) ([]*OrderYyg,error)  {
+func (self *Order) OrdersWithPordYyg(prodId string,pIndex uint64,pSize uint64) ([]*OrderYyg,int64,error)  {
 	var orders []*OrderYyg	
 	
-	_,err :=db.NewSession().SelectBySql("select a.codes as buy_code,b.* from `order_item_purchase_codes` a left join `order` b on a.`no`=b.`no` where  a.`prod_id` = ?",prodId).LoadStructs(&orders)
+	count, _ := db.NewSession().SelectBySql("select count(a.codes) from `order_item_purchase_codes` a left join `order` b on a.`no`=b.`no` where  a.`prod_id` = ?",prodId).ReturnInt64()
 	
-	return orders,err
+	_,err :=db.NewSession().SelectBySql("select a.codes as buy_code,b.* from `order_item_purchase_codes` a left join `order` b on a.`no`=b.`no` where  a.`prod_id` = ? limit ?,?",prodId,(pIndex-1)*pSize,pSize).LoadStructs(&orders)
+		
+	return orders,count,err
 }
 
 

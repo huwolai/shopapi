@@ -32,16 +32,16 @@ func OrdersYygRecord(c *gin.Context)  {
 	prodId := c.Param("prod_id")
 	
 	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
-	//pords,total,err :=service.OrdersYygRecord(prodId,appId,pIndex,pSize)
-	pords,err :=service.OrdersYygRecord(prodId,appId,pIndex,pSize)
+	pords,total,err :=service.OrdersYygRecord(prodId,appId,pIndex,pSize)
+	//pords,err :=service.OrdersYygRecord(prodId,appId,pIndex,pSize)
 	if err!=nil {
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询失败！");
 		return
 	}	
 	
-	//c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),pords))
-	c.JSON(http.StatusOK,pords)
+	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),pords))
+	//c.JSON(http.StatusOK,pords)
 }
 
 
