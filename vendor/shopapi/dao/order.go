@@ -129,7 +129,8 @@ func NewOrderCount() *OrderCount  {
 
 func (self *Order) OrderWithStatusLTTime(payStatus int,orderStatus int,time string) ([]*Order,error)  {
 	var orders []*Order
-	_,err :=db.NewSession().Select("*,UNIX_TIMESTAMP(update_time) as update_time_unix").From("`order`").Where("pay_status=?",payStatus).Where("order_status=?",orderStatus).Where("update_time<=?",time).LoadStructs(&orders)
+	_,err :=db.NewSession().Select("*,UNIX_TIMESTAMP(create_time) as update_time_unix").From("`order`").Where("pay_status=?",payStatus).Where("order_status=?",orderStatus).Where("create_time<=?",time).LoadStructs(&orders)
+	//_,err :=db.NewSession().Select("*,UNIX_TIMESTAMP(update_time) as update_time_unix").From("`order`").Where("pay_status=?",payStatus).Where("order_status=?",orderStatus).Where("update_time<=?",time).LoadStructs(&orders)
 
 	return orders,err
 
@@ -254,7 +255,8 @@ func (self *Order) WithCount(searchs interface{},appId string) (int64,error)  {
 //查询没有付款的订单 并且时间小于某个时间的
 func (self *Order) OrderWithNoPayAndLTTime(time string) ([]*Order,error) {
 	var orders []*Order
-	_,err :=db.NewSession().Select("*, UNIX_TIMESTAMP(update_time) as update_time_unix").From("`order`").Where("pay_status=? or pay_status=?",comm.ORDER_PAY_STATUS_NOPAY,comm.ORDER_PAY_STATUS_PAYING).Where("update_time<=?",time).Where("order_status=?",comm.ORDER_STATUS_WAIT_SURE).LoadStructs(&orders)
+	_,err :=db.NewSession().Select("*, UNIX_TIMESTAMP(create_time) as update_time_unix").From("`order`").Where("pay_status=? or pay_status=?",comm.ORDER_PAY_STATUS_NOPAY,comm.ORDER_PAY_STATUS_PAYING).Where("create_time<=?",time).Where("order_status=?",comm.ORDER_STATUS_WAIT_SURE).LoadStructs(&orders)
+	//_,err :=db.NewSession().Select("*, UNIX_TIMESTAMP(update_time) as update_time_unix").From("`order`").Where("pay_status=? or pay_status=?",comm.ORDER_PAY_STATUS_NOPAY,comm.ORDER_PAY_STATUS_PAYING).Where("update_time<=?",time).Where("order_status=?",comm.ORDER_STATUS_WAIT_SURE).LoadStructs(&orders)
 
 	return orders,err
 }
