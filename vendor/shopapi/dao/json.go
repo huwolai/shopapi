@@ -23,5 +23,9 @@ func Right(str string, length int) string {
    
     return string(rs[start:])
 }
+func Left(str string, length int) string {
+    rs := []rune(str)      
+    return string(rs[0:length])
+}
 
 

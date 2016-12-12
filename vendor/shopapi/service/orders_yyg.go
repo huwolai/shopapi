@@ -15,6 +15,8 @@ type ProdPurchaseCode struct  {
 	OpenStatus 	int64  `json:"open_status"`	
 	PordTitle 	string `json:"pord_title"`	
 	OrderDto	 	
+	
+	OpenMobile	string  `json:"open_mobile"`
 }
 type OrderDto struct  {
 	Json string `json:"json"`
@@ -76,8 +78,8 @@ func OrdersYygWin(search dao.OrdersYygSearch,appId string,pIndex uint64,pSize ui
 		dto.ProdId		=item.ProdId
 		dto.Sku			=item.Sku
 		dto.OpenStatus	=item.OpenStatus
-		//OpenCode
-	
+		dto.OpenMobile	=item.OpenMobile
+		//OpenCode	
 		
 		prod,_:=prodDao.ProductWithId(item.ProdId,appId)
 		if prod!=nil {		

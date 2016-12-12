@@ -51,7 +51,7 @@ func (self *Address) Insert() (int64,error)  {
 }
 
 func (self *Address) Update() error  {
-	_,err :=db.NewSession().Update("address").Set("longitude",self.Longitude).Set("latitude",self.Latitude).Set("address",self.Address).Set("json",self.Json).Where("id=?",self.Id).Exec()
+	_,err :=db.NewSession().Update("address").Set("longitude",self.Longitude).Set("latitude",self.Latitude).Set("address",self.Address).Set("json",self.Json).Set("mobile",self.Mobile).Set("name",self.Name).Where("id=?",self.Id).Exec()
 
 	return err
 }
