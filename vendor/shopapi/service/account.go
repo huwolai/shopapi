@@ -511,7 +511,7 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 			"out_trade_no": record.No,
 			"out_trade_type": comm.Trade_Type_Recharge,
 			"open_id": record.OpenId,
-			"amount": int64(record.Amount*100),
+			"amount": 0-int64(record.Amount*100),
 			"trade_type": comm.Trade_Type_Recharge,
 			"pay_type": 3,
 			"title": record.Remark,
