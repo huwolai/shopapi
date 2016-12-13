@@ -545,12 +545,12 @@ func (self *Order) OrderChangeShowState(appId string,no string,show int64) error
 	_,err :=db.NewSession().Update("order").Set("show",show).Where("no=?",no).Where("app_id=?",appId).Exec()
 	return err
 }
-func (self *Order) OrderWithPordYyg(OpenCode string) (*Order,error)  {
+func (self *Order) OrderWithPordYyg(OpenCode string,prodId int64) (*Order,error)  {
 	var orders *Order
 
 	builder :=db.NewSession().Select("*").From("`order`")
 	
-	builder =builder.Where("`no` in (select `no` from order_item_purchase_codes where codes =?)",OpenCode)
+	builder =builder.Where("`no` in (select `no` from order_item_purchase_codes where codes =? and prod_id=?)",OpenCode,prodId)
 	
 	_,err :=builder.LoadStructs(&orders)
 	return orders,err

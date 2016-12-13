@@ -3,7 +3,7 @@ package service
 import (
 	"shopapi/dao"	
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
-	//"gitlab.qiyunxin.com/tangtao/utils/log"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 	//"fmt"
 	//"strings"
 )
@@ -14,9 +14,11 @@ type ProdPurchaseCode struct  {
 	Sku 		string `json:"sku"`
 	OpenStatus 	int64  `json:"open_status"`	
 	PordTitle 	string `json:"pord_title"`	
+		
 	OrderDto	 	
 	
 	OpenMobile	string  `json:"open_mobile"`
+	YdgyName 	string `json:"ydgy_name"`
 }
 type OrderDto struct  {
 	Json string `json:"json"`
@@ -65,13 +67,13 @@ func OrdersYygWin(search dao.OrdersYygSearch,appId string,pIndex uint64,pSize ui
 		return nil,0,err
 	}
 	
-	//log.Info(prods==nil)
+	log.Info(prods==nil)
 	
 	itemsDto :=make([]*ProdPurchaseCode,0)
 	orderDao :=dao.NewOrder()
+	accountDao :=dao.NewAccount()
 	prodDao	 :=dao.NewProduct()
 	var orderItem []*dao.OrderItem
-	//account := dao.NewAccount()
 	for _,item :=range prods {
 		dto :=&ProdPurchaseCode{}		
 		dto.Id			=item.Id
@@ -79,22 +81,23 @@ func OrdersYygWin(search dao.OrdersYygSearch,appId string,pIndex uint64,pSize ui
 		dto.Sku			=item.Sku
 		dto.OpenStatus	=item.OpenStatus
 		dto.OpenMobile	=item.OpenMobile
-		//OpenCode	
+		//OpenCode
 		
 		prod,_:=prodDao.ProductWithId(item.ProdId,appId)
 		if prod!=nil {		
 			dto.PordTitle 			= prod.Title
 		}		
 		
-		if item.OpenStatus==2 {
-			order,err:=orderDao.OrderWithPordYyg(item.OpenCode)
+		if item.OpenStatus==2 {			
+			order,err:=orderDao.OrderWithPordYyg(item.OpenCode,item.ProdId)			
 			if err!=nil {		
 				return nil,0,err
 			}
 			if order!=nil {
-				//account,_ =account.AccountWithOpenId(order.OpenId,appId)
-				//order.Mobile	=account.Mobile
-				//order.YdgyName	=account.YdgyName
+				account,err :=accountDao.AccountWithOpenId(item.OpenId,appId)
+				if err==nil && account!=nil {
+					order.YdgyName	=account.YdgyName	
+				}
 				
 				orderItem,_=OrderItems(order.No);			
 				if len(orderItem)>0 {
