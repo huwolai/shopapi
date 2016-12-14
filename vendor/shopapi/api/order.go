@@ -19,6 +19,7 @@ import (
 
 type OrderDto struct  {
 	Items []OrderItemDto `json:"items"`
+	Id int64 `json:"id"`
 	Json string `json:"json"`
 	OpenId string `json:"open_id"`
 	AppId string `json:"app_id"`
@@ -52,6 +53,11 @@ type OrderDto struct  {
 	Show int `json:"show"`
 	Mobile 	string	 `json:"mobile"`
 	YdgyName  	 string	 `json:"ydgy_name"`
+	
+	ProdId int64	`json:"prod_id"`
+	SkuNo string	`json:"sku_no"`
+	
+	ItemsNo string	`json:"item_no"`
 }
 
 type OrderDetailDto struct  {
@@ -545,14 +551,14 @@ func OrdersGet(c *gin.Context)  {
 	
 	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 	appId :=security.GetAppId2(c.Request)
-	orders,err :=service.OrdersGet(search,pIndex,pSize,appId)
+	orders,err :=service.OrdersGetWithItems(search,pIndex,pSize,appId)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询失败！");
 		return
 	}
 
-	total,err :=service.OrdersGetCount(search,appId)
+	total,err :=service.OrdersGetWithItemsCount(search,appId)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询订单总数量失败！")
@@ -574,13 +580,17 @@ func OrdersGet(c *gin.Context)  {
 			}
 		
 			orderItem,_=service.OrderItems(od.No);			
-			if len(orderItem)>0 {
-				od.GmOrdernum	=orderItem[0].GmOrdernum
-				od.GmPassnum	=orderItem[0].GmPassnum
-				od.GmPassway	=orderItem[0].GmPassway
-				od.WayStatus	=orderItem[0].WayStatus
+			if len(orderItem)>0 {				
 				for _,odItem :=range orderItem {
+					if odItem.ProdId!= od.ProdId {
+						continue
+					}
 					detailTitle=append(detailTitle,fmt.Sprintf("%s*%d", odItem.Title,odItem.Num))
+					
+					od.GmOrdernum	=odItem.GmOrdernum
+					od.GmPassnum	=odItem.GmPassnum
+					od.GmPassway	=odItem.GmPassway
+					od.WayStatus	=odItem.WayStatus
 				}
 				od.DetailTitle	=detailTitle
 				detailTitle=make([]string,0)
@@ -737,6 +747,7 @@ func orderItemDetailToDto(model *dao.OrderItemDetail) *OrderItemDetailDto  {
 
 func orderToA(order *dao.Order) *OrderDto {
 	a :=&OrderDto{}
+	a.Id = order.Id
 	a.AddressId = order.AddressId
 	a.AppId = order.AppId
 	a.CancelReason = order.CancelReason
@@ -766,7 +777,11 @@ func orderToA(order *dao.Order) *OrderDto {
 	a.Mobile = order.Mobile
 	a.YdgyName = order.YdgyName
 	
-
+	if len(order.SkuNo)>0 {
+		a.ProdId	= order.ProdId
+		a.SkuNo 	= order.SkuNo
+		a.ItemsNo	= fmt.Sprintf("%s%d%s",order.No,order.ProdId,order.SkuNo)
+	}
 	return a
 }
 
@@ -873,14 +888,16 @@ func OrdersAddNum(c *gin.Context)  {
 	//ordernum	:=c.PostForm("ordernum")
 	
 	type Params struct {
-		Id			string   `json:"id"`
+		No			string   `json:"id"`
 		Ordernum	string   `json:"ordernum"`
+		Sku			string   `json:"sku"`
+		ProdId		int64	 `json:"prod_id"`
 	}
 	var param Params
 	c.BindJSON(&param)
 	
 	
-	err :=service.OrdersAddNum(param.Id,appId,param.Ordernum)
+	err :=service.OrdersAddNum(param.No,param.Sku,param.ProdId,appId,param.Ordernum)
 	
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
@@ -903,14 +920,16 @@ func OrdersAddPassnum(c *gin.Context)  {
 	//passnum		:=c.PostForm("passnum")
 
 	type Params struct {
-		Id			string   `json:"id"`
+		No			string   `json:"id"`
 		Passnum		string   `json:"passnum"`
-		Passway	string   `json:"passway"`
+		Passway		string   `json:"passway"`
+		Sku			string   `json:"sku"`
+		ProdId		int64	 `json:"prod_id"`
 	}
 	var param Params
 	c.BindJSON(&param)
 	
-	err :=service.OrdersAddPassnum(param.Id,appId,param.Passnum,param.Passway)
+	err :=service.OrdersAddPassnum(param.No,param.Sku,param.ProdId,appId,param.Passnum,param.Passway)
 	
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())

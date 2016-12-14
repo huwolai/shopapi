@@ -18,6 +18,7 @@ type AccountRecharge struct  {
 	Froms int
 	CreateTimeUnix  int64
 	Mobile string
+	Type int
 	
 	Opt string
 	Remark string
@@ -46,7 +47,7 @@ func (self *AccountRecharge) InsertTx(tx *dbr.Tx) error  {
 
 func (self *AccountRecharge) Insert() error  {
 
-	_,err :=db.NewSession().InsertInto("account_recharge").Columns("no","app_id","open_id","amount","status","flag","json","froms","opt","remark").Record(self).Exec()
+	_,err :=db.NewSession().InsertInto("account_recharge").Columns("no","app_id","open_id","amount","status","flag","json","froms","opt","remark","type").Record(self).Exec()
 
 	return err
 }
@@ -65,11 +66,18 @@ func (self *AccountRecharge) UpdateStatusWithNo(status int,no string,appId strin
 
 	return err
 }
-func (self *AccountRecharge) UpdateStatusAuditWithNo(status int,audit string,no string,appId string) error {
-	_,err :=db.NewSession().Update("account_recharge").Set("status",status).Set("audit",audit).Where("no=?",no).Where("app_id=?",appId).Exec()
+func (self *AccountRecharge) UpdateStatusAuditWithNo(audit string,no string,appId string) error {
+	_,err :=db.NewSession().Update("account_recharge").Set("status",1).Set("audit",audit).Where("no=?",no).Where("app_id=?",appId).Exec()
 
 	return err
 }
+func (self *AccountRecharge) UpdateStatusAuditWithNoFail(audit string,no string,appId string,failRes string) error {
+	_,err :=db.NewSession().Update("account_recharge").Set("status",2).Set("fail_res",failRes).Set("audit",audit).Where("no=?",no).Where("app_id=?",appId).Exec()
+
+	return err
+}
+
+
 //账户充值记录
 func (self *AccountRecharge) WithOpenId(openId string,appId string,froms int64) ([]*AccountRecharge,error)  {
 	var model []*AccountRecharge

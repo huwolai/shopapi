@@ -17,13 +17,21 @@ import (
 )
 
 type AccountRechargeModel struct  {
-	AppId string
+	AppId 	string
 	//充值账户
-	OpenId string
+	OpenId 	string
 	//充值金额
-	Money float64
+	Money 	float64
 	PayType int  //付款类型(1.支付宝 2.微信)
-	Remark string
+	Remark 	string
+	Type 	int
+	/* 账户余额类型:
+1.    系统自动结算的厨师服务费用
+2.	系统结算的厨师小店佣金费用
+3.	后台给厨师的充值打款(例如食材费和厨师推荐费用等)
+4.	后台给厨师充值的通过一点公益的消费金额
+每个月15号厨师可提现,  提现金额仅限类型1、2、3属于可提现,    厨师消费时(在app内购买厨师服务和商城商品时)优先使用类型4的金额 */
+
 }
 
 type AccountRecharge struct  {
@@ -55,7 +63,6 @@ type AccountDetailModel struct  {
 	CreateTime string `json:"create_time"`
 	//是否设置支付密码
 	PasswordIsSet int `json:"password_is_set"`
-
 }
 
 //账户预充值
@@ -479,6 +486,7 @@ func AccountChangeRecord(model *AccountRechargeModel,from int,opt string) error 
 	accountRecharge.Froms = from
 	accountRecharge.Opt = opt
 	accountRecharge.Remark = model.Remark
+	accountRecharge.Type = model.Type
 	
 	err :=accountRecharge.Insert()
 	if err!=nil{
@@ -503,8 +511,14 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 	if record.Amount!=amount {
 		return nil,errors.New("金额错误!!") 
 	}
+	//审核不通过
+	failRes  :=model["fail_res"].(string)
+	if len(failRes)>0 {
+		rechargeRecord.UpdateStatusAuditWithNoFail(model["audit"].(string),model["no"].(string),appId,failRes)
+		return nil,nil
+	}	
 	
-	rechargeRecord.UpdateStatusAuditWithNo(1,model["audit"].(string),model["no"].(string),appId)
+	rechargeRecord.UpdateStatusAuditWithNo(model["audit"].(string),model["no"].(string),appId)
 	
 	if record.Amount>0 {
 		params := map[string]interface{}{
@@ -520,6 +534,10 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 			"remark": record.Remark,
 		}
 		resultMap,err :=RequestPayApi("/pay/makeprepay",params)
+		//冻结金额增加 freeze_money
+		if err!=nil && record.Type == 4 {
+			dao.NewAccount().AccountAddFreezeMoney(record.OpenId,int64(record.Amount*100))
+		}		
 		return resultMap,err
 	}else{
 		account := dao.NewAccount()
@@ -557,6 +575,10 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 			"out_trade_no":"",
 		}
 		resultMap,err = RequestPayApi("/pay/payimprest",payparams)
+		//冻结金额减少 freeze_money
+		if err!=nil && record.Type == 4 {
+			dao.NewAccount().AccountMinusFreezeMoney(record.OpenId,int64(record.Amount*100))
+		}
 		return resultMap,err
 	}	
 	return nil,errors.New("操作错误!") 

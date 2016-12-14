@@ -3,7 +3,7 @@ package dao
 import (
 	"github.com/gocraft/dbr"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
-	//"gitlab.qiyunxin.com/tangtao/utils/log"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 type OrderItem struct  {
@@ -153,12 +153,15 @@ func fillOrderItemImg(orderItems []*OrderItemDetail) error  {
 	return nil
 }
 
-func (self *OrderItem)OrdersAddNumWithNo(orderNo string,appId string,ordernum string) error {
-	_,err :=db.NewSession().Update("order_item").Set("gm_ordernum",ordernum).Where("no=?",orderNo).Where("app_id=?",appId).Exec()
+func (self *OrderItem)OrdersAddNumWithNo(orderNo string,Sku string,ProdId int64,appId string,ordernum string) error {
+	_,err :=db.NewSession().Update("order_item").Set("gm_ordernum",ordernum).Where("no=?",orderNo).Where("app_id=?",appId).Where("sku_no=?",Sku).Where("prod_id=?",ProdId).Exec()
 	return err
 }
-func (self *OrderItem)OrdersAddNumWithPassnum(orderNo string,appId string,passnum string,passway string) error {
-	_,err :=db.NewSession().Update("order_item").Set("gm_passnum",passnum).Set("gm_passway",passway).Where("no=?",orderNo).Where("app_id=?",appId).Exec()
+func (self *OrderItem)OrdersAddNumWithPassnum(orderNo string,Sku string,ProdId int64,appId string,passnum string,passway string) error {
+	_,err :=db.NewSession().Update("order_item").Set("gm_passnum",passnum).Set("gm_passway",passway).Where("no=?",orderNo).Where("app_id=?",appId).Where("sku_no=?",Sku).Where("prod_id=?",ProdId).Exec()
+	
+	buider:=db.NewSession().Update("order_item").Set("gm_passnum",passnum).Set("gm_passway",passway).Where("no=?",orderNo).Where("app_id=?",appId).Where("sku_no=?",Sku).Where("prod_id=?",ProdId)
+	log.Error( buider.ToSql() )
 	return err
 }
 

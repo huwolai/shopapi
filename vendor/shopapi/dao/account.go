@@ -1,19 +1,21 @@
 package dao
 
 import "gitlab.qiyunxin.com/tangtao/utils/db"
+import "github.com/gocraft/dbr"
 
 type Account struct  {
-	Id int64
-	AppId string
-	OpenId string
-	Mobile string
-	Money float64
-	Password string
-	Status int
-	YdgyId string
-	YdgyName string
-	YdgyStatus int64
-	Name string
+	Id 			int64
+	AppId 		string
+	OpenId 		string
+	Mobile 		string
+	Money 		float64
+	Password 	string
+	Status 		int
+	YdgyId		string
+	YdgyName 	string
+	YdgyStatus	int64
+	Name 		string
+	FreezeMoney int64
 	BaseDModel
 }
 
@@ -125,3 +127,70 @@ func (self *GetOnKey) GetOnKey() (*GetOnKey,error) {
 
 	return GetOnKey,err
 }
+//冻结金额增加 freeze_money
+func (self *Account) AccountAddFreezeMoney(openId string,money int64) error {
+	_,err :=db.NewSession().UpdateBySql("update account set freeze_money=freeze_money+? where open_id=? limit 1",money,openId).Exec()
+	return err
+}
+//冻结金额减少 freeze_money
+func (self *Account) AccountMinusFreezeMoney(openId string,money int64) error {
+	session := db.NewSession()
+	tx,_ :=session.Begin()
+	defer func() {
+		if err :=recover();err!=nil{
+			tx.Rollback()
+			panic(err)				
+		}
+	}()
+	//==============================
+	var account *Account
+	_,err :=tx.Select("*").From("account").Where("open_id=?",openId).LoadStructs(&account)
+	if err!=nil || account==nil {
+		tx.Rollback()
+		return err
+	}
+	
+	if account.FreezeMoney>money {
+		money=account.FreezeMoney-money
+	}else{
+		money=0
+	}
+	
+	_,err =tx.UpdateBySql("update account set freeze_money=? where open_id=? limit 1",money,openId).Exec()
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+	err = tx.Commit()
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}	
+	return nil
+}
+//冻结金额减少 freeze_money
+func (self *Account) AccountMinusFreezeMoneyTx(openId string,money int64,tx *dbr.Tx) error {
+	_,err :=tx.UpdateBySql("update account set freeze_money=freeze_money-? where open_id=? limit 1",money,openId).Exec()
+	return err
+}
+func (self *Account) AccountWithOpenIdTx(openId string,appId string,tx *dbr.Tx) (*Account,error)  {
+	var account *Account
+	_,err :=tx.Select("*").From("account").Where("open_id=?",openId).Where("app_id=?",appId).LoadStructs(&account)
+	return account,err
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

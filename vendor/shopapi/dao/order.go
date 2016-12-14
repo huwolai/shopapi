@@ -54,6 +54,9 @@ type Order struct  {
 	Mobile 				string		`json:"mobile"`
 	YdgyName  			string		`json:"tdgy_name"`
 	OrderType	  		string		`json:"order_type"`
+	
+	ProdId 				int64		`json:"prod_id"`
+	SkuNo 				string		`json:"sku_no"`
 }
 
 type OrderYyg struct  {
@@ -564,6 +567,144 @@ func (self *Order) OrdersWithPordYyg(prodId string,pIndex uint64,pSize uint64) (
 		
 	return orders,count,err
 }
+
+
+func (self *Order) WithItems(searchs interface{},pageIndex uint64,pageSize uint64,appId string) ([]*Order,error)  {
+	var orders []*Order
+	//_,err :=db.NewSession().Select("*").From("`order`").Where("app_id=?",appId).Limit(pageSize).Offset((pageIndex-1)*pageSize).OrderDir("create_time",false).LoadStructs(&orders)
+
+	buider :=db.NewSession().Select("`order`.*,order_item.prod_id,order_item.sku_no").From("`order_item`").LeftJoin("order","`order`.`no`=order_item.`no`").Where("`order_item`.app_id=?",appId)
+	
+	search:=searchs.(OrderSearch)
+	if search.MerchantName!="" {
+		buider = buider.Where("`order`.merchant_name like ?","%"+search.MerchantName+"%")
+	}
+	if search.Title!="" {
+		buider = buider.Where("`order`.title like ?","%"+search.Title+"%")
+	}
+	if search.OrderNo!="" {
+		buider = buider.Where("`order`.`no` = ?",search.OrderNo)
+	}
+	if search.AddressMobile!="" {
+		//buider = buider.Where("address_mobile like ?",search.AddressMobile+"%")
+		buider = buider.Where("`order`.open_id in ( select open_id from account where mobile like ?)",search.AddressMobile+"%")
+	}
+	if len(search.OrderType)>0 {
+		buider = buider.Where("`order`.order_type in ?",search.OrderType)
+	}
+	switch search.PayStatus {
+		case 1://1，未付款；
+			buider = buider.Where("`order`.pay_status = ?",0)
+		case 2://2，已付款
+			buider = buider.Where("`order`.pay_status = ?",1)
+		case 3://3，已付款
+			buider = buider.Where("`order`.pay_status = ?",2)
+	}
+	switch search.OrderStatus {
+		case 1://1，未确认
+			buider = buider.Where("`order`.order_status = ?",0)
+		case 2://2，已确认；
+			buider = buider.Where("`order`.order_status = ?",1)
+		case 3://3，已取消；
+			buider = buider.Where("`order`.order_status = ?",2)
+		case 4://4，无效；
+			buider = buider.Where("`order`.order_status = ?",3)
+		case 5://5，退货
+			buider = buider.Where("`order`.order_status = ?",4)
+	}
+	
+	//show
+	if search.Show>0 {
+		if search.Show==1 {
+			buider = buider.Where("`order`.`show` = ?",1)
+		}else{
+			buider = buider.Where("`order`.`show` = ?",0)
+		}		
+	}	
+	
+	_,err :=buider.Limit(pageSize).Offset((pageIndex-1)*pageSize).OrderDir("create_time",false).LoadStructs(&orders)
+	return orders,err
+}
+func (self *Order) WithItemsCount(searchs interface{},appId string) (int64,error)  {
+	var count int64
+	
+	buider :=db.NewSession().Select("count(`order_item`.id)").From("`order_item`").LeftJoin("order","`order`.`no`=order_item.`no`").Where("`order_item`.app_id=?",appId)
+	
+	search:=searchs.(OrderSearch)
+	if search.MerchantName!="" {
+		buider = buider.Where("`order`.merchant_name like ?","%"+search.MerchantName+"%")
+	}
+	if search.Title!="" {
+		buider = buider.Where("`order`.title like ?","%"+search.Title+"%")
+	}
+	if search.OrderNo!="" {
+		buider = buider.Where("`order`.`no` = ?",search.OrderNo)
+	}
+	if search.AddressMobile!="" {
+		//buider = buider.Where("address_mobile like ?",search.AddressMobile+"%")
+		buider = buider.Where("`order`.open_id in ( select open_id from account where mobile like ?)",search.AddressMobile+"%")
+	}
+	if len(search.OrderType)>0 {
+		buider = buider.Where("`order`.order_type in ?",search.OrderType)
+	}
+	switch search.PayStatus {
+		case 1://1，未付款；
+			buider = buider.Where("`order`.pay_status = ?",0)
+		case 2://2，已付款
+			buider = buider.Where("`order`.pay_status = ?",1)
+		case 3://3，已付款
+			buider = buider.Where("`order`.pay_status = ?",2)
+	}
+	switch search.OrderStatus {
+		case 1://1，未确认
+			buider = buider.Where("`order`.order_status = ?",0)
+		case 2://2，已确认；
+			buider = buider.Where("`order`.order_status = ?",1)
+		case 3://3，已取消；
+			buider = buider.Where("`order`.order_status = ?",2)
+		case 4://4，无效；
+			buider = buider.Where("`order`.order_status = ?",3)
+		case 5://5，退货
+			buider = buider.Where("`order`.order_status = ?",4)
+	}
+	
+	//show
+	if search.Show>0 {
+		if search.Show==1 {
+			buider = buider.Where("`order`.`show` = ?",1)
+		}else{
+			buider = buider.Where("`order`.`show` = ?",0)
+		}		
+	}	
+	//log.Error(buider.ToSql())
+	err :=buider.LoadValue(&count)	
+	return count,err
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

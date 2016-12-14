@@ -648,8 +648,7 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 			tx.Rollback()
 			return err
 		}
-	}
-	
+	}	
 	
 	//支付预付款
 	params := map[string]interface{}{
@@ -870,8 +869,8 @@ func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 		} */
 	
 		ProdPurchaseCode.AppId	=oItem.AppId
-		ProdPurchaseCode.Id	=oItem.Id
-		ProdPurchaseCode.ProdId=oItem.ProdId
+		ProdPurchaseCode.Id		=oItem.Id
+		ProdPurchaseCode.ProdId	=oItem.ProdId
 		ProdPurchaseCode.Sku	=oItem.SkuNo
 		ProdPurchaseCode.Num	=oItem.Num
 		
@@ -1083,15 +1082,17 @@ func OrderCancel(orderNo string,reason string,appId string) error {
 }
 
 func OrdersGet(searchs interface{},pageIndex uint64,pageSize uint64,appId string)([]*dao.Order,error) {
-
 	return dao.NewOrder().With(searchs,pageIndex,pageSize,appId)
 }
 func OrdersGetCount(searchs interface{},appId string)(int64,error) {
-
 	return dao.NewOrder().WithCount(searchs,appId)
 }
-
-
+func OrdersGetWithItems(searchs interface{},pageIndex uint64,pageSize uint64,appId string)([]*dao.Order,error) {
+	return dao.NewOrder().WithItems(searchs,pageIndex,pageSize,appId)
+}
+func OrdersGetWithItemsCount(searchs interface{},appId string)(int64,error) {
+	return dao.NewOrder().WithItemsCount(searchs,appId)
+}
 func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 
 	merchant := dao.NewMerchant()
@@ -1330,7 +1331,7 @@ func OrderDeleteBatch(orderNo OrderNo,appId string) error {
 	return nil
 }
 //单增加购买订单号
-func OrdersAddNum(orderNo string,appId string,ordernum string) error {
+func OrdersAddNum(orderNo string,Sku string,ProdId int64,appId string,ordernum string) error {
 	/* order :=dao.NewOrder()
 	order,err :=order.OrderWithId(orderId,appId)
 	if err!=nil{
@@ -1338,7 +1339,7 @@ func OrdersAddNum(orderNo string,appId string,ordernum string) error {
 	} */
 	
 	orderItem := dao.NewOrderItem()
-	err :=orderItem.OrdersAddNumWithNo(orderNo,appId,ordernum)
+	err :=orderItem.OrdersAddNumWithNo(orderNo,Sku,ProdId,appId,ordernum)
 	if err!=nil{
 		return err
 	}
@@ -1346,7 +1347,7 @@ func OrdersAddNum(orderNo string,appId string,ordernum string) error {
 	return nil
 }
 //订单增加购买运单号
-func OrdersAddPassnum(orderNo string,appId string,passnum string,passway string) error {
+func OrdersAddPassnum(orderNo string,Sku string,ProdId int64,appId string,passnum string,passway string) error {
 	/* order :=dao.NewOrder()
 	order,err :=order.OrderWithId(orderId,appId)
 	if err!=nil{
@@ -1354,7 +1355,7 @@ func OrdersAddPassnum(orderNo string,appId string,passnum string,passway string)
 	} */
 	
 	orderItem := dao.NewOrderItem()
-	err :=orderItem.OrdersAddNumWithPassnum(orderNo,appId,passnum,passway)
+	err :=orderItem.OrdersAddNumWithPassnum(orderNo,Sku,ProdId,appId,passnum,passway)
 	if err!=nil{
 		return err
 	}

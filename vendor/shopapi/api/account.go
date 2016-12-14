@@ -19,11 +19,12 @@ import (
 )
 
 type AccountPreRechargeDto struct  {
-	OpenId string `json:"open_id"`
-	Money float64 `json:"money"`
+	OpenId 	string `json:"open_id"`
+	Money	float64 `json:"money"`
 	PayType int `json:"pay_type"`
-	Remark string `json:"content"`
-	Opt string `json:"opt"`
+	Remark 	string `json:"content"`
+	Opt 	string `json:"opt"`
+	Type 	int `json:"type"`
 }
 
 type AccountDetailDto struct  {
@@ -35,6 +36,8 @@ type AccountDetailDto struct  {
 	Status int `json:"status"`
 	//是否设置支付密码
 	PasswordIsSet int `json:"password_is_set"`
+	//不可提现金额
+	FreezeMoney int `json:"freeze_money"`
 }
 
 type Account struct  {
@@ -50,6 +53,7 @@ type Account struct  {
 	YdgyName string `json:"ydgy_name"`
 	YdgyStatus int64 `json:"ydgy_status"`
 	Name string `json:"username"`
+	FreezeMoney int64 `json:"freeze_money"`
 }
 
 type LoginForSMSParam struct  {
@@ -185,11 +189,12 @@ func AccountPreRecharge(c *gin.Context)  {
 	param.OpenId = c.Param("open_id")
 	appId := security.GetAppId2(c.Request)
 
-	model :=&service.AccountRechargeModel{}
-	model.Money = param.Money
-	model.OpenId = param.OpenId
-	model.PayType = param.PayType
-	model.AppId = appId
+	model 			:=&service.AccountRechargeModel{}
+	model.Money 	= param.Money
+	model.OpenId 	= param.OpenId
+	model.PayType 	= param.PayType
+	model.AppId 	= appId
+	//model.Type 		= 5
 	resultMap,err := service.AccountPreRecharge(model,2,"")
 	if err!=nil {
 		log.Error(err)
@@ -239,9 +244,9 @@ func AccountsGet(c *gin.Context)  {
 		var detailModel *service.AccountDetailModel
 		log.Info(detailModel)
 		for _,account :=range accounts  {			
-			detailModel,_ =service.AccountDetail(account.OpenId)
-			account.Money=float64(detailModel.Amount)/100.0
-			//account.Money=0
+			//detailModel,_ =service.AccountDetail(account.OpenId)
+			//account.Money=float64(detailModel.Amount)/100.0
+			account.Money=0
 			results = append(results,accountToA(account))
 		}
 	}
@@ -269,6 +274,7 @@ func accountToA(model *dao.Account) *Account  {
 	a.YdgyName = model.YdgyName
 	a.YdgyStatus = model.YdgyStatus
 	a.Name = model.Name
+	a.FreezeMoney = model.FreezeMoney
 
 	return a
 }
@@ -297,16 +303,21 @@ func GetOnKey(c *gin.Context)  {
 	
 	c.JSON(http.StatusOK,param)
 }
-
+func CheckAdmin(openId string,password string) int64{
+	if openId!="wesdfsfsdf23323" {
+		return 1
+	}
+	if len(password)>0 && password!="180181" {
+		return 2
+	}
+	return 0
+}
 //管理员后台-账户变动记录
 func AccountPreRechargeByAdmin(c *gin.Context)  {
-	openId:=c.Param("open_id")
-	if openId!="wesdfsfsdf23323" {
-		util.ResponseError400(c.Writer,"权限不足！")
-		return
-	}
+	openId:=c.Param("open_id")	
 	password := c.Query("sepassword")
-	if password!="180181" {
+	
+	if CheckAdmin(openId,password)>0 {
 		util.ResponseError400(c.Writer,"权限不足.！")
 		return
 	}	
@@ -335,11 +346,12 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 	appId := security.GetAppId2(c.Request)
 
 	model :=&service.AccountRechargeModel{}	
-	model.OpenId = param.OpenId
-	model.PayType = 3 //param.PayType
-	model.AppId = appId
-	model.Remark = param.Remark	
-	model.Money	= param.Money
+	model.OpenId 	= param.OpenId
+	model.PayType 	= 3 //param.PayType
+	model.AppId 	= appId
+	model.Remark 	= param.Remark	
+	model.Money		= param.Money
+	model.Type		= param.Type
 	
 	err = service.AccountChangeRecord(model,1,param.Opt)
 	if err!=nil{
@@ -352,13 +364,13 @@ func AccountPreRechargeByAdmin(c *gin.Context)  {
 //管理员后台-账户变动记录
 func AccountPreRechargeByAdminOK(c *gin.Context)  {
 	openId:=c.Param("open_id")
-	if openId!="wesdfsfsdf23323" {
-		util.ResponseError400(c.Writer,"权限不足！")
+	if CheckAdmin(openId,"")>0 {
+		util.ResponseError400(c.Writer,"权限不足.！")
 		return
-	}	
+	}
 	
 	var paramMap map[string]interface{}
-	err := c.BindJSON(&paramMap)	
+	err := c.BindJSON(&paramMap)
 	
 	if len(paramMap["no"].(string))<1 {
 		util.ResponseError400(c.Writer,"编号错误")
@@ -383,33 +395,15 @@ func AccountPreRechargeByAdminOK(c *gin.Context)  {
 	
 	appId := security.GetAppId2(c.Request)
 	
-	var resultMap map[string]interface{}
-	resultMap,err = service.AccountChangeRecordOK(paramMap,appId)
+	//var resultMap map[string]interface{}
+	_,err = service.AccountChangeRecordOK(paramMap,appId)
 	if err!=nil {
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}		
-	c.JSON(http.StatusOK,resultMap)	
-	
-	/* if param.Money<0 {
-		model.Money = 0-param.Money
-		resultMap,err = service.AccountPreRechargeMinus(model,1,param.Opt)
-		if err!=nil {
-			log.Error(err)
-			util.ResponseError400(c.Writer,err.Error())
-			return
-		}		
-	}else{
-		model.Money = param.Money
-		resultMap,err = service.AccountPreRecharge(model,1,param.Opt)
-		if err!=nil {
-			log.Error(err)
-			util.ResponseError400(c.Writer,err.Error())
-			return
-		}
-	}
-	c.JSON(http.StatusOK,resultMap) */
+	//c.JSON(http.StatusOK,resultMap)	
+	util.ResponseSuccess(c.Writer)
 }
 //账户充值记录  后台
 func RechargeRecordByAdmin(c *gin.Context)  {

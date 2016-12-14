@@ -187,6 +187,7 @@ type ProdSkuDto struct  {
 	Stock int `json:"stock"`
 	StockInc int `json:"stock_init"`
 	Json string `json:"json"`
+	SoldNum int `json:"sold_num"`
 }
 
 func ProdSkuAdd(c *gin.Context)  {
@@ -352,6 +353,7 @@ func prodSkuToDto(model *dao.ProdSku) *ProdSkuDto  {
 	prodSku.StockInc = model.Stock+model.SoldNum
 	prodSku.SkuNo = model.SkuNo
 	prodSku.Id = model.Id
+	prodSku.SoldNum = model.SoldNum
 	return prodSku
 }
 
