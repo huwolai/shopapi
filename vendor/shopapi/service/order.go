@@ -661,6 +661,7 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	}
 	money:=account.FreezeMoney-int64(order.Price*100)
 	if money<0 {
+		log.Info("扣除不可体现金额"+money)
 		money=0
 	}	
 	err	= accountDao.AccountMinusFreezeMoneyTx(order.OpenId,money,tx)
