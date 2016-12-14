@@ -64,6 +64,8 @@ type AccountDetailModel struct  {
 	CreateTime string `json:"create_time"`
 	//是否设置支付密码
 	PasswordIsSet int `json:"password_is_set"`
+	
+	FreezeMoney int64 `json:"freeze_money"`
 }
 
 //账户预充值
@@ -139,6 +141,9 @@ func AccountDetail(openId string) (*AccountDetailModel,error)  {
 		if err!=nil{
 			return nil,err
 		}
+		
+		account,_ :=dao.NewAccount().AccountWithOpenId(openId,appid)
+		resultModel.FreezeMoney=account.FreezeMoney
 
 		return resultModel,nil
 	}else if response.StatusCode==http.StatusBadRequest {
@@ -580,7 +585,7 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 		resultMap,err = RequestPayApi("/pay/payimprest",payparams)
 		//冻结金额减少 freeze_money
 		if err==nil && record.Type == 4 {
-			money:=account.FreezeMoney-int64(record.Amount*100)
+			money:=account.FreezeMoney+int64(record.Amount*100)
 			if money<0 {
 				money=0
 			}	
