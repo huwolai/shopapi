@@ -513,11 +513,11 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 	}
 	//审核不通过
 	failRes  :=model["fail_res"].(string)
-	if len(failRes)>0 {
+	if len(failRes)>1 {
 		rechargeRecord.UpdateStatusAuditWithNoFail(model["audit"].(string),model["no"].(string),appId,failRes)
 		return nil,nil
 	}	
-	
+	log.Info(len(failRes))
 	rechargeRecord.UpdateStatusAuditWithNo(model["audit"].(string),model["no"].(string),appId)
 	
 	if record.Amount>0 {
