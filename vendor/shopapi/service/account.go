@@ -49,6 +49,7 @@ type AccountRecharge struct  {
 	YdgyName 	string	`json:"ydgy_name"`
 	Opt 		string	`json:"opt"`
 	Remark 		string	`json:"remark"`
+	FailRes		string	`json:"fail_res"`
 }
 
 type AccountDetailModel struct  {
@@ -450,22 +451,24 @@ func RechargeRecordByAdmins(appId string,froms int64,pageIndex uint64,pageSize u
 //账户充值记录 格式化
 func RechargeRecordFormat(model *dao.AccountRecharge) AccountRecharge  {
 	//dto 	:=make([]AccountRecharge,0)
-	dtoItem	:=AccountRecharge{}
+	dtoItem		:=AccountRecharge{}
 	//for _,item :=range model {
-		dtoItem.Id=model.Id
-		dtoItem.No=model.No
-		dtoItem.OpenId=model.OpenId
-		dtoItem.Amount=model.Amount
-		dtoItem.Status=model.Status
-		dtoItem.Flag=model.Flag
-		dtoItem.Json=model.Json
-		dtoItem.Froms=model.Froms		
-		dtoItem.Mobile=model.Mobile	
-		
-		dtoItem.Opt=model.Opt		
-		dtoItem.Remark=model.Remark		
-		
-		dtoItem.CreateTime=time.Unix(model.CreateTimeUnix, 0).Format("2006-01-02 15:04:05")
+	dtoItem.Id		=model.Id
+	dtoItem.No		=model.No
+	dtoItem.OpenId	=model.OpenId
+	dtoItem.Amount	=model.Amount
+	dtoItem.Status	=model.Status
+	dtoItem.Flag	=model.Flag
+	dtoItem.Json	=model.Json
+	dtoItem.Froms	=model.Froms		
+	dtoItem.Mobile	=model.Mobile	
+	
+	dtoItem.Opt		=model.Opt		
+	dtoItem.FailRes	=model.FailRes	
+	
+	dtoItem.Remark	=model.Remark		
+	
+	dtoItem.CreateTime=time.Unix(model.CreateTimeUnix, 0).Format("2006-01-02 15:04:05")
 		
 		//dto = append(dto,dtoItem)
 	//}

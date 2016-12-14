@@ -645,10 +645,31 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 	if goodsType["goods_type"]=="mall_yyg"{
 		err = purchaseCodes(orderItems,appId,tx)
 		if err!=nil{
+			log.Error(err)
 			tx.Rollback()
 			return err
 		}
+	}
+	
+	//扣除不可体现金额
+	accountDao 	:= dao.NewAccount()
+	account,err	:=accountDao.AccountWithOpenIdTx(order.OpenId,appId,tx)
+	if err!=nil {
+		log.Error(err)
+		tx.Rollback()
+		return err
+	}
+	money:=account.FreezeMoney-int64(order.Price*100)
+	if money<0 {
+		money=0
 	}	
+	err	= accountDao.AccountMinusFreezeMoneyTx(order.OpenId,money,tx)
+	if err!=nil{
+		log.Error(err)
+		tx.Rollback()
+		return err
+	}
+	//=====================
 	
 	//支付预付款
 	params := map[string]interface{}{

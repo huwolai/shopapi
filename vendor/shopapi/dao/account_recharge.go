@@ -23,6 +23,8 @@ type AccountRecharge struct  {
 	Opt string
 	Remark string
 	
+	FailRes string
+	
 	BaseDModel
 }
 
