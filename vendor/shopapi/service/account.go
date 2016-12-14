@@ -535,7 +535,7 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 		}
 		resultMap,err :=RequestPayApi("/pay/makeprepay",params)
 		//冻结金额增加 freeze_money
-		if err!=nil && record.Type == 4 {
+		if err==nil && record.Type == 4 {
 			dao.NewAccount().AccountAddFreezeMoney(record.OpenId,int64(record.Amount*100))
 		}		
 		return resultMap,err
@@ -576,7 +576,7 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 		}
 		resultMap,err = RequestPayApi("/pay/payimprest",payparams)
 		//冻结金额减少 freeze_money
-		if err!=nil && record.Type == 4 {
+		if err==nil && record.Type == 4 {
 			money:=account.FreezeMoney-int64(record.Amount*100)
 			if money<0 {
 				money=0
