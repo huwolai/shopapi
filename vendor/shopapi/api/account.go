@@ -244,9 +244,9 @@ func AccountsGet(c *gin.Context)  {
 		var detailModel *service.AccountDetailModel
 		log.Info(detailModel)
 		for _,account :=range accounts  {			
-			//detailModel,_ =service.AccountDetail(account.OpenId)
-			//account.Money=float64(detailModel.Amount)/100.0
-			account.Money=0
+			detailModel,_ =service.AccountDetail(account.OpenId)
+			account.Money=float64(detailModel.Amount)/100.0
+			//account.Money=0
 			results = append(results,accountToA(account))
 		}
 	}
