@@ -451,7 +451,6 @@ func RechargeRecordByAdmins(c *gin.Context)  {
 	
 	rechargeRecord,total,err:=service.RechargeRecordByAdmins(appId,froms,pIndex,pSize,search)
 	if err!=nil{
-		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}

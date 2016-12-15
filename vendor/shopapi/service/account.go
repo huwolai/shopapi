@@ -449,9 +449,9 @@ func RechargeRecordByAdmins(appId string,froms int64,pageIndex uint64,pageSize u
 	
 	count,err:=accountRecharge.RecordWithUserCount(appId,froms,pageIndex,pageSize,search)
 	
-	log.Info(err)
+	//log.Info(err)
 	
-	return rechargeRecord,count,nil
+	return rechargeRecord,count,err
 }
 //账户充值记录 格式化
 func RechargeRecordFormat(model *dao.AccountRecharge) AccountRecharge  {
