@@ -445,6 +445,9 @@ func RechargeRecordByAdmins(c *gin.Context)  {
 	search.YdgyId	=c.Query("ydgy_id")
 	search.YdgyName	=c.Query("ydgy_name")
 	search.Mobile	=c.Query("mobile")
+	search.Type		=c.Query("type")
+	search.TimeFrom =c.Query("timeup")
+	search.TimeTo	=c.Query("timedown")
 	
 	rechargeRecord,total,err:=service.RechargeRecordByAdmins(appId,froms,pIndex,pSize,search)
 	if err!=nil{
@@ -468,8 +471,26 @@ func RechargeRecordByAdmins(c *gin.Context)  {
 		dto = append(dto,dtoItem)
 	}
 
-	//c.JSON(http.StatusOK,dto)
-	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),dto))
+	p:=page.NewPage(pIndex,pSize,uint64(total),dto)
+	type Res struct  {
+		PageSize 	uint64 `json:"page_size"`
+		PageIndex 	uint64 `json:"page_index"`
+		Total		uint64 `json:"total"`
+		Data 		interface{} `json:"data"`
+		Zsum 		string `json:"zsum"`
+		Fsum		string `json:"fsum"`
+	}
+	var res Res
+	
+	res.PageSize	=p.PageSize
+	res.PageIndex	=p.PageIndex
+	res.Total		=p.Total
+	res.Data		=p.Data
+	res.Zsum,_		=service.RechargeRecordZsum(appId,froms,search)
+	res.Fsum,_		=service.RechargeRecordFsum(appId,froms,search)
+	
+	
+	c.JSON(http.StatusOK,res)
 }
 
 

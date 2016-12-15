@@ -25,14 +25,15 @@ const (
 func Test(c *gin.Context) {
 	var err error
 	getui := &Getui{}
-	err=getui.Conn()	
+	/* err=getui.Conn()	
 	if err!=nil {
 		c.JSON(http.StatusOK,err.Error())
 		return
 	}	
 	c.JSON(http.StatusOK,getui.AuthToken)
-	//getui.AuthToken="05a941277358ba42c2e27459034aa09b4fe33747fd33defdf2052f37d5741068"
-	//getui.Test()
+	c.JSON(http.StatusOK,getui.Timestamp) */
+	getui.AuthToken="edc55faa3ebdf4dd7d2f64d3d2c3c8c9be86cb408113d16172f13dd3c860e4c9"
+	getui.Test()
 	//=======================================================
 	status,err:=getui.Status("ed105d433efafb78c110729c821748c1")
 	if err!=nil {
@@ -41,11 +42,11 @@ func Test(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK,status)
 	
-	err=getui.Close()
+	/* err=getui.Close()
 	if err!=nil {
 		c.JSON(http.StatusOK,err.Error())
 		return
-	}
+	} */
 }
 
 type Getui struct {
@@ -72,12 +73,12 @@ func (self *Getui)Conn() error {
 	}else{		
 	} */
 	if response.StatusCode!=http.StatusOK {
-		return errors.New("鉴权错误")
+		return errors.New("鉴权失败")
 	}
 	resultMap 	:= map[string]interface{}{}
 	util.ReadJsonByByte([]byte(response.Body),&resultMap)
 	if "ok"!=resultMap["result"].(string) {
-		return errors.New("鉴权错误,"+resultMap["result"].(string))
+		return errors.New("鉴权失败,"+resultMap["result"].(string))
 	}
 	
 	self.AuthToken= resultMap["auth_token"].(string)
@@ -87,15 +88,15 @@ func (self *Getui)Status(cid string) (string,error) {
 	url:=fmt.Sprintf("https://restapi.getui.com/v1/%s/user_status/%s",APPID,cid)
 	response,_ := network.Get(url,map[string]string{},map[string]string{
 		"Content-Type"	: "application/json",
-		"authtoken"		: self.AuthToken,
+		"authtoken"		:  self.AuthToken,
 	})
 	if response.StatusCode!=http.StatusOK {
-		return "",errors.New("状态检测错误")
+		return "",errors.New("状态检测失败")
 	}
 	resultMap 	:= map[string]interface{}{}
 	util.ReadJsonByByte([]byte(response.Body),&resultMap)
 	if "ok"!=resultMap["result"].(string) {
-		return "",errors.New("状态检测错误,"+resultMap["result"].(string))
+		return "",errors.New("状态检测失败,"+resultMap["result"].(string))
 	}
 	return resultMap["status"].(string),nil
 }
@@ -107,25 +108,69 @@ func (self *Getui)Close() error {
 		"authtoken": self.AuthToken,
 	})
 	if response.StatusCode!=http.StatusOK {
-		return errors.New("关闭错误")
+		return errors.New("关闭失败")
 	}
 	resultMap 	:= map[string]interface{}{}
 	util.ReadJsonByByte([]byte(response.Body),&resultMap)
 	if "ok"!=resultMap["result"].(string) {
-		return errors.New("关闭错误,"+resultMap["result"].(string))
+		return errors.New("关闭失败,"+resultMap["result"].(string))
 	}
 	return nil
 }
 func (self *Getui)Test() {
-	url:=fmt.Sprintf("https://restapi.getui.com/v1/%s/user_status/%s",APPID,"ed105d433efafb78c110729c821748c1")
-	url="http://127.0.0.1/test.php"
+	//url:=fmt.Sprintf("https://restapi.getui.com/v1/%s/user_status/%s",APPID,"ed105d433efafb78c110729c821748c1")
+	url:="http://127.0.0.1/test.php"
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("authtoken", self.AuthToken)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("authtoken", "edc55faa3ebdf4dd7d2f64d3d2c3c8c9be86cb408113d16172f13dd3c860e4c9")
 	resp, _ := client.Do(req)
 	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println("                            ")
+	fmt.Println("                            ")
+	fmt.Println("                            ")
     fmt.Println(string(body))
+    fmt.Println("edc55faa3ebdf4dd7d2f64d3d2c3c8c9be86cb408113d16172f13dd3c860e4c9")
+    fmt.Println(url)
+	fmt.Println("                            ")
+	fmt.Println("                            ")
+	fmt.Println("                            ")
+}
+func (self *Getui)PushSingle(cid string,title string,text string) error {
+	url:=fmt.Sprintf("https://restapi.getui.com/v1/%s/push_single",APPID)
+	message		:=map[string]interface{}{
+		"appkey"				:APPKEY,		
+		"msgtype"				:"notification",
+		"push_network_type"		:0,
+		"is_offline"			:true, 
+		"offline_expire_time"	:10000000,
+	}
+	notification:=map[string]interface{}{
+		"text"					:title,
+		"title"					:text,
+		"transmission_type"		:false,
+		"transmission_content"	:title,
+	}
+	payparams	:=map[string]interface{}{
+		"message"		:message,
+		"notification"	:notification,
+		"cid"			:cid,
+		"requestid"		:cid+self.Timestamp,
+	}
+	paramData,_ := json.Marshal(payparams);
+	response,_  := network.Post(url,paramData,map[string]string{
+		"Content-Type"	: "application/json",
+		"authtoken"		:  self.AuthToken,
+	})
+	if response.StatusCode!=http.StatusOK {
+		return errors.New("单推失败")
+	}
+	resultMap 	:= map[string]interface{}{}
+	util.ReadJsonByByte([]byte(response.Body),&resultMap)
+	if "ok"!=resultMap["result"].(string) {
+		return errors.New("单推失败,"+resultMap["result"].(string))
+	}
+	return nil
 }
 
 

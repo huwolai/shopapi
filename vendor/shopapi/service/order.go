@@ -659,7 +659,7 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		tx.Rollback()
 		return err
 	}
-	money:=account.FreezeMoney-int64(order.Price*100)
+	money:=account.FreezeMoney-int64(order.PayPrice*100)
 	if money<0 {
 		log.Info("扣除不可体现金额"+string(money))
 		money=0

@@ -584,7 +584,7 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 		}
 		resultMap,err = RequestPayApi("/pay/payimprest",payparams)
 		//冻结金额减少 freeze_money
-		if err==nil && record.Type == 4 {
+		if err==nil && record.Type == 6 {
 			money:=account.FreezeMoney+int64(record.Amount*100)
 			if money<0 {
 				money=0
@@ -595,6 +595,33 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 	}	
 	return nil,errors.New("操作错误!") 
 }
+//zsum  统计充值的金额
+func RechargeRecordZsum(appId string,froms int64,search dao.AccountRechargeSearch) (string,error) {
+	return dao.NewAccountRecharge().RechargeRecordZsum(appId,froms,search)
+}
+//fsum  统计扣款的金额
+func RechargeRecordFsum(appId string,froms int64,search dao.AccountRechargeSearch) (string,error) {
+	return dao.NewAccountRecharge().RechargeRecordFsum(appId,froms,search)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

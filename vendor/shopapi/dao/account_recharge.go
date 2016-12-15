@@ -4,6 +4,7 @@ import (
 	"github.com/gocraft/dbr"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
 	//"gitlab.qiyunxin.com/tangtao/utils/log"
+	"fmt"
 )
 
 type AccountRecharge struct  {
@@ -33,6 +34,9 @@ type AccountRechargeSearch struct {
 	YdgyId  	 string
 	YdgyName  	 string
 	Mobile  	 string
+	Type  	 	 string
+	TimeFrom 	 string
+	TimeTo 		 string
 }
 
 func NewAccountRecharge() *AccountRecharge {
@@ -124,6 +128,20 @@ func (self *AccountRecharge) RecordWithUser(appId string,froms int64,pageIndex u
 		buider = buider.Where("open_id in (select open_id from account where mobile like ?)",search.Mobile+"%")	
 	}
 	
+	if search.Type!="" {
+		buider = buider.Where("type = ?",search.Type)	
+	}
+	
+	if search.TimeFrom!="" {
+		buider = buider.Where("create_time >= ?",search.TimeFrom+" 00:00:00")	
+	}
+	
+	if search.TimeTo!="" {
+		buider = buider.Where("create_time <= ?",search.TimeTo+" 23:59:59")	
+	}
+	
+	//log.Error( buider.ToSql() )
+	
 	_,err :=buider.Limit(pageSize).Offset((pageIndex-1)*pageSize).OrderDir("id",false).LoadStructs(&model)
 	
 	return model,err
@@ -148,10 +166,47 @@ func (self *AccountRecharge) RecordWithUserCount(appId string,froms int64,pageIn
 		buider = buider.Where("open_id in (select open_id from account where mobile like ?)",search.Mobile+"%")	
 	}
 	
+	if search.Type!="" {
+		buider = buider.Where("type = ?",search.Type)	
+	}
+	
+	if search.TimeFrom!="" {
+		buider = buider.Where("create_time >= ?",search.TimeFrom+" 00:00:00")	
+	}
+	
+	if search.TimeTo!="" {
+		buider = buider.Where("create_time <= ?",search.TimeTo+" 23:59:59")	
+	}
+	
 	var count int64
 	_,err :=buider.LoadStructs(&count)
 
 	return count,err
+}
+func (self *AccountRecharge)RechargeRecordZsum(appId string,froms int64,search AccountRechargeSearch) (string,error) {
+	buider :=db.NewSession().Select("sum(amount)").From("account_recharge").Where("app_id=?",appId)
+	buider = buider.Where("amount > ?",0)
+	
+	if froms>=0 {
+		buider = buider.Where("froms=?",froms)
+	}
+	var count float64
+	_,err :=buider.LoadStructs(&count)
+	
+	return fmt.Sprintf("%.2f",count),err
+}
+func (self *AccountRecharge)RechargeRecordFsum(appId string,froms int64,search AccountRechargeSearch) (string,error) {
+	buider :=db.NewSession().Select("sum(amount)").From("account_recharge").Where("app_id=?",appId)
+	buider = buider.Where("amount < ?",0)
+	
+	if froms>=0 {
+		buider = buider.Where("froms=?",froms)
+	}
+	
+	var count float64
+	_,err :=buider.LoadStructs(&count)
+
+	return fmt.Sprintf("%.2f",count),err
 }
 
 
