@@ -625,13 +625,8 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		tx.Rollback()
 		return err
 	}
-
-	//商户权重加1
-	err =MerchantWeightAdd(1,order.MerchantId,tx)
-	if err!=nil{
-		tx.Rollback()
-		return errors.New("商户权重添加失败!")
-	}
+	
+	
 	//修改订单状态
 	err =order.UpdateWithStatusTx(comm.ORDER_STATUS_WAIT_SURE,comm.ORDER_PAY_STATUS_SUCCESS,orderNo,tx)
 	if err!=nil{
@@ -640,8 +635,17 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		return errors.New("订单更新错误!")
 	}
 	
+	
+	goodsType,_:=dao.JsonToMap(orderItems[0].Json);	
+	//商户权重加1
+	if goodsType["goods_type"]=="chef"{
+		err =MerchantWeightAdd(1,order.MerchantId,tx)
+		if err!=nil{
+			tx.Rollback()
+			return errors.New("商户权重添加失败!")
+		}
+	}
 	//一元购
-	goodsType,_:=dao.JsonToMap(orderItems[0].Json);		
 	if goodsType["goods_type"]=="mall_yyg"{
 		err = purchaseCodes(orderItems,appId,tx)
 		if err!=nil{
@@ -659,16 +663,18 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		tx.Rollback()
 		return err
 	}
-	money:=account.FreezeMoney-int64(order.PayPrice*100)
-	if money<0 {
-		log.Info("扣除不可体现金额"+string(money))
-		money=0
-	}	
-	err	= accountDao.AccountMinusFreezeMoneyTx(order.OpenId,money,tx)
-	if err!=nil{
-		log.Error(err)
-		tx.Rollback()
-		return err
+	if account.FreezeMoney>0{
+		money:=account.FreezeMoney-int64(order.PayPrice*100)
+		if money<0 {
+			log.Info("扣除不可体现金额"+string(money))
+			money=0
+		}	
+		err	= accountDao.AccountMinusFreezeMoneyTx(order.OpenId,money,tx)
+		if err!=nil{
+			log.Error(err)
+			tx.Rollback()
+			return err
+		}
 	}
 	//=====================
 	
@@ -679,17 +685,18 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		"code": order.Code,
 		"out_trade_no":order.No,
 	}
-	resultMap,err := RequestPayApi("/pay/payimprest",params)
+	//resultMap,err := RequestPayApi("/pay/payimprest",params)
+	_,err = RequestPayApi("/pay/payimprest",params)
 	if err!=nil{
 		return err
 	}
-	subTradeNo :=resultMap["sub_trade_no"].(string)	
 	
+	/*subTradeNo :=resultMap["sub_trade_no"].(string)	
 	err =NotifyCouponServer(orderNo,appId,subTradeNo)
 	if err!=nil{
 		tx.Rollback()
 		return errors.New("通知第三方优惠服务失败!")
-	}
+	} */
 
 	err =tx.Commit()
 	if err!=nil{
