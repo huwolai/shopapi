@@ -190,6 +190,32 @@ func (self *AccountRecharge)RechargeRecordZsum(appId string,froms int64,search A
 	if froms>=0 {
 		buider = buider.Where("froms=?",froms)
 	}
+	
+	if search.No!="" {
+		buider = buider.Where("no like ?",search.No+"%")
+	}
+	if search.YdgyId!="" {
+		buider = buider.Where("open_id in (select open_id from account where ydgy_id like ?)",search.YdgyId+"%")
+	}
+	if search.YdgyName!="" {
+		buider = buider.Where("open_id in (select open_id from account where ydgy_name like ?)",search.YdgyName+"%")
+	}
+	if search.Mobile!="" {
+		buider = buider.Where("open_id in (select open_id from account where mobile like ?)",search.Mobile+"%")	
+	}
+	
+	if search.Type!="" {
+		buider = buider.Where("type = ?",search.Type)	
+	}
+	
+	if search.TimeFrom!="" {
+		buider = buider.Where("create_time >= ?",search.TimeFrom+" 00:00:00")	
+	}
+	
+	if search.TimeTo!="" {
+		buider = buider.Where("create_time <= ?",search.TimeTo+" 23:59:59")	
+	}
+	
 	var count float64
 	_,err :=buider.LoadStructs(&count)
 	
@@ -201,6 +227,31 @@ func (self *AccountRecharge)RechargeRecordFsum(appId string,froms int64,search A
 	
 	if froms>=0 {
 		buider = buider.Where("froms=?",froms)
+	}
+	
+	if search.No!="" {
+		buider = buider.Where("no like ?",search.No+"%")
+	}
+	if search.YdgyId!="" {
+		buider = buider.Where("open_id in (select open_id from account where ydgy_id like ?)",search.YdgyId+"%")
+	}
+	if search.YdgyName!="" {
+		buider = buider.Where("open_id in (select open_id from account where ydgy_name like ?)",search.YdgyName+"%")
+	}
+	if search.Mobile!="" {
+		buider = buider.Where("open_id in (select open_id from account where mobile like ?)",search.Mobile+"%")	
+	}
+	
+	if search.Type!="" {
+		buider = buider.Where("type = ?",search.Type)	
+	}
+	
+	if search.TimeFrom!="" {
+		buider = buider.Where("create_time >= ?",search.TimeFrom+" 00:00:00")	
+	}
+	
+	if search.TimeTo!="" {
+		buider = buider.Where("create_time <= ?",search.TimeTo+" 23:59:59")	
 	}
 	
 	var count float64
