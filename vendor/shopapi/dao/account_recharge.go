@@ -133,11 +133,11 @@ func (self *AccountRecharge) RecordWithUser(appId string,froms int64,pageIndex u
 	}
 	
 	if search.TimeFrom!="" {
-		buider = buider.Where("create_time >= ?",search.TimeFrom+" 00:00:00")	
+		buider = buider.Where("create_time >= ?",search.TimeFrom)	
 	}
 	
 	if search.TimeTo!="" {
-		buider = buider.Where("create_time <= ?",search.TimeTo+" 23:59:59")	
+		buider = buider.Where("create_time <= ?",search.TimeTo)	
 	}
 	
 	//log.Error( buider.ToSql() )
@@ -171,11 +171,11 @@ func (self *AccountRecharge) RecordWithUserCount(appId string,froms int64,pageIn
 	}
 	
 	if search.TimeFrom!="" {
-		buider = buider.Where("create_time >= ?",search.TimeFrom+" 00:00:00")	
+		buider = buider.Where("create_time >= ?",search.TimeFrom)	
 	}
 	
 	if search.TimeTo!="" {
-		buider = buider.Where("create_time <= ?",search.TimeTo+" 23:59:59")	
+		buider = buider.Where("create_time <= ?",search.TimeTo)	
 	}
 	
 	var count int64
@@ -209,11 +209,11 @@ func (self *AccountRecharge)RechargeRecordZsum(appId string,froms int64,search A
 	}
 	
 	if search.TimeFrom!="" {
-		buider = buider.Where("create_time >= ?",search.TimeFrom+" 00:00:00")	
+		buider = buider.Where("create_time >= ?",search.TimeFrom)	
 	}
 	
 	if search.TimeTo!="" {
-		buider = buider.Where("create_time <= ?",search.TimeTo+" 23:59:59")	
+		buider = buider.Where("create_time <= ?",search.TimeTo)	
 	}
 	
 	var count float64
@@ -247,11 +247,11 @@ func (self *AccountRecharge)RechargeRecordFsum(appId string,froms int64,search A
 	}
 	
 	if search.TimeFrom!="" {
-		buider = buider.Where("create_time >= ?",search.TimeFrom+" 00:00:00")	
+		buider = buider.Where("create_time >= ?",search.TimeFrom)	
 	}
 	
 	if search.TimeTo!="" {
-		buider = buider.Where("create_time <= ?",search.TimeTo+" 23:59:59")	
+		buider = buider.Where("create_time <= ?",search.TimeTo)	
 	}
 	
 	var count float64

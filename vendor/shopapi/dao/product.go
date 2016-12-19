@@ -364,6 +364,10 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 	if noflags!=nil&&len(noflags) >0 {
 		builder = builder.Where("product.flag not in ?",noflags)
 	}
+	
+	builder = builder.OrderDir("product.`order`",false)
+//log.Error( builder.ToSql() )	
+	
 	_,err := builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&prodList)
 	if err!=nil{
 		return nil,0,err
