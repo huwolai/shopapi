@@ -310,26 +310,35 @@ func ProductAddNum()  {
 func PurchaseCodesOpen()  {
 	//公式 
 	log.Info("定时开奖")
-	prodOpening,_	:=dao.ProdPurchaseCodeWithOpenStatus(1)	
-	for _, prod := range prodOpening {		
-		orderItem,_:=dao.OrderItemPurchaseCodesWithTime(prod.OpenTime,comm.PRODUCT_YYG_BUY_CODES)
-		codeCount,_:=dao.OrderItemPurchaseCodesWithProdId(prod.ProdId)//商品份数
-		//codeCount++
-		
-		var c  int64 = 0
-		for _, tSum := range orderItem {
-			s1	:=fmt.Sprintf("%s%s",time.Unix(int64(tSum.BuyTime/1e3), 0).Format("150405"),dao.Right(fmt.Sprintf("%d",tSum.BuyTime),3))
-			i1,_:=strconv.ParseInt(s1,10,64)			
-			c	 =c+i1
+	prodOpening,_	:=dao.ProdPurchaseCodeWithOpenStatus(1)
+	if prodOpening!=nil {
+		for _, prod := range prodOpening {	
+			if len(prod.OpenMobile)>0 {
+				return 
+			}
+			orderItem,_:=dao.OrderItemPurchaseCodesWithTime(prod.OpenTime,comm.PRODUCT_YYG_BUY_CODES)
+			codeCount,_:=dao.OrderItemPurchaseCodesWithProdId(prod.ProdId)//商品份数
+			//codeCount++
+			
+			var c  int64 = 0
+			for _, tSum := range orderItem {
+				s1	:=fmt.Sprintf("%s%s",time.Unix(int64(tSum.BuyTime/1e3), 0).Format("150405"),dao.Right(fmt.Sprintf("%d",tSum.BuyTime),3))
+				i1,_:=strconv.ParseInt(s1,10,64)			
+				c	 =c+i1
+			}
+			openCode:=fmt.Sprintf("%d",c%codeCount+10000001)
+			
+			user,err:=dao.GetOpenIdbyOpenCode(prod.ProdId,openCode)		
+			if err!=nil {
+				log.Error(err)
+				return
+			}
+			if user==nil {
+				return
+			}
+			
+			dao.ProductAndPurchaseCodesOpened(prod.ProdId,user.OpenId,user.Mobile,openCode)
 		}
-		openCode:=fmt.Sprintf("%d",c%codeCount+10000001)
-		
-		user,err:=dao.GetOpenIdbyOpenCode(prod.ProdId,openCode)		
-		if err!=nil {
-			log.Error(err)
-		}
-		
-		dao.ProductAndPurchaseCodesOpened(prod.ProdId,user.OpenId,user.Mobile,openCode)
 	}
 	//开奖状态更新
 	dao.ProductAndPurchaseCodesOpenedStatus()
