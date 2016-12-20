@@ -114,6 +114,8 @@ func main() {
 			users.GET("/rechargerecord/admin", api.RechargeRecordByAdmins)
 			//获取全部用户总额
 			users.GET("/get_user_money/admin", api.GetUsersMoney)
+			//提现
+			users.GET("/cashout/record",	 api.CashoutRecord)
 		}
 		user := v1.Group("/user")
 		{
@@ -157,8 +159,7 @@ func main() {
 			user.GET("/:open_id/rechargerecord/admin", api.RechargeRecordByAdmin)
 			//提现
 			user.POST("/:open_id/makecashout",  	 api.MakeCashout)
-			user.PUT("/:open_id/cashout/:cashout_id",api.Cashout)
-			user.GET("/:open_id/cashout/record",	 api.CashoutRecord)
+			user.PUT("/:open_id/cashout/:cashout_id",api.Cashout)			
 
 		}
 		//分类
