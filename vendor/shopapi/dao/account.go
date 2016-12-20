@@ -149,7 +149,12 @@ func (self *Account) AccountWithOpenIdTx(openId string,appId string,tx *dbr.Tx) 
 	_,err :=tx.Select("*").From("account").Where("open_id=?",openId).Where("app_id=?",appId).LoadStructs(&account)
 	return account,err
 }
-
+//获取全部用户
+func (self *Account) Accounts(appId string) ([]*Account,error)  {
+	var list []*Account
+	_,err :=db.NewSession().Select("*").From("account").Where("app_id=?",appId).LoadStructs(&list)
+	return list,err
+}
 
 
 

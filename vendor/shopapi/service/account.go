@@ -603,6 +603,10 @@ func RechargeRecordZsum(appId string,froms int64,search dao.AccountRechargeSearc
 func RechargeRecordFsum(appId string,froms int64,search dao.AccountRechargeSearch) (string,error) {
 	return dao.NewAccountRecharge().RechargeRecordFsum(appId,froms,search)
 }
+//获取全部用户
+func Accounts(appId string) ([]*dao.Account,error)  {
+	return dao.NewAccount().Accounts(appId)
+}
 
 
 

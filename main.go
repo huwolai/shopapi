@@ -112,6 +112,8 @@ func main() {
 			users.GET("/",api.AccountsGet)
 			//充值记录 后台
 			users.GET("/rechargerecord/admin", api.RechargeRecordByAdmins)
+			//获取全部用户总额
+			users.GET("/get_user_money/admin", api.GetUsersMoney)
 		}
 		user := v1.Group("/user")
 		{

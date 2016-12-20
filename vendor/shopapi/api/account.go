@@ -16,6 +16,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/page"
 	"shopapi/dao"
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
+	//"fmt"
 )
 
 type AccountPreRechargeDto struct  {
@@ -230,8 +231,7 @@ func AccountsGet(c *gin.Context)  {
 	userName 	:= c.Query("username") // 用户名
 	ydgyId 	 	:= c.Query("ydgy_id")	//一点公益 ID
 	ydgyName 	:= c.Query("ydgy_name") //一点公益名字
-	ydgyStatus  := c.Query("ydgy_status") //一点公益状态
-	
+	ydgyStatus  := c.Query("ydgy_status") //一点公益状态	
 	
 	accounts,err := service.AccountsWith(pIndex,pSize,mobile,appId,userName,ydgyId,ydgyName,ydgyStatus)
 	if err!=nil{
@@ -491,7 +491,32 @@ func RechargeRecordByAdmins(c *gin.Context)  {
 	
 	c.JSON(http.StatusOK,res)
 }
-
+//获取全部用户总额
+func GetUsersMoney(c *gin.Context)  {
+	appId 		:= security.GetAppId2(c.Request)
+	accounts,err:=service.Accounts(appId)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	var money int64
+	var detailModel *service.AccountDetailModel
+		
+	for _,account :=range accounts  {			
+		detailModel,_ 	=service.AccountDetail(account.OpenId)
+		money			=money+detailModel.Amount
+		//log.Info(account)
+		//money=money+1
+	}
+	
+	detailModel,_ 	=service.AccountDetail("2bd209e36084479cbbb7258f12fce02f")	
+	
+	c.JSON(http.StatusOK,map[string]float64{
+		"user_money":float64(money)/100.0,
+		"money"		:float64(detailModel.Amount)/100.0,
+	})
+}
 
 
 
