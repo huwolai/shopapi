@@ -610,8 +610,48 @@ func Accounts(appId string) ([]*dao.Account,error)  {
 	return dao.NewAccount().Accounts(appId)
 }
 //
-func MakeCashout(appId string,cashout interface{}) error  {
-	return dao.MakeCashout(appId,cashout)
+func MakeCashout(appId string,cashOut interface{}) error  {
+	sesson := db.NewSession()
+	tx,_   :=sesson.Begin()
+	defer func() {
+		if err :=recover();err!=nil{
+			tx.Rollback()
+			panic(err)
+		}
+	}()
+	
+	cashoutId,err:=dao.MakeCashout(appId,cashOut,tx)	
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+	
+	 cashout:=cashOut.(dao.Cashout)
+
+	resultMap,err :=RequestPayApi("/makecashout",map[string]interface{}{
+		"open_id"	: cashout.OpenId,
+		"amount"	: cashout.Amount,
+		"title"		: cashout.Title,
+		"remark"	: cashout.Remark,
+	})
+	
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}	
+	err=dao.CashoutcodeUpdateTx(cashoutId,resultMap["cashout_code"].(string),tx)	
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+	
+	err = tx.Commit()	
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}	
+
+	return nil
 }
 func Cashout(cashoutId string) error  {
 	sesson := db.NewSession()
@@ -635,7 +675,7 @@ func Cashout(cashoutId string) error  {
 		return errors.New("已审核!") 
 	}
 	
-	resultMap,err :=RequestPayApi("/makecashout",map[string]interface{}{
+	/* resultMap,err :=RequestPayApi("/makecashout",map[string]interface{}{
 		"open_id"	: record.OpenId,
 		"amount"	: record.Amount,
 		"title"		: record.Title,
@@ -650,11 +690,11 @@ func Cashout(cashoutId string) error  {
 	if err!=nil{
 		tx.Rollback()
 		return err
-	}
+	} */
 	
-	resultMap,err =RequestPayApi("/cashout",map[string]interface{}{
+	resultMap,err :=RequestPayApi("/cashout",map[string]interface{}{
 		"open_id"	: record.OpenId,
-		"code"		: resultMap["cashout_code"].(string),
+		"code"		: string(record.Cashoutcode),
 	})
 	if err!=nil{
 		tx.Rollback()

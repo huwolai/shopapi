@@ -16,26 +16,28 @@ type Cashout struct  {
 	Remark	 	string `json:"remark"`
 	Status	 	int64  `json:"status"`
 	Mobile	 	string `json:"mobile"`
+	Cashoutcode	string `json:"cashoutcode"`
 }
-func MakeCashout(appId string,cashOut interface{}) error  {
+func MakeCashout(appId string,cashOut interface{},tx *dbr.Tx) (int64,error)  {
 	cashout:=cashOut.(Cashout)	
 	
 	cashout.Status	=0
 	cashout.AppId	=appId
-	cashout.Amount	=cashout.Amount*100
+	cashout.Amount	=cashout.Amount
 	
-	_,err :=db.NewSession().InsertInto("account_cash_out").Columns("app_id","open_id","amount","title","remark","status").Record(cashout).Exec()
+	result,err :=tx.InsertInto("account_cash_out").Columns("app_id","open_id","amount","title","remark","status").Record(cashout).Exec()
 
-	return err
+	lastId,err := result.LastInsertId()
+
+	return lastId,err
 }
 func CashoutRecordTx(cashoutId string,tx *dbr.Tx) (*Cashout,error){
 	var cashout *Cashout
 	_,err :=db.NewSession().Select("*").From("account_cash_out").Where("id=?",cashoutId).LoadStructs(&cashout)
 	return cashout,err
 }
-func CashoutcodeUpdateTx(cashoutId string,code string,tx *dbr.Tx) error {
-	_,err :=db.NewSession().Update("account_cash_out").Set("cashoutcode",code).Where("id=?",cashoutId).Exec()
-
+func CashoutcodeUpdateTx(cashoutId int64,code string,tx *dbr.Tx) error {
+	_,err :=tx.Update("account_cash_out").Set("cashoutcode",code).Where("id=?",cashoutId).Exec()
 	return err
 }
 func CashoutStatusUpdateTx(cashoutId string,cashout map[string]interface{},tx *dbr.Tx) error {
