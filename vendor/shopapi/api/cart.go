@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
 	//"gitlab.qiyunxin.com/tangtao/utils/page"
+	"gitlab.qiyunxin.com/tangtao/utils/security"
 	"strconv"
 	"shopapi/service"
 	"shopapi/dao"
@@ -44,11 +45,11 @@ func CartAddToList(c *gin.Context)  {
 }
 func CartMinusFromList(c *gin.Context)  {
 	var err error
-	/* _,err = security.GetAuthUser(c.Request)
+	_,err = security.GetAuthUser(c.Request)
 	if err!=nil{
 		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
 		return
-	} */
+	}
 	
 	var cart dao.Cart
 	err =c.BindJSON(&cart)	
@@ -68,11 +69,11 @@ func CartMinusFromList(c *gin.Context)  {
 func CartDelFromList(c *gin.Context)  {	
 	var err error
 	
-	/* _,err = security.GetAuthUser(c.Request)
+	_,err = security.GetAuthUser(c.Request)
 	if err!=nil{
 		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
 		return
-	} */
+	}
 	
 	open_id := c.Param("open_id")
 	id,err	:= strconv.ParseUint(c.Param("id"),10,64)

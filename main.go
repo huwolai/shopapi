@@ -155,6 +155,10 @@ func main() {
 			user.GET("/:open_id/ismerchant", api.MerchantIs)	
 			//充值记录 后台
 			user.GET("/:open_id/rechargerecord/admin", api.RechargeRecordByAdmin)
+			//提现
+			user.POST("/:open_id/makecashout",  	 api.MakeCashout)
+			user.PUT("/:open_id/cashout/:cashout_id",api.Cashout)
+			user.GET("/:open_id/cashout/record",	 api.CashoutRecord)
 
 		}
 		//分类

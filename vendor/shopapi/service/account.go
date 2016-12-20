@@ -9,11 +9,13 @@ import (
 	"net/http"
 	"errors"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
+	"gitlab.qiyunxin.com/tangtao/utils/db"
 	"shopapi/dao"
 	"shopapi/comm"
 	"shopapi/redis"
 	"time"
 	"strconv"
+	
 )
 
 type AccountRechargeModel struct  {
@@ -607,7 +609,77 @@ func RechargeRecordFsum(appId string,froms int64,search dao.AccountRechargeSearc
 func Accounts(appId string) ([]*dao.Account,error)  {
 	return dao.NewAccount().Accounts(appId)
 }
-
+//
+func MakeCashout(appId string,cashout interface{}) error  {
+	return dao.MakeCashout(appId,cashout)
+}
+func Cashout(cashoutId string) error  {
+	sesson := db.NewSession()
+	tx,_   :=sesson.Begin()
+	defer func() {
+		if err :=recover();err!=nil{
+			tx.Rollback()
+			panic(err)
+		}
+	}()
+	
+	record,err:=dao.CashoutRecordTx(cashoutId,tx)
+	
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+	
+	if record.Status>0{
+		tx.Rollback()
+		return errors.New("已审核!") 
+	}
+	
+	resultMap,err :=RequestPayApi("/makecashout",map[string]interface{}{
+		"open_id"	: record.OpenId,
+		"amount"	: record.Amount,
+		"title"		: record.Title,
+		"remark"	: record.Remark,
+	})
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+	
+	err=dao.CashoutcodeUpdateTx(cashoutId,resultMap["cashout_code"].(string),tx)	
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+	
+	resultMap,err =RequestPayApi("/cashout",map[string]interface{}{
+		"open_id"	: record.OpenId,
+		"code"		: resultMap["cashout_code"].(string),
+	})
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+	
+	err=dao.CashoutStatusUpdateTx(cashoutId,resultMap,tx)
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}	
+	
+	err = tx.Commit()
+	if err!=nil{
+		tx.Rollback()
+		return err
+	}
+	
+	return nil	
+}
+func CashoutRecord(appId string,pageIndex uint64,pageSize uint64) ([]*dao.Cashout,int64,error)  {
+	items,err:=dao.CashoutRecord(appId,pageIndex,pageSize)
+	count	 :=dao.CashoutRecordCount(appId)
+	return items,count,err
+}
 
 
 

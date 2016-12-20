@@ -125,3 +125,26 @@ const (
 	//收藏商品
 	FAVORITES_TYPE_PRODUCT =2
 )
+
+//管理员
+const (
+	ADMINOPENID  = "wesdfsfsdf23323"
+	ADMINPWD	 = "180181"
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

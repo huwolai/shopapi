@@ -304,10 +304,10 @@ func GetOnKey(c *gin.Context)  {
 	c.JSON(http.StatusOK,param)
 }
 func CheckAdmin(openId string,password string) int64{
-	if openId!="wesdfsfsdf23323" {
+	if openId!=comm.ADMINOPENID {
 		return 1
 	}
-	if len(password)>0 && password!="180181" {
+	if len(password)>0 && password!=comm.ADMINPWD {
 		return 2
 	}
 	return 0
@@ -518,8 +518,69 @@ func GetUsersMoney(c *gin.Context)  {
 	})
 }
 
+//预提款
+func MakeCashout(c *gin.Context)  {
+	appId,err :=CheckAppAuth(c)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+	
+	openId		:=c.Param("open_id")
+	
+	var cashout dao.Cashout
+	err =c.BindJSON(&cashout)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	cashout.OpenId=openId
+	
+	err=service.MakeCashout(appId,cashout)
 
+	if err!=nil {
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	util.ResponseSuccess(c.Writer)
+}
+//确认打款
+func Cashout(c *gin.Context)  {
+	var err error
+	_,err =CheckAppAuth(c)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
 
+	cashoutId:=c.Param("cashout_id")
+	
+	err=service.Cashout(cashoutId)
+
+	if err!=nil {
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	util.ResponseSuccess(c.Writer)
+}
+func CashoutRecord(c *gin.Context)  {
+	appId,err :=CheckAppAuth(c)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}
+
+	pIndex,pSize := page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+
+	record,total,err:=service.CashoutRecord(appId,pIndex,pSize)
+	if err!=nil{
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	
+	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),record))
+}
 
 
 

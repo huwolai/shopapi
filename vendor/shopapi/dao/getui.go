@@ -2,6 +2,7 @@ package dao
 
 import (
 	"gitlab.qiyunxin.com/tangtao/utils/util"
+	"gitlab.qiyunxin.com/tangtao/utils/db"
 	//"strings"
 	"bytes"
 	"io/ioutil"
@@ -25,6 +26,7 @@ const (
 type Getui struct  {
 	Authtoken 	[]string
 	ContentType []string
+	TokenExpire	int64
 }
 
 func NewGetui() *Getui  {
@@ -33,11 +35,29 @@ func NewGetui() *Getui  {
 	s :=make([]string,0)
 	s =append(s,"application/json")	
 	getui.ContentType=s
-
+	
 	return getui
 }
 
 func (self *Getui)Conn() error {
+	s :=make([]string,0)
+	
+	type Json struct  {
+		 Json string
+	}
+
+	var json *Json
+	_,err :=db.NewSession().Select("*").From("flags").Where("flag=?","token").Where("type=?","GETUI").LoadStructs(&json)
+	
+	if len(json.Json)>0 {
+		token,_:=JsonToMap(json.Json)			
+		if time.Now().Unix()<int64(token["expire"].(float64)) {
+			s =append(s,token["auth_token"].(string))
+			self.Authtoken=s
+			return nil
+		}
+	}
+	//==========================================
 	timestamp	 := fmt.Sprintf("%d",time.Now().UnixNano()/1e6)	
 	hash 		 := sha256.New()
 	io.WriteString(hash,fmt.Sprintf("%s%s%s",APPKEY,timestamp,MASTERSECRET));
@@ -49,10 +69,10 @@ func (self *Getui)Conn() error {
 		"timestamp"	: timestamp,
 	}
 	response,err := self.Post(url,payparams)
-	
-	s :=make([]string,0)
-	s =append(s,response["auth_token"].(string))	
+	s =append(s,response["auth_token"].(string))		
 	self.Authtoken=s
+	
+	db.NewSession().Update("flags").Set("json",fmt.Sprintf("{\"auth_token\":\"%s\",\"expire\":%d}",response["auth_token"].(string),time.Now().Unix()+43200)).Where("flag=?","token").Where("type=?","GETUI").Exec()
 	
 	return err
 }
@@ -138,13 +158,13 @@ func (self *Getui)Json(req *http.Request) (map[string]interface{},error) {
 	defer resp.Body.Close()
  
     body, err := ioutil.ReadAll(resp.Body)
-	fmt.Println("                            ")
+	/* fmt.Println("                            ")
 	fmt.Println("                            ")
 	fmt.Println("                            ")
 	fmt.Println(string(body))
 	fmt.Println("                            ")
 	fmt.Println("                            ")
-	fmt.Println("                            ")	
+	fmt.Println("                            ")	 */
     if err != nil {
         return nil,errors.New("连接失败")
     }
