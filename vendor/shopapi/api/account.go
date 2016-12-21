@@ -101,15 +101,17 @@ func LoginForSMS(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-	cid			:=""
-	devicetoken :=""
-	if getui.Cid!="" {
-		cid=getui.Cid
+	if getui!=nil {
+		cid			:=""
+		devicetoken :=""
+		if getui.Cid!="" {
+			cid=getui.Cid
+		}
+		if getui.Devicetoken!="" {
+			devicetoken=getui.Devicetoken
+		}	
+		service.UpdateGetui(resultMap["open_id"].(string),cid,devicetoken)
 	}
-	if getui.Devicetoken!="" {
-		devicetoken=getui.Devicetoken
-	}	
-	service.UpdateGetui(resultMap["open_id"].(string),cid,devicetoken)
 	//推送 ****
 	
 	c.JSON(http.StatusOK,resultMap)
