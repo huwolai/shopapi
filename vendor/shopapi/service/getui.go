@@ -3,7 +3,7 @@ package service
 import (	
 	"shopapi/dao"
 	"errors"
-	"fmt"
+	//"fmt"
 )
 func PushSingle(openId string,appId string,title string,content string,types string) error {
 	account,err :=dao.NewAccount().AccountWithOpenId(openId,appId)
@@ -14,8 +14,11 @@ func PushSingle(openId string,appId string,title string,content string,types str
 		return errors.New("Getui为空")
 	}
 	
-	getuiJson,_:=dao.JsonToMap(account.Getui)	
+	getuiJson,err:=dao.JsonToMap(account.Getui)	
 	
+	if err!=nil {
+		return err
+	}
 	
 	if getuiJson["cid"].(string)=="" {
 		return errors.New("cid为空")
