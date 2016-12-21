@@ -550,7 +550,7 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 			dao.NewAccount().AccountAddFreezeMoney(record.OpenId,int64(record.Amount*100))
 		}
 		//推送
-		PushSingle(record.OpenId,appId,"充值成功",fmt.Sprintf("充值%d成功",record.Amount),"paySucceed")
+		PushSingle(record.OpenId,appId,"充值成功",fmt.Sprintf("充值%f成功",record.Amount),"paySucceed")
 		return resultMap,err
 	}else{
 		account := dao.NewAccount()
@@ -597,7 +597,7 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 			dao.NewAccount().AccountMinusFreezeMoney(record.OpenId,money)
 		}
 		//推送
-		PushSingle(record.OpenId,appId,"充值成功",fmt.Sprintf("充值%d成功",record.Amount),"paySucceed")
+		PushSingle(record.OpenId,appId,"充值成功",fmt.Sprintf("充值%f成功",record.Amount),"paySucceed")
 		return resultMap,err
 	}	
 	return nil,errors.New("操作错误!") 
