@@ -19,6 +19,7 @@ type Account struct  {
 	YdgyStatus	int64
 	Name 		string
 	FreezeMoney int64
+	Getui 		string
 	BaseDModel
 }
 
@@ -154,6 +155,10 @@ func (self *Account) Accounts(appId string) ([]*Account,error)  {
 	var list []*Account
 	_,err :=db.NewSession().Select("*").From("account").Where("app_id=?",appId).LoadStructs(&list)
 	return list,err
+}
+func (self *Account) UpdateGetui(openId string,json string) error {
+	_,err:=db.NewSession().UpdateBySql("update account set getui=? where open_id=? limit 1",json,openId).Exec()
+	return err
 }
 
 

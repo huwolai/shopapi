@@ -526,7 +526,8 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 	if len(failRes)>1 {
 		rechargeRecord.UpdateStatusAuditWithNoFail(model["audit"].(string),model["no"].(string),appId,failRes)
 		return nil,nil
-	}	
+	}
+	
 	log.Info(len(failRes))
 	rechargeRecord.UpdateStatusAuditWithNo(model["audit"].(string),model["no"].(string),appId)
 	
@@ -547,7 +548,9 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 		//冻结金额增加 freeze_money
 		if err==nil && record.Type == 4 {
 			dao.NewAccount().AccountAddFreezeMoney(record.OpenId,int64(record.Amount*100))
-		}		
+		}
+		//推送
+		PushSingle(record.OpenId,appId,"充值成功","充值成功","paySucceed")
 		return resultMap,err
 	}else{
 		account := dao.NewAccount()
@@ -593,6 +596,8 @@ func AccountChangeRecordOK(model map[string]interface{},appId string) (map[strin
 			}	
 			dao.NewAccount().AccountMinusFreezeMoney(record.OpenId,money)
 		}
+		//推送
+		PushSingle(record.OpenId,appId,"扣款成功","扣款成功","paySucceed")
 		return resultMap,err
 	}	
 	return nil,errors.New("操作错误!") 
@@ -720,7 +725,9 @@ func CashoutRecord(appId string,pageIndex uint64,pageSize uint64) ([]*dao.Cashou
 	count	 :=dao.CashoutRecordCount(appId)
 	return items,count,err
 }
-
+func UpdateGetui(openId string,cid string,devicetoken string) error  {
+	return dao.NewAccount().UpdateGetui(openId,fmt.Sprintf("{\"cid\":\"?\",\"devicetoken\":\"?\"}",cid,devicetoken))
+}
 
 
 

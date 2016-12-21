@@ -89,6 +89,29 @@ func LoginForSMS(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
+	
+	//推送
+	type Getui struct  {
+		Cid 		string
+		Devicetoken	string
+	}	
+	var getui Getui
+	err = c.BindJSON(&getui)
+	if err!=nil {
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	cid			:=""
+	devicetoken :=""
+	if getui.Cid!="" {
+		cid=getui.Cid
+	}
+	if getui.Devicetoken!="" {
+		devicetoken=getui.Devicetoken
+	}	
+	service.UpdateGetui(resultMap["open_id"].(string),cid,devicetoken)
+	//推送 ****
+	
 	c.JSON(http.StatusOK,resultMap)
 }
 
@@ -401,7 +424,8 @@ func AccountPreRechargeByAdminOK(c *gin.Context)  {
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
 		return
-	}		
+	}
+	
 	//c.JSON(http.StatusOK,resultMap)	
 	util.ResponseSuccess(c.Writer)
 }

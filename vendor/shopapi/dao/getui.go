@@ -29,6 +29,16 @@ type Getui struct  {
 	TokenExpire	int64
 }
 
+type AccountMsg struct  {
+	Cid 		string
+	Devicetoken	string
+	Title		string
+	Content 	string
+	Types 		string
+	OpenId 		string
+	AppId 		string
+}
+
 func NewGetui() *Getui  {
 	getui:=&Getui{}
 	
@@ -81,34 +91,61 @@ func (self *Getui)Status(cid string)(string,error) {
 	response,err := self.Get(url,map[string]string{})
 	return response["status"].(string),err
 }
-func (self *Getui)PushSingle(cid string,title string,body string) error {
+func (self *Getui)PushSingle(msg AccountMsg) error {
 	url:=fmt.Sprintf("https://restapi.getui.com/v1/%s/push_single",APPID)
 	message:= map[string]interface{}{
-		"appkey"		: APPKEY, 
-		"is_offline" 	: false,
-		"msgtype" 		: "notification",
+		"appkey"				: APPKEY, 
+		"is_offline" 			: false,
+		"msgtype" 				: "notification",
 	}
 	notification:= map[string]interface{}{
-		"text"					: body, 
-		"title" 				: title,		
+		"text"					: msg.Content, 
+		"title" 				: msg.Title,		
 		"notify_style" 			: 1,		
 	}
 	postData  := map[string]interface{}{
 		"message"		: message, 
 		"notification"	: notification, 
-		"cid"			: cid, 
+		"cid"			: msg.Cid, 
 		"requestid"		: fmt.Sprintf("%d",time.Now().UnixNano()), 
 	}	
 	_,err := self.Post(url,postData)
 	
+	self.save(msg)
+	
 	return err
 }
-func (self *Getui)PushApnsSingle(devictoken string,title string,body string,types string) error {
+func (self *Getui)PushSingleOffline(msg AccountMsg) error {
+	url:=fmt.Sprintf("https://restapi.getui.com/v1/%s/push_single",APPID)
+	message:= map[string]interface{}{
+		"appkey"				: APPKEY, 
+		"is_offline" 			: true,
+		"offline_expire_time" 	: 10000000,
+		"msgtype" 				: "notification",
+	}
+	notification:= map[string]interface{}{
+		"text"					: msg.Content, 
+		"title" 				: msg.Title,		
+		"notify_style" 			: 1,		
+	}
+	postData  := map[string]interface{}{
+		"message"		: message, 
+		"notification"	: notification, 
+		"cid"			: msg.Cid, 
+		"requestid"		: fmt.Sprintf("%d",time.Now().UnixNano()), 
+	}	
+	_,err := self.Post(url,postData)	
+	
+	self.save(msg)
+	
+	return err
+}
+func (self *Getui)PushApnsSingle(msg AccountMsg) error {
 	url:=fmt.Sprintf("https://restapi.getui.com/v1/%s/push_apns_single",APPID)
 	
 	alert:= map[string]interface{}{
-		"title": title, 
-		"body" : body,
+		"title": msg.Title, 
+		"body" : msg.Content,
 	}
 	aps := map[string]interface{}{
 		"alert"		: alert, 
@@ -116,13 +153,15 @@ func (self *Getui)PushApnsSingle(devictoken string,title string,body string,type
 	}
 	pushInfo := map[string]interface{}{
 		"aps"	 	: aps, 
-		"payload" 	: "{\"title\":\""+title+"\",\"body\":\""+body+"\",\"type\":\""+types+"\"}",
+		"payload" 	: "{\"title\":\""+msg.Title+"\",\"body\":\""+msg.Content+"\",\"type\":\""+msg.Types+"\"}",
 	}
 	postData  := map[string]interface{}{
-		"device_token"	: devictoken, 
+		"device_token"	: msg.Devicetoken, 
 		"push_info"		: pushInfo, 
 	}	
 	_,err := self.Post(url,postData)
+	
+	self.save(msg)
 	
 	return err
 }
@@ -182,8 +221,11 @@ func (self *Getui)Json(req *http.Request) (map[string]interface{},error) {
 	
 	return resultMap,nil
 }
+func (self *Getui)save(msg AccountMsg) error {
+	_,err :=db.NewSession().InsertInto("account_msg").Columns("app_id","open_id","title","content","types","cid","devicetoken").Record(msg).Exec()
 
-
+	return err
+}
 
 
 
