@@ -90,7 +90,7 @@ func LoginForSMS(c *gin.Context)  {
 		return
 	}
 	
-	//推送
+	/* //推送
 	type Getui struct  {
 		Cid 		string
 		Devicetoken	string
@@ -101,18 +101,16 @@ func LoginForSMS(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-	if getui!=nil {
-		cid			:=""
-		devicetoken :=""
-		if getui.Cid!="" {
-			cid=getui.Cid
-		}
-		if getui.Devicetoken!="" {
-			devicetoken=getui.Devicetoken
-		}	
-		service.UpdateGetui(resultMap["open_id"].(string),cid,devicetoken)
+	cid			:=""
+	devicetoken :=""
+	if getui.Cid!="" {
+		cid=getui.Cid
 	}
-	//推送 ****
+	if getui.Devicetoken!="" {
+		devicetoken=getui.Devicetoken
+	}	
+	service.UpdateGetui(resultMap["open_id"].(string),cid,devicetoken)
+	//推送 **** */
 	
 	c.JSON(http.StatusOK,resultMap)
 }
