@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"shopapi/service"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
+	"gitlab.qiyunxin.com/tangtao/utils/security"
 )
 type Ydgy struct {
 	Id		string   `json:"id"`
@@ -55,7 +56,8 @@ func YdgyGetId(c *gin.Context)  {
 }
 //一点公益ID号状态审核
 func YdgySetIdWithStatus(c *gin.Context)  {
-	openId := c.Param("open_id")
+	appId 	:= security.GetAppId2(c.Request)
+	openId  := c.Param("open_id")
 	if openId=="" {
 		util.ResponseError400(c.Writer,"用户open_id不能为空!")
 		return
@@ -72,6 +74,16 @@ func YdgySetIdWithStatus(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"操作失败!")
 		return
 	}
+	
+	//推送
+	if len(appId)>0 {
+		if len(c.Query("failres"))>0 {
+			service.PushSingle(openId,appId,"审核失败",c.Query("failres"),"userYYGY")
+		}else{
+			service.PushSingle(openId,appId,"审核成功","审核成功","userYYGY")
+		}
+	}
+	
 	
 	util.ResponseSuccess(c.Writer)
 }

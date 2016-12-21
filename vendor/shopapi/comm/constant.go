@@ -130,6 +130,7 @@ const (
 const (
 	ADMINOPENID  = "wesdfsfsdf23323"
 	ADMINPWD	 = "180181"
+	KEFUOPENID	 = "94d4f8e55ca8413ea0d93f6eda926b54"
 )
 
 

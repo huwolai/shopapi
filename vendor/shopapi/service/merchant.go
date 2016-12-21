@@ -274,6 +274,8 @@ func MerchantAudit(merchantId int64,appId string,state int64,failRes string) err
 	
 	//审核未通过
 	if  state == comm.MERCHANT_STATUS_FAIL  {
+		//推送
+		PushSingle(merchant.OpenId,appId,"审核未通过",failRes,"chefApplication")
 		err =merchant.UpdateStatus(comm.MERCHANT_STATUS_FAIL,merchant.Id,failRes)
 		if err!=nil{
 			log.Error("更新商户状态失败",err)
@@ -292,6 +294,8 @@ func MerchantAudit(merchantId int64,appId string,state int64,failRes string) err
 		log.Error("更新商户状态失败",err)
 		return err
 	}
+	//推送
+	PushSingle(merchant.OpenId,appId,"审核通过","审核通过","chefApplication")
 	//------------- 特殊要求--------------
 	//为商户添加默认产品
 	err =ProdDefaultAddForMerchant(merchant)
