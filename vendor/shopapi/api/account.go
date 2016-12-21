@@ -90,7 +90,7 @@ func LoginForSMS(c *gin.Context)  {
 		return
 	}
 	
-	//推送
+	/* //推送
 	type Getui struct  {
 		Cid 		string
 		Devicetoken	string
@@ -108,7 +108,7 @@ func LoginForSMS(c *gin.Context)  {
 		}	
 		service.UpdateGetui(resultMap["open_id"].(string),cid,devicetoken)
 	}
-	//推送 ****
+	//推送 **** */
 	
 	c.JSON(http.StatusOK,resultMap)
 }
