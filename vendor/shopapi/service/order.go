@@ -655,6 +655,14 @@ func OrderPayForAccount(openId string,orderNo string,payToken string,appId strin
 		}
 	}
 	
+	PushSingle(order.OpenId,appId,"订单已付款","订单已付款","userOrder")
+	if order.MOpenId!="" {
+		PushSingle(order.MOpenId,appId,"有人付款了","有人付款了","chefOrder")	
+	}
+	if goodsType["goods_type"]=="tailor"{
+		PushSingle(comm.KEFUOPENID,appId,"有私人定制订单了","有私人定制订单了","tailorOrder")
+	}
+	
 	//扣除不可体现金额
 	accountDao 	:= dao.NewAccount()
 	account,err	:=accountDao.AccountWithOpenIdTx(order.OpenId,appId,tx)
