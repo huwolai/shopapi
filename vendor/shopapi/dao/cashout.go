@@ -4,6 +4,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/db"
 	"github.com/gocraft/dbr"
 	//"errors"
+	"fmt"
 	//"github.com/gocraft/dbr"
 )
 
@@ -17,6 +18,7 @@ type Cashout struct  {
 	Status	 	int64  `json:"status"`
 	Mobile	 	string `json:"mobile"`
 	Cashoutcode	string `json:"cashoutcode"`
+	Name		string `json:"name"`
 }
 func MakeCashout(appId string,cashOut interface{},tx *dbr.Tx) (int64,error)  {
 	cashout:=cashOut.(Cashout)	
@@ -44,14 +46,39 @@ func CashoutStatusUpdateTx(cashoutId string,cashout map[string]interface{},tx *d
 	_,err :=db.NewSession().Update("account_cash_out").Set("status",1).Set("sub_trade_no",cashout["sub_trade_no"].(string)).Where("id=?",cashoutId).Exec()
 	return err
 }
-func CashoutRecord(appId string,pageIndex uint64,pageSize uint64) ([]*Cashout,error) {
+func CashoutRecord(appId string,pageIndex uint64,pageSize uint64,mobile string,openId string,status string) ([]*Cashout,error) {
 	var cashout []*Cashout
-	_,err :=db.NewSession().SelectBySql("select c.*,a.mobile from account_cash_out c left join account as a on c.open_id=a.open_id where c.app_id = ? order by id desc limit ?,?",appId,(pageIndex-1)*pageSize,pageSize).LoadStructs(&cashout)
+	
+	sql:=fmt.Sprintf("select c.*,a.mobile,if(m.name is null,'',m.name) as name from account_cash_out c left join account as a on c.open_id=a.open_id left join merchant as m on c.open_id=m.open_id where c.app_id = '%s'",appId)
+	
+	if mobile!="" {
+		sql=sql+fmt.Sprintf(" and a.mobile like '%s%%'",mobile)
+	}
+	if openId!="" {
+		sql=sql+fmt.Sprintf(" and c.open_id = '%s'",openId)
+	}
+	if status!="" {
+		sql=sql+fmt.Sprintf(" and c.status = '%s'",status)
+	}
+	_,err :=db.NewSession().SelectBySql(sql+" order by id desc limit ?,?",(pageIndex-1)*pageSize,pageSize).LoadStructs(&cashout)	
 
 	return cashout,err
 }
-func CashoutRecordCount(appId string) int64 {
-	count, _ := db.NewSession().Select("count(id)").From("account_cash_out").Where("app_id = ?", appId).ReturnInt64()
+func CashoutRecordCount(appId string,mobile string,openId string,status string) int64 {
+	sql:=fmt.Sprintf("select count(c.id) from account_cash_out c left join account as a on c.open_id=a.open_id where c.app_id = '%s'",appId)
+	
+	if mobile!="" {
+		sql=sql+fmt.Sprintf(" and a.mobile like '%s%%'",mobile)
+	}
+	if openId!="" {
+		sql=sql+fmt.Sprintf(" and c.open_id = '%s'",openId)
+	}
+	if status!="" {
+		sql=sql+fmt.Sprintf(" and c.status = '%s'",status)
+	}
+	
+	count, _ :=db.NewSession().SelectBySql(sql).ReturnInt64()
+
 	return count
 }
 

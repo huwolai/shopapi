@@ -275,13 +275,22 @@ func ProdDetailListWith(c *gin.Context)  {
 	//==search
 	var keywords dao.ProductSearch	
 	keywords.Keyword 	=c.Query("keyword")
-	keywords.Category,_ =strconv.ParseUint(c.Query("fenlei"),10,64)
-	keywords.Status,_ 	=strconv.ParseUint(c.Query("shangjia"),10,64)
+	keywords.Category,_ =strconv.ParseUint(c.Query("fenlei"),10,64)	
 	keywords.IsRecom,_ 	=strconv.ParseUint(c.Query("tuijian"),10,64)
 	keywords.PriceUp,_ 	=strconv.ParseFloat(c.Query("jiageup"),64)
 	keywords.PriceDown,_=strconv.ParseFloat(c.Query("jiagedown"),64)
 	keywords.Show,_		=strconv.ParseUint(c.Query("show"),10,64)
+	keywords.NoStatus,_ =strconv.ParseUint(c.Query("nostatus"),10,64)
 	
+	status:=c.Query("status")
+	if c.Query("shangjia")!="" {
+		status=c.Query("shangjia")
+	}
+	if status!="" {
+		keywords.Status,_ 	=strconv.ParseInt(status,10,64)
+	}else{
+		keywords.Status		=-1
+	}	
 	
 	prodList,err :=service.ProdDetailListWith(keywords,imerchantId,flagsArray,noflagsArray,orderBy,pindex,psize,appId)
 	if err!=nil{

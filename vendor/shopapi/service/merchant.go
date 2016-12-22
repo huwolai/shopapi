@@ -479,3 +479,35 @@ func MerchantImgsWithNamed(appId string,names string) error {
 
 	return nil
 }
+
+
+//删除商户
+func MerchantDelete(merchantId string,appId string) error  {	
+	return dao.NewMerchant().MerchantDelete(merchantId,appId)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

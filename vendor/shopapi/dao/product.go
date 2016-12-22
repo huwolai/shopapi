@@ -94,7 +94,8 @@ type ProductDetail struct {
 type ProductSearch struct {
 	Keyword		 string
 	Category  	 uint64
-	Status  	 uint64
+	Status  	 int64
+	NoStatus  	 uint64
 	IsRecom  	 uint64
 	PriceUp	 	 float64
 	PriceDown 	 float64
@@ -133,12 +134,11 @@ func (self *ProductDetail) ProdDetailListWith(keywords interface{} ,merchantId i
 		buider = buider.Where("product.id in (select prod_id from prod_category where category_id =?)",search.Category)
 	}
 	//是否上架状态 ( 1 上架 2 下架)
-	if search.Status>0 {
-		if search.Status==1 {
-			buider = buider.Where("product.status = ?",1)
-		}else{
-			buider = buider.Where("product.status = ?",0)
-		}		
+	if search.Status>=0 {
+		buider = buider.Where("product.status = ?",search.Status)
+	}
+	if search.NoStatus>0 {
+		buider = buider.Where("product.status != ?",search.NoStatus)
 	}
 	//是否推荐 ( 1 是 2 否)
 	if search.IsRecom>0 {
@@ -211,12 +211,11 @@ func (self *ProductDetail) ProdDetailListCountWith(keywords interface{},merchant
 		buider = buider.Where("product.id in (select prod_id from prod_category where category_id =?)",search.Category)
 	}
 	//是否上架状态 ( 1 上架 2 下架)
-	if search.Status>0 {
-		if search.Status==1 {
-			buider = buider.Where("product.status = ?",1)
-		}else{
-			buider = buider.Where("product.status = ?",0)
-		}
+	if search.Status>=0 {
+		buider = buider.Where("product.status = ?",search.Status)
+	}
+	if search.NoStatus>0 {
+		buider = buider.Where("product.status != ?",search.NoStatus)
 	}
 	//是否推荐 ( 1 是 2 否)
 	if search.IsRecom>0 {

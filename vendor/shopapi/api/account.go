@@ -234,16 +234,18 @@ func AccountDetail(c *gin.Context)  {
 }
 
 func AccountsGet(c *gin.Context)  {
-	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
-	appId :=security.GetAppId2(c.Request)
-	mobile := c.Query("mobile")
+	pIndex,pSize:=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+	appId 		:=security.GetAppId2(c.Request)
+	mobile 		:= c.Query("mobile")
+	
+	openId 		:= c.Query("open_id")
 	
 	userName 	:= c.Query("username") // 用户名
 	ydgyId 	 	:= c.Query("ydgy_id")	//一点公益 ID
 	ydgyName 	:= c.Query("ydgy_name") //一点公益名字
 	ydgyStatus  := c.Query("ydgy_status") //一点公益状态	
 	
-	accounts,err := service.AccountsWith(pIndex,pSize,mobile,appId,userName,ydgyId,ydgyName,ydgyStatus)
+	accounts,err := service.AccountsWith(pIndex,pSize,mobile,appId,userName,ydgyId,ydgyName,ydgyStatus,openId)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"查询失败！")
 		return
@@ -261,7 +263,7 @@ func AccountsGet(c *gin.Context)  {
 		}
 	}
 
-	total,err :=service.AccountsWithCount(mobile,appId,userName,ydgyId,ydgyName,ydgyStatus)
+	total,err :=service.AccountsWithCount(mobile,appId,userName,ydgyId,ydgyName,ydgyStatus,openId)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"查询总数量失败！")
 		return
@@ -584,7 +586,11 @@ func CashoutRecord(c *gin.Context)  {
 
 	pIndex,pSize := page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 
-	record,total,err:=service.CashoutRecord(appId,pIndex,pSize)
+	mobile 		:= c.Query("mobile")
+	openId 		:= c.Query("open_id")
+	status 		:= c.Query("status")
+	
+	record,total,err:=service.CashoutRecord(appId,pIndex,pSize,mobile,openId,status)
 	if err!=nil{
 		util.ResponseError400(c.Writer,err.Error())
 		return

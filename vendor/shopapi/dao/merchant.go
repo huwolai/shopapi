@@ -30,6 +30,8 @@ type Merchant struct  {
 	
 	FailRes string
 	
+	Money float64
+	
 	BaseDModel
 }
 
@@ -336,4 +338,24 @@ func MerchantServiceAdd() error  {
 	}
 	return nil
 }
+//删除商户
+func (self *Merchant) MerchantDelete(id string,appId string) error {
+	_,err :=db.NewSession().UpdateBySql(fmt.Sprintf("insert into merchant_backup select * from merchant where app_id='%s' and id='%s' limit 1",appId,id)).Exec()
+	
+	if err==nil {
+		_,err :=db.NewSession().UpdateBySql(fmt.Sprintf("delete from merchant where app_id='%s' and id='%s' limit 1",appId,id)).Exec()
+		return err
+	}
+	
+	return err
+}
+
+
+
+
+
+
+
+
+
 

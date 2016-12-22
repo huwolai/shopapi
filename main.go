@@ -253,6 +253,7 @@ func main() {
 			merchant.POST("/:merchant_id/audit", api.MerchantAudit)
 			//商户分销商品
 			merchant.GET("/:merchant_id/distributions/products", api.DistributionWithMerchant)
+			merchant.PUT("/:merchant_id/delete", api.MerchantDelete)
 		}
 
 		//推荐

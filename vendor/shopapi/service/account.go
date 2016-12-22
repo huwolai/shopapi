@@ -314,9 +314,9 @@ func loginSMSOfCommuser(mobile,code,appId string) ( map[string]interface{},error
 	return nil,errors.New("调用统一用户中心登录失败!")
 }
 
-func AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string) ([]*dao.Account,error)   {
+func AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string,openId string) ([]*dao.Account,error)   {
 
-	accounts,err := dao.NewAccount().AccountsWith(pageIndex,pageSize,mobile,appId,userName,ydgyId,ydgyName,ydgyStatus)
+	accounts,err := dao.NewAccount().AccountsWith(pageIndex,pageSize,mobile,appId,userName,ydgyId,ydgyName,ydgyStatus,openId)
 	
 	if err==nil {
 		merchant := dao.NewMerchant()
@@ -332,9 +332,9 @@ func AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string,us
 	return accounts,err
 }
 
-func AccountsWithCount(mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string) (int64,error) {
+func AccountsWithCount(mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string,openId string) (int64,error) {
 
-	return dao.NewAccount().AccountsWithCount(mobile,appId,userName,ydgyId,ydgyName,ydgyStatus)
+	return dao.NewAccount().AccountsWithCount(mobile,appId,userName,ydgyId,ydgyName,ydgyStatus,openId)
 }
 //配置登入界面
 func GetOnKey() (*dao.GetOnKey,error)   {
@@ -720,9 +720,9 @@ func Cashout(cashoutId string) error  {
 	
 	return nil	
 }
-func CashoutRecord(appId string,pageIndex uint64,pageSize uint64) ([]*dao.Cashout,int64,error)  {
-	items,err:=dao.CashoutRecord(appId,pageIndex,pageSize)
-	count	 :=dao.CashoutRecordCount(appId)
+func CashoutRecord(appId string,pageIndex uint64,pageSize uint64,mobile string,openId string,status string) ([]*dao.Cashout,int64,error)  {
+	items,err:=dao.CashoutRecord(appId,pageIndex,pageSize,mobile,openId,status)
+	count	 :=dao.CashoutRecordCount(appId,mobile,openId,status)
 	return items,count,err
 }
 func UpdateGetui(openId string,cid string,devicetoken string) error  {

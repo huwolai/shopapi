@@ -73,7 +73,7 @@ func (self *Account) AccountUpdateStatus(status int,openId string,appId string) 
 }
 
 //查询用户
-func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string) ([]*Account,error)  {
+func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string,openId string) ([]*Account,error)  {
 	var list []*Account
 	builder :=db.NewSession().Select("*").From("account").Where("app_id=?",appId).OrderDir("create_time",false)
 	if mobile!=""{
@@ -91,12 +91,15 @@ func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,mobile string
 	if ydgyStatus!=""{
 		builder = builder.Where("ydgy_status = ?",ydgyStatus)
 	}
+	if openId!=""{
+		builder = builder.Where("open_id = ?",openId)
+	}
 	_,err :=builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&list)
 	
 	return list,err
 }
 
-func (self *Account) AccountsWithCount(mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string) (int64,error) {
+func (self *Account) AccountsWithCount(mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string,openId string) (int64,error) {
 	builder :=db.NewSession().Select("count(*)").From("account").Where("app_id=?",appId)
 	if mobile!=""{
 		builder = builder.Where("mobile like ?",mobile + "%")
@@ -112,6 +115,9 @@ func (self *Account) AccountsWithCount(mobile string,appId string,userName strin
 	}
 	if ydgyStatus!=""{
 		builder = builder.Where("ydgy_status = ?",ydgyStatus)
+	}
+	if openId!=""{
+		builder = builder.Where("open_id = ?",openId)
 	}
 	var count int64
 	_,err :=builder.Load(&count)

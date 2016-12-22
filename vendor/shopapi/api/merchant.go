@@ -35,6 +35,8 @@ type MerchantDto struct {
 	Longitude float64 `json:"longitude"`
 	//维度
 	Latitude float64 `json:"latitude"`
+	
+	Money float64 `json:"money"`
 }
 type MerchantDetailParam struct  {
 	Name string `json:"name"`
@@ -209,7 +211,12 @@ func MerchantWith(c *gin.Context)  {
 	}
 	merchantsDto :=make([]*MerchantDto,0)
 	if merchants!=nil{
+		var detailModel *service.AccountDetailModel
+		log.Info(detailModel)
 		for _,merchant :=range merchants {
+			detailModel,_ =service.AccountDetail(merchant.OpenId)
+			merchant.Money=float64(detailModel.Amount)/100.0
+			//merchant.Money=0		
 			merchantsDto = append(merchantsDto,merchantToDto(merchant))
 		}
 	}
@@ -684,6 +691,7 @@ func merchantToDto(model *dao.Merchant)  *MerchantDto {
 	dto.Weight = model.Weight
 	dto.Status = model.Status
 	dto.Mobile = model.Mobile
+	dto.Money = model.Money
 	//if len(model.Mobile)==11 {
 	//	dto.Mobile =  strings.Replace(model.Mobile,model.Mobile[3:8],"*****",1)
 	//}
@@ -798,7 +806,28 @@ func MerchantImgsWithNamed(c *gin.Context)  {
 	util.ResponseSuccess(c.Writer)
 	//c.JSON(http.StatusOK,params.Names)
 }
-
+func MerchantDelete(c *gin.Context){
+	_,err := security.CheckUserAuth(c.Request)
+	if err!=nil{
+		util.ResponseError(c.Writer,http.StatusUnauthorized,err.Error())
+		return
+	}
+	
+	appId,err 	:=security.GetAppId(c.Request)
+	if err!=nil {
+		util.ResponseError(c.Writer,http.StatusUnauthorized,"认证失败!")
+		return
+	}	
+	
+	merchantId 	:= c.Param("merchant_id")
+	err =service.MerchantDelete(merchantId,appId)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	util.ResponseSuccess(c.Writer)
+}
 
 
 
