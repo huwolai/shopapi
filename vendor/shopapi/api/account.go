@@ -59,9 +59,12 @@ type Account struct  {
 
 type LoginForSMSParam struct  {
 	//手机号
-	Mobile string `json:"mobile"`
+	Mobile 		string `json:"mobile"`
 	//验证码
-	Code string `json:"code"`
+	Code 		string `json:"code"`
+	//个推
+	Cid 		string	`json:"cid"`
+	Devicetoken	string	`json:"devicetoken"`
 }
 
 type PayPwdUpdateDto struct  {
@@ -83,7 +86,6 @@ func LoginForSMS(c *gin.Context)  {
 	}
 
 	appId := security.GetAppId2(c.Request)
-
 	resultMap,err :=service.LoginForSMS(loginSms.Mobile,loginSms.Code,appId)
 	if err!=nil {
 		log.Info(err)
@@ -91,25 +93,11 @@ func LoginForSMS(c *gin.Context)  {
 		return
 	}
 	
-	/* //推送
-	type Getui struct  {
-		Cid 		string
-		Devicetoken	string
-	}	
-	var getui Getui
-	err = c.BindJSON(&getui)
-	if err==nil {
-		cid			:=""
-		devicetoken :=""
-		if getui.Cid!="" {
-			cid=getui.Cid
-		}
-		if getui.Devicetoken!="" {
-			devicetoken=getui.Devicetoken
-		}	
-		service.UpdateGetui(resultMap["open_id"].(string),cid,devicetoken)
+	//推送
+	if loginSms.Cid!="" {
+		service.UpdateGetui(resultMap["open_id"].(string),loginSms.Cid,loginSms.Devicetoken)
 	}
-	//推送 **** */	
+	//推送 ****
 	
 	c.JSON(http.StatusOK,resultMap)
 }
