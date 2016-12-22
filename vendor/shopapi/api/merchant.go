@@ -215,7 +215,9 @@ func MerchantWith(c *gin.Context)  {
 		log.Info(detailModel)
 		for _,merchant :=range merchants {
 			detailModel,_ =service.AccountDetail(merchant.OpenId)
-			merchant.Money=float64(detailModel.Amount)/100.0
+			if detailModel!=nil {
+				merchant.Money=float64(detailModel.Amount)/100.0
+			}			
 			//merchant.Money=0		
 			merchantsDto = append(merchantsDto,merchantToDto(merchant))
 		}
