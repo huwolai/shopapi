@@ -161,12 +161,11 @@ func ProductAndPurchaseCodesOpened(prodId int64,openId string,mobile string,open
 //开奖状态
 func ProductAndPurchaseCodesOpenedStatus() error  {
 	
-	count,_ :=db.NewSession().SelectBySql("select count(id) from prod_purchase_codes where open_time<=UNIX_TIMESTAMP()+52 and open_status=1 and open_time>?",0).ReturnInt64()
+	/* count,_ :=db.NewSession().SelectBySql("select count(id) from prod_purchase_codes where open_time<=UNIX_TIMESTAMP()+52 and open_status=1 and open_time>?",0).ReturnInt64()
 	
 	if count<1 {
 		return nil
-	}
-
+	} */
 	_,err :=db.NewSession().UpdateBySql("update prod_purchase_codes set open_status=? where open_time<=UNIX_TIMESTAMP()+52 and open_status=1 and open_time>0",2).Exec()	
 	return err
 }
