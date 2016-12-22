@@ -292,6 +292,7 @@ func loginSMSOfCommuser(mobile,code,appId string) ( map[string]interface{},error
 		"app_id":appId,
 	}
 	response,err :=network.Post(config.GetValue("commuser_url").ToString()+"/loginSMS",paramData,header)
+	log.Info(config.GetValue("commuser_url"))
 	if err!=nil {
 		return nil,err
 	}

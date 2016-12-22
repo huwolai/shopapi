@@ -86,6 +86,7 @@ func LoginForSMS(c *gin.Context)  {
 
 	resultMap,err :=service.LoginForSMS(loginSms.Mobile,loginSms.Code,appId)
 	if err!=nil {
+		log.Info(err)
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
@@ -108,7 +109,7 @@ func LoginForSMS(c *gin.Context)  {
 		}	
 		service.UpdateGetui(resultMap["open_id"].(string),cid,devicetoken)
 	}
-	//推送 **** */
+	//推送 **** */	
 	
 	c.JSON(http.StatusOK,resultMap)
 }
