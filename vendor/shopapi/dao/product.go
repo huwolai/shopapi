@@ -100,6 +100,7 @@ type ProductSearch struct {
 	PriceUp	 	 float64
 	PriceDown 	 float64
 	Show	 	 uint64
+	HasSold 	 string
 }
 
 func NewProductDetail() *ProductDetail {
@@ -118,7 +119,7 @@ func (self *ProductDetail) ProdDetailListWith(keywords interface{} ,merchantId i
 	search:=keywords.(ProductSearch)	
 	
 	var prodList []*ProductDetail
-	buider :=db.NewSession().Select("product.*,IFNULL(merchant.id,0) merchant_id,IFNULL(merchant.name,'') merchant_name,IFNULL(category.id,0) category_id,IFNULL(category.title,'') category_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id").LeftJoin("prod_category","prod_category.prod_id=product.id").LeftJoin("category","prod_category.category_id=category.id")
+	buider :=db.NewSession().Select("product.*,IFNULL(merchant.id,0) merchant_id,IFNULL(merchant.name,'') merchant_name,IFNULL(category.id,0) category_id,IFNULL(category.title,'') category_name").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id").LeftJoin("prod_category","prod_category.prod_id=product.id").LeftJoin("category","prod_category.category_id=category.id").LeftJoin("prod_sku","prod_sku.prod_id=product.id")
 	
 	//buider = buider.Where("product.parent_id = ?",0)
 	
@@ -174,6 +175,10 @@ func (self *ProductDetail) ProdDetailListWith(keywords interface{} ,merchantId i
 	if merchantId!=0{
 		buider = buider.Where("merchant.id=?",merchantId)
 	}
+	if search.HasSold=="1"{
+		buider = buider.Where("prod_sku.sold_num>?",0)
+		buider =buider.OrderDir("prod_sku.sold_num",false)
+	}
 	if orderBy!="" {
 		buider =buider.OrderDir(orderBy,false)
 	}
@@ -192,7 +197,7 @@ func (self *ProductDetail) ProdDetailListCountWith(keywords interface{},merchant
 	search:=keywords.(ProductSearch)	
 
 	var count int64
-	buider :=db.NewSession().Select("count(*)").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id")
+	buider :=db.NewSession().Select("count(*)").From("product").LeftJoin("merchant_prod","product.id=merchant_prod.prod_id").LeftJoin("merchant","merchant_prod.merchant_id=merchant.id").LeftJoin("prod_sku","prod_sku.prod_id=product.id")
 
 
 	if flags!=nil{
@@ -248,6 +253,9 @@ func (self *ProductDetail) ProdDetailListCountWith(keywords interface{},merchant
 
 	if merchantId!=0{
 		buider = buider.Where("merchant.id=?",merchantId)
+	}
+	if search.HasSold=="1"{
+		buider = buider.Where("prod_sku.sold_num>?",0)
 	}
 
 	err :=buider.LoadValue(&count)

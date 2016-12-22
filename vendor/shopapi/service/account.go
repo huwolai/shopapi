@@ -314,9 +314,9 @@ func loginSMSOfCommuser(mobile,code,appId string) ( map[string]interface{},error
 	return nil,errors.New("调用统一用户中心登录失败!")
 }
 
-func AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string,openId string) ([]*dao.Account,error)   {
+func AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string,openId string,hasMoney string) ([]*dao.Account,error)   {
 
-	accounts,err := dao.NewAccount().AccountsWith(pageIndex,pageSize,mobile,appId,userName,ydgyId,ydgyName,ydgyStatus,openId)
+	accounts,err := dao.NewAccount().AccountsWith(pageIndex,pageSize,mobile,appId,userName,ydgyId,ydgyName,ydgyStatus,openId,hasMoney)
 	
 	if err==nil {
 		merchant := dao.NewMerchant()
@@ -332,9 +332,9 @@ func AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string,us
 	return accounts,err
 }
 
-func AccountsWithCount(mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string,openId string) (int64,error) {
+func AccountsWithCount(mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string,openId string,hasMoney string) (int64,error) {
 
-	return dao.NewAccount().AccountsWithCount(mobile,appId,userName,ydgyId,ydgyName,ydgyStatus,openId)
+	return dao.NewAccount().AccountsWithCount(mobile,appId,userName,ydgyId,ydgyName,ydgyStatus,openId,hasMoney)
 }
 //配置登入界面
 func GetOnKey() (*dao.GetOnKey,error)   {
@@ -728,7 +728,9 @@ func CashoutRecord(appId string,pageIndex uint64,pageSize uint64,mobile string,o
 func UpdateGetui(openId string,cid string,devicetoken string) error  {
 	return dao.NewAccount().UpdateGetui(openId,fmt.Sprintf("{\"cid\":\"?\",\"devicetoken\":\"?\"}",cid,devicetoken))
 }
-
+func AccountSyncMoney(openId string,money int64) error {
+	return dao.NewAccount().UpdateMoney(openId,money)
+}
 
 
 

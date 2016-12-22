@@ -275,6 +275,7 @@ func ProdDetailListWith(c *gin.Context)  {
 	//==search
 	var keywords dao.ProductSearch	
 	keywords.Keyword 	=c.Query("keyword")
+	keywords.HasSold 	=c.Query("hasSold")
 	keywords.Category,_ =strconv.ParseUint(c.Query("fenlei"),10,64)	
 	keywords.IsRecom,_ 	=strconv.ParseUint(c.Query("tuijian"),10,64)
 	keywords.PriceUp,_ 	=strconv.ParseFloat(c.Query("jiageup"),64)

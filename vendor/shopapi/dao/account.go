@@ -73,7 +73,7 @@ func (self *Account) AccountUpdateStatus(status int,openId string,appId string) 
 }
 
 //查询用户
-func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string,openId string) ([]*Account,error)  {
+func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string,openId string,hasMoney string) ([]*Account,error)  {
 	var list []*Account
 	builder :=db.NewSession().Select("*").From("account").Where("app_id=?",appId).OrderDir("create_time",false)
 	if mobile!=""{
@@ -94,12 +94,16 @@ func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,mobile string
 	if openId!=""{
 		builder = builder.Where("open_id = ?",openId)
 	}
+	if hasMoney=="1"{
+		builder = builder.Where("money > ?",0)
+		builder = builder.OrderDir("money",false)
+	}
 	_,err :=builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&list)
 	
 	return list,err
 }
 
-func (self *Account) AccountsWithCount(mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string,openId string) (int64,error) {
+func (self *Account) AccountsWithCount(mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string,openId string,hasMoney string) (int64,error) {
 	builder :=db.NewSession().Select("count(*)").From("account").Where("app_id=?",appId)
 	if mobile!=""{
 		builder = builder.Where("mobile like ?",mobile + "%")
@@ -118,6 +122,9 @@ func (self *Account) AccountsWithCount(mobile string,appId string,userName strin
 	}
 	if openId!=""{
 		builder = builder.Where("open_id = ?",openId)
+	}
+	if hasMoney=="1"{
+		builder = builder.Where("money > ?",0)		
 	}
 	var count int64
 	_,err :=builder.Load(&count)
@@ -164,6 +171,10 @@ func (self *Account) Accounts(appId string) ([]*Account,error)  {
 }
 func (self *Account) UpdateGetui(openId string,json string) error {
 	_,err:=db.NewSession().UpdateBySql("update account set getui=? where open_id=? limit 1",json,openId).Exec()
+	return err
+}
+func (self *Account) UpdateMoney(openId string,money int64) error {
+	_,err:=db.NewSession().UpdateBySql("update account set money=? where open_id=? limit 1",money,openId).Exec()
 	return err
 }
 
