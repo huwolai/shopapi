@@ -41,7 +41,7 @@ func  StartCron() {
 	//商品 售出数量 定时增加
 	c.AddFunc("0 0 1 * * ?", ProductAddNum)
 
-	c.AddFunc("0 0/1 * * * ?", PurchaseCodesOpen)
+	//c.AddFunc("0 0/1 * * * ?", PurchaseCodesOpen)
 	
 	c.Start()
 }
@@ -343,7 +343,7 @@ func PurchaseCodesOpen()  {
 	//开奖状态更新
 	dao.ProductAndPurchaseCodesOpenedStatus()
 }
-
+//定时开奖 ****
 
 
 

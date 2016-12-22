@@ -150,7 +150,7 @@ func ProductAndPurchaseCodesOpening(tx *dbr.Tx,prodPurchaseCode *ProdPurchaseCod
 func ProductAndPurchaseCodesOpened(prodId int64,openId string,mobile string,openCode string) error  {
 	//_,err :=tx.UpdateBySql("update prod_purchase_codes set open_id=?,open_time=? where sku=? and num=?",openId,openTime,id,num).Exec()	
 	builder:=db.NewSession().Update("prod_purchase_codes")	
-	//builder = builder.Set("open_status",2)
+	builder = builder.Set("open_status",2)
 	builder = builder.Set("open_code",openCode)
 	builder = builder.Set("open_id",openId)
 	builder = builder.Set("open_mobile",mobile)

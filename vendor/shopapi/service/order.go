@@ -22,6 +22,7 @@ import (
     "encoding/hex"
 	"encoding/base64"
 	"strings"
+	"github.com/robfig/cron"
 )
 
 type OrderModel struct  {
@@ -923,10 +924,19 @@ func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 		}
 		//购买完成 设置开奖时间
 		if(codes.Num==ProdPurchaseCode.Num){
-			err=dao.ProductAndPurchaseCodesOpening(tx,ProdPurchaseCode,fmt.Sprintf("%d",time.Now().Unix()+300))//5分钟
+			opentime:=time.Now().Unix()+300
+			err=dao.ProductAndPurchaseCodesOpening(tx,ProdPurchaseCode,fmt.Sprintf("%d",opentime))//5分钟
 			if err!=nil{
 				return err
 			}
+			//定时====================
+			cr := cron.New()
+			cr.AddFunc(time.Unix(opentime, 0).Format("05 04 15 * * ?"), func() { 
+				PurchaseCodesOpen(ProdPurchaseCode.ProdId)
+				cr.Stop()
+			})
+			cr.Start()	
+			//====================
 		}
 		//============================
 		s:=strings.Split(codes.Codes, ",")

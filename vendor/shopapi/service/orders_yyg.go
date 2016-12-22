@@ -4,7 +4,10 @@ import (
 	"shopapi/dao"	
 	"gitlab.qiyunxin.com/tangtao/utils/qtime"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
-	//"fmt"
+	"fmt"
+	"shopapi/comm"
+	"time"
+	"strconv"
 	//"strings"
 )
 
@@ -158,6 +161,29 @@ func orderToA(dto *ProdPurchaseCode,order *dao.Order) *ProdPurchaseCode {
 	return 	dto
 }
 
+//定时开奖
+func PurchaseCodesOpen(prodId int64)  {
+	log.Info("定时开奖"+fmt.Sprintf("%d", prodId))
+	prod,_		:=dao.ProdPurchaseCodeWithProdId(prodId)
+	orderItem,_ :=dao.OrderItemPurchaseCodesWithTime(prod.OpenTime,comm.PRODUCT_YYG_BUY_CODES)
+	codeCount,_ :=dao.OrderItemPurchaseCodesWithProdId(prod.ProdId)//商品份数
+	var c  int64 = 0
+	for _, tSum := range orderItem {
+		s1	:=fmt.Sprintf("%s%s",time.Unix(int64(tSum.BuyTime/1e3), 0).Format("150405"),dao.Right(fmt.Sprintf("%d",tSum.BuyTime),3))
+		i1,_:=strconv.ParseInt(s1,10,64)			
+		c	 =c+i1
+	}
+	openCode:=fmt.Sprintf("%d",c%codeCount+10000001)	
+	user,err:=dao.GetOpenIdbyOpenCode(prod.ProdId,openCode)		
+	if err!=nil {
+		log.Error(err)
+		return
+	}
+	if user==nil {
+		return
+	}
+	dao.ProductAndPurchaseCodesOpened(prod.ProdId,user.OpenId,user.Mobile,openCode)
+}
 
 
 
