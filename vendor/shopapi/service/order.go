@@ -930,9 +930,11 @@ func purchaseCodes(orderItems []*dao.OrderItem,appId string,tx *dbr.Tx) error {
 				return err
 			}
 			//定时====================
+			fmt.Println(fmt.Sprintf("%d准备开奖",ProdPurchaseCode.ProdId))
 			cr := cron.New()
 			cr.AddFunc(time.Unix(opentime, 0).Format("05 04 15 * * ?"), func() { 
 				PurchaseCodesOpen(ProdPurchaseCode.ProdId)
+				fmt.Println(fmt.Sprintf("%d结束开奖",ProdPurchaseCode.ProdId))
 				cr.Stop()
 			})
 			cr.Start()	
