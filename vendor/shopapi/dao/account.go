@@ -75,7 +75,7 @@ func (self *Account) AccountUpdateStatus(status int,openId string,appId string) 
 //查询用户
 func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,mobile string,appId string,userName string,ydgyId string,ydgyName string,ydgyStatus string,openId string,hasMoney string) ([]*Account,error)  {
 	var list []*Account
-	builder :=db.NewSession().Select("*").From("account").Where("app_id=?",appId).OrderDir("create_time",false)
+	builder :=db.NewSession().Select("*").From("account").Where("app_id=?",appId)
 	if mobile!=""{
 		builder = builder.Where("mobile like ?",mobile + "%")
 	}
@@ -98,7 +98,8 @@ func (self *Account) AccountsWith(pageIndex uint64,pageSize uint64,mobile string
 		builder = builder.Where("money > ?",0)
 		builder = builder.OrderDir("money",false)
 	}
-	_,err :=builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&list)
+	//fmt.Println( builder.ToSql() )
+	_,err :=builder.OrderDir("create_time",false).Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&list)
 	
 	return list,err
 }
