@@ -106,7 +106,7 @@ func (self *Getui)PushSingle(msg AccountMsg) error {
 		"title" 				: msg.Title,			
 	}
 	transmission:= map[string]interface{}{	
-		"transmission_type" 	: true,
+		"transmission_type" 	: false,
 		"duration_begin"		: time.Unix(unixTime,0).Format("2006-01-02 15:04:05"),	
 		"duration_end"			: time.Unix(unixTime+86400,0).Format("2006-01-02 15:04:05"),
 		"transmission_content"	: fmt.Sprintf(transmission_content,msg.Title,msg.Content,msg.Types),

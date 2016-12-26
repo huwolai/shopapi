@@ -3,7 +3,7 @@ package service
 import (	
 	"shopapi/dao"
 	"errors"
-	//"fmt"
+	///"fmt"
 )
 func PushSingle(openId string,appId string,title string,content string,types string) error {
 	account,err :=dao.NewAccount().AccountWithOpenId(openId,appId)
@@ -40,6 +40,7 @@ func PushSingle(openId string,appId string,title string,content string,types str
 	if err!=nil {
 		return err
 	}
+	//fmt.Println(status)
 	if status=="offline" && msg.Devicetoken!="" {		
 		err:=getui.PushApnsSingle(msg)		
 		return err
