@@ -18,6 +18,7 @@ type UserBank struct  {
 	AccountName string `json:"account_name"`
 	BankName string `json:"bank_name"`
 	BankNo string `json:"bank_no"`
+	BankFullName string `json:"branch"`
 }
 
 func UserBankGet(c *gin.Context)  {
@@ -115,7 +116,7 @@ func userBankToA(s *dao.UserBank) *UserBank  {
 	a.AccountName = s.AccountName
 	a.BankName = s.BankName
 	a.BankNo = s.BankNo
-
+	a.BankFullName = s.BankFullName
 	return a
 }
 
@@ -128,7 +129,7 @@ func userBankToS(a *UserBank) *service.UserBank  {
 	s.BankName = a.BankName
 	s.AppId = a.AppId
 	s.OpenId = a.OpenId
-
+	s.BankFullName = a.BankFullName
 	return s
 
 }

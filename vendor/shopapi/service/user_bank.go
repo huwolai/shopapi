@@ -8,7 +8,8 @@ type UserBank struct  {
 	OpenId string
 	AccountName string
 	BankName string
-	BankNo string
+	BankNo 	string
+	BankFullName string
 }
 
 func UserBankGet(openId,appId string) ([]*dao.UserBank,error) {
@@ -23,6 +24,7 @@ func UserBankAdd(userBank *UserBank) (*dao.UserBank,error) {
 	uBank.OpenId = userBank.OpenId
 	uBank.BankName = userBank.BankName
 	uBank.BankNo = userBank.BankNo
+	uBank.BankFullName = userBank.BankFullName
 
 	id,err :=uBank.Insert()
 	if err!=nil{
@@ -46,6 +48,7 @@ func UserBankUpdate(userBank *UserBank) (*dao.UserBank,error)  {
 	uBank.BankNo = userBank.BankNo
 	uBank.AppId = userBank.AppId
 	uBank.Id = userBank.Id
+	uBank.BankFullName = userBank.BankFullName
 
 	err := uBank.UpdateWithId(userBank.Id)
 

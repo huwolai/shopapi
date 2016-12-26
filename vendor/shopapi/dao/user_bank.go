@@ -10,6 +10,7 @@ type UserBank struct  {
 	BankName string
 	BankNo string
 	BaseDModel
+	BankFullName string
 }
 
 func NewUserBank() *UserBank  {
@@ -18,7 +19,7 @@ func NewUserBank() *UserBank  {
 }
 
 func (self *UserBank) Insert() (int64,error)  {
-	result,err :=db.NewSession().InsertInto("user_bank").Columns("app_id","open_id","account_name","bank_name","bank_no").Record(self).Exec()
+	result,err :=db.NewSession().InsertInto("user_bank").Columns("app_id","open_id","account_name","bank_name","bank_no","bank_full_name").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
@@ -40,7 +41,7 @@ func (self *UserBank) DeleteWithId(id int64) error  {
 }
 
 func (self *UserBank) UpdateWithId(id int64) error  {
-	_,err :=db.NewSession().Update("user_bank").Set("account_name",self.AccountName).Set("bank_name",self.BankName).Set("bank_no",self.BankNo).Exec()
+	_,err :=db.NewSession().Update("user_bank").Set("account_name",self.AccountName).Set("bank_name",self.BankName).Set("bank_full_name",self.BankFullName).Set("bank_no",self.BankNo).Where("id=?",id).Exec()
 
 	return err
 }
