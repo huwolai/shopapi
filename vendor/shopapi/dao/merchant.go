@@ -28,11 +28,13 @@ type Merchant struct  {
 	//维度
 	Latitude float64
 	
-	FailRes string
+	FailRes string	
 	
 	Money float64
 	
 	BaseDModel
+	
+	ServiceArea string
 }
 
 type MerchantDetail struct  {
@@ -54,7 +56,8 @@ type MerchantDetail struct  {
 	CoverDistance float64
 	//距离(单位米)
 	Distance float64
-
+	
+	ServiceArea string
 }
 
 type MerchantOnline struct  {
@@ -130,12 +133,13 @@ func (self *Merchant) MerchantUpdateTx(merchant *Merchant,tx *dbr.Tx) error  {
 	//return err
 	
 	builder :=db.NewSession().Update("merchant")
-	builder = builder.Set("name",merchant.Name)
-	builder = builder.Set("address",merchant.Address)
-	builder = builder.Set("address_id",merchant.AddressId)
-	builder = builder.Set("longitude",merchant.Longitude)
-	builder = builder.Set("latitude",merchant.Latitude)	
-	builder = builder.Set("json",merchant.Json)
+	builder = builder.Set("name"		,merchant.Name)
+	builder = builder.Set("address"		,merchant.Address)
+	builder = builder.Set("address_id"	,merchant.AddressId)
+	builder = builder.Set("longitude"	,merchant.Longitude)
+	builder = builder.Set("latitude"	,merchant.Latitude)	
+	builder = builder.Set("json"		,merchant.Json)
+	builder = builder.Set("service_area",merchant.ServiceArea)
 	
 	if merchant.CoverDistance>0 {
 		builder = builder.Set("cover_distance",merchant.CoverDistance)
@@ -170,15 +174,20 @@ func (self *Merchant) IncrWeightWithIdTx(num int,id int64,tx *dbr.Tx) error {
 	return err
 }
 
-func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64) ([]*MerchantDetail,error)  {
+func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,openId string,appId string,serviceArea string, pageIndex uint64, pageSize uint64) ([]*MerchantDetail,error)  {
 	
 	status := make([]uint64, 0)
 	status = append(status,1)
 	status = append(status,5)
 	
 	var mdetails []*MerchantDetail
-	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' and getDistance(mt.longitude,latitude,?,?)<cover_distance order by distance limit ?,?",longitude,latitude,appId,status,openId,longitude,latitude,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)	
-	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where 1 order by id desc limit 1",longitude,latitude).LoadStructs(&mdetails)
+	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' and getDistance(mt.longitude,latitude,?,?)<cover_distance order by distance limit ?,?",longitude,latitude,appId,status,openId,longitude,latitude,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)	
+	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' and find_in_set(?,service_area) order by distance limit ?,?",longitude,latitude,appId,status,openId,serviceArea,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
+	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' order by distance limit ?,?",longitude,latitude,appId,status,openId,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
+/* 	b:=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' and find_in_set(?,service_area) order by distance limit ?,?",longitude,latitude,appId,status,openId,serviceArea,(pageIndex-1)*pageSize,pageSize)
+	log.Error( b.ToSql() ) */
+	
+	
 	
 	//首页固定20个
 	if uint64(len(mdetails))>pageSize {

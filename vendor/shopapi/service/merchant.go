@@ -27,6 +27,8 @@ type MerchantDetailDLL struct  {
 	CoverDistance float64
 	Json string
 	Imgs []MerchantImgDLL
+	
+	ServiceArea string
 }
 
 type MerchantImgDLL struct  {
@@ -73,9 +75,11 @@ func MerchantUpdate(dll *MerchantDetailDLL) error  {
 			log.Error("查询地址错误！")
 			return err
 		}
-		merchant.Address = address.Address
-		merchant.Latitude = address.Latitude
-		merchant.Longitude = address.Longitude
+		if address!=nil {
+			merchant.Address = address.Address
+			merchant.Latitude = address.Latitude
+			merchant.Longitude = address.Longitude
+		}		
 	}
 	fillMerchant(merchant,dll)
 	err =merchant.MerchantUpdateTx(merchant,tx)
@@ -139,7 +143,9 @@ func fillMerchantImg(merchantImg *dao.MerchantImgs,dll *MerchantImgDLL)  {
 }
 
 func fillMerchant(merchant *dao.Merchant,dll *MerchantDetailDLL)  {
-
+	if dll.ServiceArea!="" {
+		merchant.ServiceArea = dll.ServiceArea
+	}
 	if dll.Json!="" {
 		merchant.Json = dll.Json
 	}
@@ -209,18 +215,19 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 		dll.Address = address.Address
 	}
 
-	merchant = dao.NewMerchant()
-	merchant.Json=dll.Json
-	merchant.Name = dll.Name
-	merchant.OpenId = dll.OpenId
-	merchant.Mobile  = account.Mobile
-	merchant.Status = comm.MERCHANT_STATUS_WAIT_AUIT //申请中
-	merchant.AppId = dll.AppId
-	merchant.Longitude = dll.Longitude
-	merchant.Latitude = dll.Latitude
-	merchant.Address = dll.Address
-	merchant.AddressId = dll.AddressId
-	merchant.CoverDistance = dll.CoverDistance
+	merchant 					= dao.NewMerchant()
+	merchant.Json				= dll.Json
+	merchant.Name 				= dll.Name
+	merchant.OpenId 			= dll.OpenId
+	merchant.Mobile  			= account.Mobile
+	merchant.Status 			= comm.MERCHANT_STATUS_WAIT_AUIT //申请中
+	merchant.AppId 				= dll.AppId
+	merchant.Longitude 			= dll.Longitude
+	merchant.Latitude 			= dll.Latitude
+	merchant.Address 			= dll.Address
+	merchant.AddressId 			= dll.AddressId
+	merchant.CoverDistance 		= dll.CoverDistance
+	merchant.ServiceArea 		= dll.ServiceArea
 	mid,err := merchant.InsertTx(tx)
 	if err!=nil{
 		tx.Rollback()
@@ -381,10 +388,9 @@ func MerchantServiceTimeAdd(merchantId int64,stimes []string) error  {
 
 }
 
-func  MerchantNear(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64) ([]*dao.MerchantDetail,error)   {
+func  MerchantNear(longitude float64,latitude float64,openId string,appId string,serviceArea string, pageIndex uint64, pageSize uint64) ([]*dao.MerchantDetail,error)   {
 	mDetail :=dao.NewMerchantDetail()
-	mDetailList,err := mDetail.MerchantNear(longitude,latitude,openId,appId,pageIndex,pageSize)
-
+	mDetailList,err := mDetail.MerchantNear(longitude,latitude,openId,appId,serviceArea,pageIndex,pageSize)
 	return mDetailList,err
 }
 //附近商户搜索 可提供服务的厨师

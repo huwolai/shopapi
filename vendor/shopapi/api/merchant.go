@@ -37,6 +37,7 @@ type MerchantDto struct {
 	Latitude float64 `json:"latitude"`
 	
 	Money float64 `json:"money"`
+	ServiceArea string `json:"service_area"`
 }
 type MerchantDetailParam struct  {
 	Name string `json:"name"`
@@ -51,10 +52,12 @@ type MerchantDetailParam struct  {
 	//纬度
 	Latitude float64 `json:"latitude"`
 	//覆盖距离 (单位米)
-	CoverDistance float64 `json:"cover_distance"`
+	CoverDistance float64 `json:"cover_distance"`	
 	AppId string `json:"app_id"`
 	//商户图片
 	Imgs []MerchantImgDto
+	
+	ServiceArea string `json:"service_area"`
 }
 
 //商户主要图片DTO
@@ -87,6 +90,7 @@ type MerchantDetailDto struct  {
 	//距离(单位米)
 	Distance float64 `json:"distance"`
 
+	ServiceArea string `json:"service_area"`
 }
 
 type MerchantOpenDto struct  {
@@ -411,9 +415,10 @@ func MerchantServiceTimeAdd(c *gin.Context)  {
 func MerchatNear(c *gin.Context)  {
 	appId := security.GetAppId2(c.Request)
 
-	longitude :=c.Query("longitude")
-	latitude :=c.Query("latitude")
-	openId := security.GetOpenId(c.Request)
+	longitude 	:=c.Query("longitude")
+	latitude	:=c.Query("latitude")
+	serviceArea :=c.Query("service_area")
+	openId 		:= security.GetOpenId(c.Request)
 	
 	pageSize:="20"
 	if len(c.Query("page_size"))>0 {		
@@ -426,7 +431,7 @@ func MerchatNear(c *gin.Context)  {
 	flongitude,_ :=strconv.ParseFloat(longitude,20)
 	flatitude,_  :=strconv.ParseFloat(latitude,20)
 	
-	mDetailList,err := service.MerchantNear(flongitude,flatitude,openId,appId,pIndex,pSize)
+	mDetailList,err := service.MerchantNear(flongitude,flatitude,openId,appId,serviceArea,pIndex,pSize)
 	if err!=nil {
 		util.ResponseError400(c.Writer,err.Error())
 		return
@@ -636,6 +641,7 @@ func merchantDetailToDto(model *dao.MerchantDetail) *MerchantDetailDto  {
 	dto.Weight = model.Weight
 	dto.Id = model.Id
 	dto.CoverDistance =  model.CoverDistance * 1000
+	dto.ServiceArea =  model.ServiceArea
 
 	return dto
 
@@ -654,6 +660,7 @@ func merchantDetailParamToDll(param MerchantDetailParam)  *service.MerchantDetai
 	dll.Latitude = param.Latitude
 	dll.Longitude = param.Longitude
 	dll.Id = param.Id
+	dll.ServiceArea = param.ServiceArea
 
 	if param.Imgs!=nil {
 		imgdlls := make([]service.MerchantImgDLL,0)
@@ -694,6 +701,7 @@ func merchantToDto(model *dao.Merchant)  *MerchantDto {
 	dto.Status = model.Status
 	dto.Mobile = model.Mobile
 	dto.Money = model.Money
+	dto.ServiceArea = model.ServiceArea
 	//if len(model.Mobile)==11 {
 	//	dto.Mobile =  strings.Replace(model.Mobile,model.Mobile[3:8],"*****",1)
 	//}
