@@ -210,6 +210,27 @@ func cal(order *dao.Order, calMoney float64, openId string, mark string) error {
 	}
 	_, err := service.RequestPayApi("/v2/imprests/fetch", params)
 
+	if err==nil {
+		accountRecharge 		:= dao.NewAccountRecharge()
+		accountRecharge.Amount   = calMoney * 100
+		accountRecharge.No 		 = order.No + "-" + mark
+		accountRecharge.AppId 	 = order.AppId
+		accountRecharge.Status 	 = comm.ACCOUNT_RECHARGE_STATUS_WAIT
+		accountRecharge.OpenId 	 = openId
+		accountRecharge.Froms 	 = 0
+		accountRecharge.Opt 	 = "system"
+		//accountRecharge.audit 	 = ""
+		accountRecharge.Remark   = order.Title
+		accountRecharge.Type     = 1
+		accountRecharge.Insert()
+		/* err :=accountRecharge.Insert()
+		if err!=nil{
+			log.Error(err)
+			return nil,errors.New("充值记录插入失败!")
+		} */
+	}
+	
+	
 	return err
 }
 
