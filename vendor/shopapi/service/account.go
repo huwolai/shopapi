@@ -144,8 +144,11 @@ func AccountDetail(openId string) (*AccountDetailModel,error)  {
 			return nil,err
 		}
 		
-		account,_ :=dao.NewAccount().AccountWithOpenId(openId,appid)
-		resultModel.FreezeMoney=account.FreezeMoney
+		/* account,_ :=dao.NewAccount().AccountWithOpenId(openId,appid)
+		if account!=nil {
+			resultModel.FreezeMoney=account.FreezeMoney
+		} */
+		
 
 		return resultModel,nil
 	}else if response.StatusCode==http.StatusBadRequest {
