@@ -161,8 +161,8 @@ func ProductUpdateStockWithProdId(prodId int64,stock int,soldNum int) error {
 func  ProdImgsWithProdId(prodId int64,appId string) ([]*ProdImgsDetailDLL,error) {
 	prodImgDetail := dao.NewProdImgsDetail()
 	prodImgDetals,err := prodImgDetail.ProdImgsWithProdId(prodId,appId)
-	log.Error("prodImgDetals=",prodImgDetals)
-	log.Error("size:",len(prodImgDetals),"prod_id:",prodId,"app_id:",appId)
+	//log.Error("prodImgDetals=",prodImgDetals)
+	//log.Error("size:",len(prodImgDetals),"prod_id:",prodId,"app_id:",appId)
 	if err!=nil{
 
 		return nil,err
@@ -174,7 +174,7 @@ func  ProdImgsWithProdId(prodId int64,appId string) ([]*ProdImgsDetailDLL,error)
 		}
 	}
 
-	log.Error("detailDLLs size:",len(detailDLLs))
+	//log.Error("detailDLLs size:",len(detailDLLs))
 
 	return detailDLLs,nil
 }
@@ -373,7 +373,7 @@ func ProductAndAttrAdd(dto *ProdAndAttrDto)  (*ProdAndAttrDto,error) {
 		return nil,err
 	}
 
-	log.Error("prodAttrVal----------",prodAttrVal)
+	//log.Error("prodAttrVal----------",prodAttrVal)
 
 	if prodAttrVal!=nil{
 		prodSku :=dao.NewProdSku()
@@ -705,6 +705,9 @@ func ProductBuyCodesWithProdId(prodId int64) ([]*dao.OrderItemPurchaseCodeRrecor
 	return dao.OrderItemPurchaseCodesRrecordWithTime(prod.OpenTime,comm.PRODUCT_YYG_BUY_CODES)
 }
 
+func ProdSoldNumRealWithId(prodId int64) (int64,error) {
+	return dao.NewProdSku().ProdSoldNumRealWithId(prodId)
+}
 
 
 

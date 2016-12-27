@@ -145,6 +145,8 @@ type ProductDetailDto struct {
 	StockInc int `json:"stock_init"`
 	
 	IsLimit int64 `json:"is_limit"`
+	
+	SoldNumReal int64 `json:"sold_num_real"`
 }
 
 type ProdImgsDetailDto struct  {
@@ -309,7 +311,9 @@ func ProdDetailListWith(c *gin.Context)  {
 	if prodList!=nil {
 
 		for _,prodDetail :=range prodList {
-			prodListDtos = append(prodListDtos,productDetailToDto(prodDetail))
+			prodItem:=productDetailToDto(prodDetail)
+			prodItem.SoldNumReal,err=service.ProdSoldNumRealWithId(prodItem.Id)
+			prodListDtos = append(prodListDtos,prodItem)
 		}
 	}
 	c.JSON(http.StatusOK,page.NewPage(pindex,psize,uint64(count),prodListDtos))

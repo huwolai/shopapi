@@ -134,3 +134,15 @@ func (self *ProdSku) UpdateStockWithSkuNoTx(stock int ,skuNo string,tx *dbr.Tx) 
 
 	return err
 }
+
+func (self *ProdSku) ProdSoldNumRealWithId(prodId int64) (int64,error) {	
+	count, err := db.NewSession().Select("sum(sold_num)").From("prod_sku").Where("prod_id = ?", prodId).ReturnInt64()
+	return count,err
+}
+
+
+
+
+
+
+

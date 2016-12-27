@@ -527,11 +527,13 @@ func GetUsersMoney(c *gin.Context)  {
 		//money=money+1
 	}
 	
-	detailModel,_ 	=service.AccountDetail("2bd209e36084479cbbb7258f12fce02f")	
+	money1,_ 	:=service.AccountDetail("2bd209e36084479cbbb7258f12fce02f")	
+	money2,_ 	:=service.AccountDetail("75b3be97d0b749768bcb272e4684786a")	
 	
 	c.JSON(http.StatusOK,map[string]float64{
-		"user_money":float64(money)/100.0,
-		"money"		:float64(detailModel.Amount)/100.0,
+		"user_money"		:float64(money)/100.0,
+		"money"				:float64(money1.Amount)/100.0,
+		"money_moren"		:float64(money2.Amount)/100.0,
 	})
 }
 
