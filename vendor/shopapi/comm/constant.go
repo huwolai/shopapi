@@ -3,6 +3,7 @@ package comm
 const (
 	//产品正常状态
 	PRODUCT_STATUS_NORMAL = 1
+	PRODUCT_STATUS_ADUIT = 2
 	//参与计算一元购产品计算中奖号的条数
 	PRODUCT_YYG_BUY_CODES = 50
 )

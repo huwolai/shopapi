@@ -540,7 +540,8 @@ func productImgUpdate(prodbll *ProdBLL,tx *dbr.Tx) error{
 
 //保存商品基础信息
 func productBaseSave(prodbll *ProdBLL,tx *dbr.Tx) (int64,error)  {
-	prodbll.Status = comm.PRODUCT_STATUS_NORMAL
+	//prodbll.Status = comm.PRODUCT_STATUS_NORMAL
+	prodbll.Status = comm.PRODUCT_STATUS_ADUIT
 	prod := prodToModel(prodbll)
 	prodId,err := prod.InsertTx(tx)
 	if err!=nil{
