@@ -100,6 +100,7 @@ type ProductSearch struct {
 	PriceUp	 	 float64
 	PriceDown 	 float64
 	Show	 	 uint64
+	HasSold	 	 uint64
 }
 
 func NewProductDetail() *ProductDetail {
@@ -173,6 +174,9 @@ func (self *ProductDetail) ProdDetailListWith(keywords interface{} ,merchantId i
 	} */
 	if merchantId!=0{
 		buider = buider.Where("merchant.id=?",merchantId)
+	}
+	if search.HasSold!=0{
+		buider = buider.Where("product.id in (select prod_id from prod_sku where sold_num>?)",0)
 	}
 	if orderBy!="" {
 		buider =buider.OrderDir(orderBy,false)
@@ -248,6 +252,9 @@ func (self *ProductDetail) ProdDetailListCountWith(keywords interface{},merchant
 
 	if merchantId!=0{
 		buider = buider.Where("merchant.id=?",merchantId)
+	}
+	if search.HasSold!=0{
+		buider = buider.Where("product.id in (select prod_id from prod_sku where sold_num>?)",0)
 	}
 
 	err :=buider.LoadValue(&count)

@@ -283,6 +283,7 @@ func ProdDetailListWith(c *gin.Context)  {
 	keywords.PriceDown,_=strconv.ParseFloat(c.Query("jiagedown"),64)
 	keywords.Show,_		=strconv.ParseUint(c.Query("show"),10,64)
 	keywords.NoStatus,_ =strconv.ParseUint(c.Query("nostatus"),10,64)
+	keywords.HasSold,_  =strconv.ParseUint(c.Query("hasSold"),10,64)
 	
 	status:=c.Query("status")
 	if c.Query("shangjia")!="" {
