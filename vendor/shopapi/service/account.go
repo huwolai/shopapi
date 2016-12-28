@@ -729,7 +729,7 @@ func CashoutRecord(appId string,pageIndex uint64,pageSize uint64,mobile string,o
 	return items,count,err
 }
 func UpdateGetui(openId string,cid string,devicetoken string) error  {
-	return dao.NewAccount().UpdateGetui(openId,fmt.Sprintf("{\"cid\":\"?\",\"devicetoken\":\"?\"}",cid,devicetoken))
+	return dao.NewAccount().UpdateGetui(openId,fmt.Sprintf("{\"cid\":\"%s\",\"devicetoken\":\"%s\"}",cid,devicetoken))
 }
 func AccountSyncMoney(openId string,money int64) error {
 	return dao.NewAccount().UpdateMoney(openId,money)
