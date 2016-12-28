@@ -88,13 +88,13 @@ func (self *AccountRecharge) UpdateStatusAuditWithNoFail(audit string,no string,
 func (self *AccountRecharge) WithOpenId(openId string,appId string,froms int64) ([]*AccountRecharge,error)  {
 	var model []*AccountRecharge
 	
-	buider :=db.NewSession().Select("*").From("account_recharge").Where("open_id=?",openId).Where("app_id=?",appId)
+	buider :=db.NewSession().Select("*,UNIX_TIMESTAMP(create_time) as create_time_unix").From("account_recharge").Where("open_id=?",openId).Where("app_id=?",appId)
 	
 	if froms>=0 {
 		buider = buider.Where("froms=?",froms)
 	}
 	
-	_,err :=buider.OrderDir("id",false).Limit(68).LoadStructs(&model)
+	_,err :=buider.OrderDir("id",false).LoadStructs(&model)
 	return model,err
 }
 func (self *AccountRecharge) RecordWithUser(appId string,froms int64,pageIndex uint64,pageSize uint64, search AccountRechargeSearch) ([]*AccountRecharge,error)  {
