@@ -443,9 +443,12 @@ func AccountPreRechargeMinus(model *AccountRechargeModel,from int,opt string) (m
 	} */
 }
 //账户充值记录  后台
-func RechargeRecordByAdmin(openId string,appId string,froms int64) ([]*dao.AccountRecharge,error) {
+func RechargeRecordByAdmin(openId string,appId string,froms int64,pageIndex uint64,pageSize uint64) ([]*dao.AccountRecharge,int64,error) {
 	accountRecharge :=dao.NewAccountRecharge()
-	return accountRecharge.WithOpenId(openId,appId,froms)
+	rechargeRecord,err:=accountRecharge.WithOpenId(openId,appId,froms,pageIndex,pageSize)
+	count,err:=accountRecharge.WithOpenIdCount(openId,appId,froms)
+
+	return rechargeRecord,count,err
 }
 func RechargeRecordByAdmins(appId string,froms int64,pageIndex uint64,pageSize uint64,search dao.AccountRechargeSearch ) ([]*dao.AccountRecharge,int64,error) {
 	accountRecharge :=dao.NewAccountRecharge()

@@ -85,7 +85,7 @@ func (self *AccountRecharge) UpdateStatusAuditWithNoFail(audit string,no string,
 
 
 //账户充值记录
-func (self *AccountRecharge) WithOpenId(openId string,appId string,froms int64) ([]*AccountRecharge,error)  {
+func (self *AccountRecharge) WithOpenId(openId string,appId string,froms int64,pageIndex uint64,pageSize uint64) ([]*AccountRecharge,error)  {
 	var model []*AccountRecharge
 	
 	buider :=db.NewSession().Select("*,UNIX_TIMESTAMP(create_time) as create_time_unix").From("account_recharge").Where("open_id=?",openId).Where("app_id=?",appId)
@@ -94,8 +94,21 @@ func (self *AccountRecharge) WithOpenId(openId string,appId string,froms int64) 
 		buider = buider.Where("froms=?",froms)
 	}
 	
-	_,err :=buider.OrderDir("id",false).LoadStructs(&model)
+	_,err :=buider.Limit(pageSize).Offset((pageIndex-1)*pageSize).OrderDir("id",false).LoadStructs(&model)
 	return model,err
+}
+func (self *AccountRecharge) WithOpenIdCount(openId string,appId string,froms int64) (int64,error)  {
+
+	buider :=db.NewSession().Select("count(id)").From("account_recharge").Where("open_id=?",openId).Where("app_id=?",appId)
+	
+	if froms>=0 {
+		buider = buider.Where("froms=?",froms)
+	}
+	
+	var count int64
+	_,err :=buider.LoadStructs(&count)
+
+	return count,err
 }
 func (self *AccountRecharge) RecordWithUser(appId string,froms int64,pageIndex uint64,pageSize uint64, search AccountRechargeSearch) ([]*AccountRecharge,error)  {
 	var model []*AccountRecharge

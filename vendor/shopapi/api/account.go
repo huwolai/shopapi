@@ -430,7 +430,9 @@ func RechargeRecordByAdmin(c *gin.Context)  {
 		return
 	}
 	
-	rechargeRecord,err:=service.RechargeRecordByAdmin(openId,appId,froms)
+	pIndex,pSize := page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+	
+	rechargeRecord,total,err:=service.RechargeRecordByAdmin(openId,appId,froms,pIndex,pSize)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,err.Error())
@@ -442,7 +444,8 @@ func RechargeRecordByAdmin(c *gin.Context)  {
 		dto = append(dto,service.RechargeRecordFormat(item))
 	}
 	
-	c.JSON(http.StatusOK,dto)
+	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),dto))
+	//c.JSON(http.StatusOK,dto)
 }
 //账户充值记录  后台 列表
 func RechargeRecordByAdmins(c *gin.Context)  {
