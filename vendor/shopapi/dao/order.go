@@ -61,6 +61,7 @@ type Order struct  {
 
 type OrderYyg struct  {
 	BuyCode string	`json:"buy_code"`
+	YdgyName string	`json:"ydgy_name"`
 	Order
 }
 type OrderDetail struct  {
@@ -563,7 +564,7 @@ func (self *Order) OrdersWithPordYyg(prodId string,pIndex uint64,pSize uint64) (
 	
 	count, _ := db.NewSession().SelectBySql("select count(a.codes) from `order_item_purchase_codes` a left join `order` b on a.`no`=b.`no` where  a.`prod_id` = ?",prodId).ReturnInt64()
 	
-	_,err :=db.NewSession().SelectBySql("select a.codes as buy_code,b.* from `order_item_purchase_codes` a left join `order` b on a.`no`=b.`no` where  a.`prod_id` = ? limit ?,?",prodId,(pIndex-1)*pSize,pSize).LoadStructs(&orders)
+	_,err :=db.NewSession().SelectBySql("select c.ydgy_name,a.codes as buy_code,b.* from `order_item_purchase_codes` a left join `order` b on a.`no`=b.`no` left join `account` c on c.`open_id`=b.`open_id` where  a.`prod_id` = ? limit ?,?",prodId,(pIndex-1)*pSize,pSize).LoadStructs(&orders)
 		
 	return orders,count,err
 }
