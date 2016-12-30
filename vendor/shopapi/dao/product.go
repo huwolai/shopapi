@@ -611,7 +611,12 @@ func (self *Product) UpdateSoldNumWithSkuNo(soldNum int ,prodId int64) error {
 	_,err :=db.NewSession().Update("product").Set("sold_num",soldNum).Set("sold_num_init",soldNum).Where("id=?",prodId).Exec()
 	return err
 }
+func (self *ProductDetail) ProdDetailListWithIds(appId string,ids []string) ([]*ProductDetail,error) {
+	var prod []*ProductDetail
+	_,err :=db.NewSession().Select("*").From("product").Where("app_id=?",appId).Where("id in ?",ids).LoadStructs(&prod)
 
+	return prod,err
+}
 
 
 

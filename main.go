@@ -184,7 +184,8 @@ func main() {
 		products := v1.Group("/products")
 		{
 			products.POST("/:merchant_id", api.ProductAdd)
-			products.GET("/", api.ProdDetailListWith)				
+			products.GET("/", api.ProdDetailListWith)
+			products.GET("/activity", api.ProdDetailListWithActivity)
 		}
 
 		//商品
@@ -396,6 +397,7 @@ func main() {
 		test := v1.Group("/test")
 		{
 			test.GET("/", api.Test)
+			//test.GET("/1", api.Test1)
 		}
 	}
 

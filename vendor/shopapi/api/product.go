@@ -1345,8 +1345,35 @@ func ProductInitPro(c *gin.Context) {
 	util.ResponseSuccess(c.Writer)
 }
 
-
-
+func ProdDetailListWithActivity(c *gin.Context)  {
+	appId:=security.GetAppId2(c.Request)
+	
+	var statusArray []string 
+	
+	typesArray := []string{"ACTIVITY"}
+	
+	flags,err := service.FlagsGetJsonWithTypes(typesArray,statusArray,appId)
+	if err!=nil{
+		log.Info(err)
+		util.ResponseError400(c.Writer,"查询失败!")
+		return
+	}
+	
+	idsMap,_:= dao.JsonToMap(flags)
+	ids		:=strings.Split(idsMap["id"].(string),",")
+	
+	prodList,_ := service.ProdDetailListWithIds(appId,ids)
+	
+	prodListDtos :=make([]*ProductDetailDto,0)
+	if prodList!=nil {
+		for _,prodDetail :=range prodList {
+			prodListDtos = append(prodListDtos,productDetailToDto(prodDetail))
+		}
+	}
+	
+	idsMap["items"]=prodListDtos
+	c.JSON(http.StatusOK,idsMap)
+}
 
 
 

@@ -2,7 +2,7 @@ package dao
 
 import (
 	"gitlab.qiyunxin.com/tangtao/utils/db"
-	"gitlab.qiyunxin.com/tangtao/utils/log"
+	//"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 type Flags struct  {
@@ -28,7 +28,7 @@ func (self *Flags) Insert() error {
 
 //查询标记通过类型
 func (self *Flags) WithTypes(stype []string,appId string,status []string) ([]*Flags,error)  {
-	log.Error("type:",stype,"app_id:",appId)
+	//log.Error("type:",stype,"app_id:",appId)
 	var flags []*Flags
 	builder :=db.NewSession().Select("*").From("flags").Where("app_id=?",appId)
 	if stype!=nil{

@@ -710,6 +710,10 @@ func ProdSoldNumRealWithId(prodId int64) (int64,error) {
 	return dao.NewProdSku().ProdSoldNumRealWithId(prodId)
 }
 
+func ProdDetailListWithIds(appId string,ids []string) ([]*dao.ProductDetail,error)  {
+	return dao.NewProductDetail().ProdDetailListWithIds(appId,ids)
+}
+
 
 
 
