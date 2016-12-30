@@ -294,6 +294,20 @@ func allocOrderAmount(order *dao.Order) error  {
 		log.Error("syserr->订单号[",order.No,"]","商户ID[",order.MOpenId,"]", "结算商户的钱失败!,导致结算给分销者的钱未成功!严重问题")
 		return err
 	}
+	//================================
+	accountRecharge 		:= dao.NewAccountRecharge()
+	accountRecharge.Amount   = order.MerchantAmount * 100
+	accountRecharge.No 		 = ""
+	accountRecharge.AppId 	 = "shopapi"
+	accountRecharge.Status 	 = comm.ACCOUNT_RECHARGE_STATUS_WAIT
+	accountRecharge.OpenId 	 = order.MOpenId
+	accountRecharge.Froms 	 = 0
+	accountRecharge.Opt 	 = "system"
+	//accountRecharge.audit 	 = ""
+	accountRecharge.Remark   = "厨师上门服务"
+	accountRecharge.Type     = 1
+	accountRecharge.Insert()
+	//================================
 
 	if order.DbnAmount<=0 {
 		log.Warn("此订单",order.No,"没有需要分配给分销者的钱!")
@@ -334,6 +348,20 @@ func allocOrderAmount(order *dao.Order) error  {
 				log.Error("syserr->订单号[",order.No,"]","分销者ID[",key,"]", "结算商分销者的钱失败!,可能导致此订单的后面的分销者没结算到钱!严重问题")
 				return err
 			}
+			//================================
+			accountRecharge1 		:= dao.NewAccountRecharge()
+			accountRecharge1.Amount  = value * 100
+			accountRecharge1.No 	 = ""
+			accountRecharge1.AppId 	 = "shopapi"
+			accountRecharge1.Status  = comm.ACCOUNT_RECHARGE_STATUS_WAIT
+			accountRecharge1.OpenId  = key
+			accountRecharge1.Froms 	 = 0
+			accountRecharge1.Opt 	 = "system"
+			//accountRecharge1.audit = ""
+			accountRecharge1.Remark  = "分销佣金"
+			accountRecharge1.Type    = 1
+			accountRecharge1.Insert()
+			//================================
 		}
 	}
 
