@@ -615,6 +615,8 @@ func (self *ProductDetail) ProdDetailListWithIds(appId string,ids []string) ([]*
 	var prod []*ProductDetail
 	_,err :=db.NewSession().Select("*").From("product").Where("app_id=?",appId).Where("id in ?",ids).LoadStructs(&prod)
 
+	err = FillProdImgs(appId,prod)
+	
 	return prod,err
 }
 
