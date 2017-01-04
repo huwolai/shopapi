@@ -394,9 +394,9 @@ func  MerchantNear(longitude float64,latitude float64,openId string,appId string
 	return mDetailList,err
 }
 //附近商户搜索 可提供服务的厨师
-func  MerchantNearSearch(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64, serviceTime string, serviceHour uint64) ([]*dao.MerchantDetail,error)   {
+func  MerchantNearSearch(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64, serviceTime string, serviceHour uint64,serviceArea string) ([]*dao.MerchantDetail,error)   {
 	mDetail :=dao.NewMerchantDetail()
-	mDetailList,err := mDetail.MerchantNearSearch(longitude,latitude,openId,appId,pageIndex,pageSize,serviceTime,serviceHour)
+	mDetailList,err := mDetail.MerchantNearSearch(longitude,latitude,openId,appId,pageIndex,pageSize,serviceTime,serviceHour,serviceArea)
 
 	return mDetailList,err
 }

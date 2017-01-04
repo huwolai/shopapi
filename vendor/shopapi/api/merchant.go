@@ -451,9 +451,10 @@ func MerchatNear(c *gin.Context)  {
 func MerchatNearSearch(c *gin.Context)  {
 	appId := security.GetAppId2(c.Request)
 
-	longitude :=c.Query("longitude")
-	latitude :=c.Query("latitude")
-	openId := security.GetOpenId(c.Request)
+	longitude 	:=c.Query("longitude")
+	latitude 	:=c.Query("latitude")
+	serviceArea :=c.Query("service_area")
+	openId 		:= security.GetOpenId(c.Request)
 	
 	pIndex,pSize := page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))	
 
@@ -476,7 +477,7 @@ func MerchatNearSearch(c *gin.Context)  {
 	serviceHourUInt,_ :=strconv.ParseUint(serviceHour,10,64)
 	serviceHourUInt++
 	
-	mDetailList,err := service.MerchantNearSearch(flongitude,flatitude,openId,appId,pIndex,pSize,serviceTime,serviceHourUInt)
+	mDetailList,err := service.MerchantNearSearch(flongitude,flatitude,openId,appId,pIndex,pSize,serviceTime,serviceHourUInt,serviceArea)
 	if err!=nil {
 		util.ResponseError400(c.Writer,err.Error())
 		return
