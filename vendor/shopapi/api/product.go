@@ -1360,18 +1360,20 @@ func ProdDetailListWithActivity(c *gin.Context)  {
 	}
 	
 	idsMap,_:= dao.JsonToMap(flags)
-	ids		:=strings.Split(idsMap["id"].(string),",")
-	
-	prodList,_ := service.ProdDetailListWithIds(appId,ids)
-	
 	prodListDtos :=make([]*ProductDetailDto,0)
-	if prodList!=nil {
-		for _,prodDetail :=range prodList {
-			prodListDtos = append(prodListDtos,productDetailToDto(prodDetail))
-		}
+	if(idsMap["id"]!=nil){
+		ids		:=strings.Split(idsMap["id"].(string),",")	
+		prodList,_ := service.ProdDetailListWithIds(appId,ids)		
+		if prodList!=nil {
+			for _,prodDetail :=range prodList {
+				prodListDtos = append(prodListDtos,productDetailToDto(prodDetail))
+			}
+		}		
 	}
-	
 	idsMap["items"]=prodListDtos
+	
+	
+	
 	c.JSON(http.StatusOK,idsMap)
 }
 
