@@ -82,7 +82,7 @@ func NewMerchantOnline() *MerchantOnline  {
 
 func (self *Merchant) InsertTx(tx *dbr.Tx) (int64,error) {
 
-	result,err :=tx.InsertInto("merchant").Columns("name","mobile","app_id","open_id","address","address_id","longitude","latitude","status","weight","cover_distance","json","flag").Record(self).Exec()
+	result,err :=tx.InsertInto("merchant").Columns("name","mobile","app_id","open_id","address","address_id","longitude","latitude","status","weight","cover_distance","json","flag","service_area").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
