@@ -417,7 +417,7 @@ func (self *ProductDetail) ProductListWithCategoryIsLimit(appId string,categoryI
 	
 	builder = builder.OrderDir("prod_purchase_codes.open_status",true)
 	builder = builder.OrderDir("prod_purchase_codes.num",true)
-	builder = builder.OrderDir("product.id",false)
+	builder = builder.OrderDir("prod_purchase_codes.open_time",false)
 	builder = builder.Limit(pageSize).Offset((pageIndex-1)*pageSize)
 	
 	//log.Error( builder.ToSql() )
