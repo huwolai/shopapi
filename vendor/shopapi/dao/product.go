@@ -414,10 +414,18 @@ func (self *ProductDetail) ProductListWithCategoryIsLimit(appId string,categoryI
 		builder = builder.Where("product.flag not in ?",noflags)
 	}
 	//_,err := builder.OrderDir("prod_purchase_codes.open_status",true).Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&prodList)
-	_,err := builder.OrderDir("prod_purchase_codes.open_status",true).OrderDir("prod_purchase_codes.num",true).Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&prodList)
+	
+	builder = builder.OrderDir("prod_purchase_codes.open_status",true)
+	builder = builder.OrderDir("prod_purchase_codes.num",true)
+	builder = builder.OrderDir("product.id",true)
+	builder = builder.Limit(pageSize).Offset((pageIndex-1)*pageSize)
+	
+	//log.Error( builder.ToSql() )
+	
+	_,err :=builder.LoadStructs(&prodList)
 	if err!=nil{
 		return nil,0,err
-	}
+	}	
 	
 	var count int
 	builder =session.Select("count(product.id)").From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.status=?",1).Where("product.app_id=?",appId)
