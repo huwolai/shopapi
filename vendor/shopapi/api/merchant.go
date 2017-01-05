@@ -413,6 +413,7 @@ func MerchantServiceTimeAdd(c *gin.Context)  {
 
 //附近商户
 func MerchatNear(c *gin.Context)  {
+	
 	appId := security.GetAppId2(c.Request)
 
 	longitude 	:=c.Query("longitude")

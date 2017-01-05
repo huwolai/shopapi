@@ -280,20 +280,7 @@ func allocOrderAmount(order *dao.Order) error  {
 	if items==nil{
 		return errors.New("没有找到订单明细数据!")
 	}
-
-	//分配给商户的钱
-	imprestsModel := &ImprestsModel{}
-	imprestsModel.Code = order.Code
-	imprestsModel.Amount = int64(order.MerchantAmount*100)
-	imprestsModel.OpenId = order.MOpenId
-	imprestsModel.Title="厨师上门服务" //分销系统待区分
-	imprestsModel.Remark = "厨师上门服务费用"
-	_,err =FetchImprests(imprestsModel)
-	if err!=nil{
-		log.Error(err)
-		log.Error("syserr->订单号[",order.No,"]","商户ID[",order.MOpenId,"]", "结算商户的钱失败!,导致结算给分销者的钱未成功!严重问题")
-		return err
-	}
+	
 	//================================
 	accountRecharge 		:= dao.NewAccountRecharge()
 	accountRecharge.Amount   = order.MerchantAmount * 100
@@ -306,6 +293,27 @@ func allocOrderAmount(order *dao.Order) error  {
 	//accountRecharge.audit 	 = ""
 	accountRecharge.Remark   = "厨师上门服务"
 	accountRecharge.Type     = 1
+	//================================
+
+	//分配给商户的钱
+	imprestsModel := &ImprestsModel{}
+	imprestsModel.Code = order.Code
+	imprestsModel.Amount = int64(order.MerchantAmount*100)
+	imprestsModel.OpenId = order.MOpenId
+	imprestsModel.Title="厨师上门服务" //分销系统待区分
+	imprestsModel.Remark = "厨师上门服务费用"
+	_,err =FetchImprests(imprestsModel)
+	if err!=nil{
+		accountRecharge.Remark   = "厨师上门服务,失败!"
+		accountRecharge.Insert()
+		
+		dao.Debug("syserr->订单号[",order.No,"]","商户ID[",order.MOpenId,"]", "结算商户的钱失败!,导致结算给分销者的钱未成功!严重问题")
+		
+		log.Error(err)
+		log.Error("syserr->订单号[",order.No,"]","商户ID[",order.MOpenId,"]", "结算商户的钱失败!,导致结算给分销者的钱未成功!严重问题")
+		return err
+	}
+	//================================
 	accountRecharge.Insert()
 	//================================
 
@@ -335,20 +343,6 @@ func allocOrderAmount(order *dao.Order) error  {
 
 	if len(distribMap)>0 {
 		for key,value :=range distribMap {
-			//分配给商户的钱
-			imprestsModel := &ImprestsModel{}
-			imprestsModel.Code = order.Code
-			imprestsModel.Amount =int64(value*100)
-			imprestsModel.OpenId = key
-			imprestsModel.Title= "分销佣金"
-			imprestsModel.Remark = "分销佣金"
-			_,err =FetchImprests(imprestsModel)
-			if err!=nil{
-				log.Error(err)
-				log.Error("syserr->订单号[",order.No,"]","分销者ID[",key,"]", "结算商分销者的钱失败!,可能导致此订单的后面的分销者没结算到钱!严重问题")
-				return err
-			}
-			//================================
 			accountRecharge1 		:= dao.NewAccountRecharge()
 			accountRecharge1.Amount  = value * 100
 			accountRecharge1.No 	 = ""
@@ -360,6 +354,25 @@ func allocOrderAmount(order *dao.Order) error  {
 			//accountRecharge1.audit = ""
 			accountRecharge1.Remark  = "分销佣金"
 			accountRecharge1.Type    = 1
+			//分配给商户的钱
+			imprestsModel := &ImprestsModel{}
+			imprestsModel.Code = order.Code
+			imprestsModel.Amount =int64(value*100)
+			imprestsModel.OpenId = key
+			imprestsModel.Title= "分销佣金"
+			imprestsModel.Remark = "分销佣金"
+			_,err =FetchImprests(imprestsModel)
+			if err!=nil{
+				accountRecharge1.Remark  = "分销佣金,失败"
+				accountRecharge1.Insert()
+				
+				dao.Debug("syserr->订单号[",order.No,"]","分销者ID[",key,"]", "结算商分销者的钱失败!,可能导致此订单的后面的分销者没结算到钱!严重问题")
+				
+				log.Error(err)
+				log.Error("syserr->订单号[",order.No,"]","分销者ID[",key,"]", "结算商分销者的钱失败!,可能导致此订单的后面的分销者没结算到钱!严重问题")
+				return err
+			}
+			//================================			
 			accountRecharge1.Insert()
 			//================================
 		}
