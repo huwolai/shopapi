@@ -72,8 +72,8 @@ func OrderItemPurchaseCodesRrecordWithTime(time int64,limit int64)  ([]*OrderIte
 }
 func OrderItemPurchaseCodesWithProdId(prodId int64)  (int64,error)  {
 	var count int64
-	_,err :=db.NewSession().SelectBySql("SELECT count(*) from (select * from order_item_purchase_codes where prod_id =? GROUP BY codes) c",prodId).LoadStructs(&count)
-	//_,err :=db.NewSession().SelectBySql("SELECT nums from prod_purchase_codes where prod_id=?",prodId).LoadStructs(&count)
+	//_,err :=db.NewSession().SelectBySql("SELECT count(*) from (select * from order_item_purchase_codes where prod_id =? GROUP BY codes) c",prodId).LoadStructs(&count)
+	_,err :=db.NewSession().SelectBySql("SELECT nums from prod_purchase_codes where prod_id=?",prodId).LoadStructs(&count)
 	return  count,err
 }
 func OrderItemPurchaseCodesWithNo(orderNo string)  ([]string,error)  {
