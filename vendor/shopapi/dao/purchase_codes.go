@@ -29,6 +29,7 @@ type ProdPurchaseCode struct  {
 	Sku 		string `json:"sku"`
 	Codes 		string `json:"codes"`
 	Num 		int `json:"num"`
+	Nums 		int `json:"nums"`
 	OpenId 		string `json:"open_id"`
 	OpenStatus 	int64 `json:"open_status"`
 	OpenTime 	int64 `json:"Open_time"`
@@ -72,6 +73,7 @@ func OrderItemPurchaseCodesRrecordWithTime(time int64,limit int64)  ([]*OrderIte
 func OrderItemPurchaseCodesWithProdId(prodId int64)  (int64,error)  {
 	var count int64
 	_,err :=db.NewSession().SelectBySql("SELECT count(*) from (select * from order_item_purchase_codes where prod_id =? GROUP BY codes) c",prodId).LoadStructs(&count)
+	//_,err :=db.NewSession().SelectBySql("SELECT nums from prod_purchase_codes where prod_id=?",prodId).LoadStructs(&count)
 	return  count,err
 }
 func OrderItemPurchaseCodesWithNo(orderNo string)  ([]string,error)  {
@@ -81,7 +83,8 @@ func OrderItemPurchaseCodesWithNo(orderNo string)  ([]string,error)  {
 }
 //一元购生成购买码
 func ProductAndPurchaseCodesAdd(prodPurchaseCode *ProdPurchaseCode) error {
-	_,err :=db.NewSession().InsertInto("prod_purchase_codes").Columns("sku","app_id","prod_id","codes","num").Record(prodPurchaseCode).Exec()
+	prodPurchaseCode.Nums=prodPurchaseCode.Num
+	_,err :=db.NewSession().InsertInto("prod_purchase_codes").Columns("sku","app_id","prod_id","codes","num","nums").Record(prodPurchaseCode).Exec()
 	return err
 }
 //一元购减去购买码
