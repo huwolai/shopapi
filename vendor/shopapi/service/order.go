@@ -284,7 +284,7 @@ func allocOrderAmount(order *dao.Order) error  {
 	//================================
 	accountRecharge 		:= dao.NewAccountRecharge()
 	accountRecharge.Amount   = order.MerchantAmount * 100
-	accountRecharge.No 		 = fmt.Sprintf("chef-%d",time.Now().UnixNano())
+	accountRecharge.No 		 = fmt.Sprintf("chef-%d-%d",time.Now().UnixNano(),dao.RandInt(9,9999))
 	accountRecharge.AppId 	 = "shopapi"
 	accountRecharge.Status 	 = comm.ACCOUNT_RECHARGE_STATUS_WAIT
 	accountRecharge.OpenId 	 = order.MOpenId
@@ -345,7 +345,7 @@ func allocOrderAmount(order *dao.Order) error  {
 		for key,value :=range distribMap {
 			accountRecharge1 		:= dao.NewAccountRecharge()
 			accountRecharge1.Amount  = value * 100
-			accountRecharge1.No 	 = fmt.Sprintf("chef-%d",time.Now().UnixNano())
+			accountRecharge1.No 	 = fmt.Sprintf("chef-%d-%d",time.Now().UnixNano(),dao.RandInt(9,9999))
 			accountRecharge1.AppId 	 = "shopapi"
 			accountRecharge1.Status  = comm.ACCOUNT_RECHARGE_STATUS_WAIT
 			accountRecharge1.OpenId  = key

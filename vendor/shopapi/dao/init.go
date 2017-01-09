@@ -10,7 +10,8 @@ import (
 )
 
 type ProductIds struct  {
-	Id int
+	Id 		int
+	Price 	float64
 }
 
 type MerchantResume struct {
@@ -60,13 +61,17 @@ func ProductInitNum() error  {
 func ProductAddNum() error  {	
 	
 	var Products []*ProductIds		
-	builder :=db.NewSession().Select("id").From("product")	
+	builder :=db.NewSession().Select("id,price").From("product")	
 	//builder = builder.Where("flag = ?","login_type")	
 	builder.LoadStructs(&Products)
 
 	x := 0
 	for _,Product :=range Products  {
-		x=RandInt(20,30)
+		if Product.Price > 500.0 {
+			RandInt(0,2)
+		}else{
+			RandInt(3,7)
+		}		
 		db.NewSession().UpdateBySql(fmt.Sprintf("update product set sold_num_init=sold_num_init+%d,sold_num=sold_num+%d where id=%d limit 1",x,x,Product.Id)).Exec()
 	}
 
