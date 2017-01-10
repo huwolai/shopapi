@@ -119,7 +119,7 @@ func MerchantUpdate(dll *MerchantDetailDLL) error  {
 
 func MerchantWith(flags []string,noflags []string,status string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*dao.Merchant,error)  {
 
-	return dao.NewMerchant().With(flags,noflags,status,orderBy,pageIndex,pageSize,appId)
+	return dao.NewMerchant().WithOrderby(flags,noflags,status,orderBy,pageIndex,pageSize,appId)
 }
 
 func MerchantCountWith(flags []string,noflags []string,status string,orderBy string,appId string) (int64,error) {

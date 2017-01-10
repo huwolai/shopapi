@@ -284,6 +284,32 @@ func (self *Merchant)  With(flags []string,noflags []string,status string,orderB
 	return list,err
 }
 
+func (self *Merchant)  WithOrderby(flags []string,noflags []string,status string,orderBy string,pageIndex uint64,pageSize uint64,appId string) ([]*Merchant,error){
+
+	builder :=db.NewSession().Select("merchant.*").From("merchant").LeftJoin("account","account.open_id=merchant.open_id").Where("merchant.app_id=?",appId)
+	
+	if flags!=nil&&len(flags)>0{
+		builder = builder.Where("merchant.flag in ?",flags)
+	}
+
+	if noflags!=nil&&len(noflags) >0 {
+		builder = builder.Where("merchant.flag not in ?",noflags)
+	}
+	if status!="" {
+		builder = builder.Where("merchant.status=?",status)
+	}
+	/* if orderBy!="" {
+		builder = builder.OrderDir(orderBy,false)
+	} */
+	
+	builder = builder.OrderDir("merchant.weight",false)
+	builder = builder.OrderDir("account.money",false)
+	//fmt.Println( builder.ToSql() )
+	var list []*Merchant
+	_,err :=builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&list)
+
+	return list,err
+}
 func (self *Merchant) CountWith(flags []string,noflags []string,status string,appId string) (int64,error)  {
 	builder :=db.NewSession().Select("count(*)").From("merchant").Where("app_id=?",appId)
 	if flags!=nil&&len(flags)>0{
