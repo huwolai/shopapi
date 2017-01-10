@@ -1222,8 +1222,8 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 		
 	
 	
-	totalActPrice := 0.0
-	totalPrice :=0.0
+	var totalActPrice int64 = 0
+	var totalPrice	  int64 = 0
 	for _,item :=range items  {
 		prodSkuDetail := dao.NewProdSkuDetail()
 		prodSkuDetail,err :=prodSkuDetail.WithSkuNo(item.SkuNo)
@@ -1237,16 +1237,16 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 		if prodSkuDetail.Stock<=0 {
 			return nil,errors.New("此商品已没有库存!")
 		}
-		totalActPrice+=prodSkuDetail.DisPrice*float64(item.Num)
-		totalPrice += prodSkuDetail.Price*float64(item.Num)
+		totalActPrice	+=	int64(prodSkuDetail.DisPrice*100)*int64(item.Num)
+		totalPrice 		+= 	int64(prodSkuDetail.Price*100)	 *int64(item.Num)
 		err =orderItemSave(prodSkuDetail,item,order.No,tx)
 		if err!=nil{
 			return nil,err
 		}
 
 	}
-	order.RealPrice = totalActPrice
-	order.Price = totalPrice
+	order.RealPrice = float64(totalActPrice)/100
+	order.Price 	= float64(totalPrice)/100
 
 	orderId,err := order.InsertTx(tx)
 	if err!=nil{
@@ -1267,9 +1267,9 @@ func orderItemSave(prodSkuDetail *dao.ProdSkuDetail,item OrderItemModel,orderNo 
 	orderItem.AppId = prodSkuDetail.AppId
 	orderItem.Num = item.Num
 	orderItem.OfferUnitPrice = prodSkuDetail.Price
-	orderItem.OfferTotalPrice = prodSkuDetail.Price*float64(item.Num)
+	orderItem.OfferTotalPrice = float64(int64(prodSkuDetail.Price*100)*int64(item.Num))
 	orderItem.BuyUnitPrice = prodSkuDetail.DisPrice
-	orderItem.BuyTotalPrice = prodSkuDetail.DisPrice*float64(item.Num)
+	orderItem.BuyTotalPrice = float64(int64(prodSkuDetail.DisPrice*100)*int64(item.Num))
 	orderItem.Json = item.Json
 	return  orderItem.InsertTx(tx)
 }
