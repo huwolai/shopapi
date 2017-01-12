@@ -1267,9 +1267,9 @@ func orderItemSave(prodSkuDetail *dao.ProdSkuDetail,item OrderItemModel,orderNo 
 	orderItem.AppId = prodSkuDetail.AppId
 	orderItem.Num = item.Num
 	orderItem.OfferUnitPrice = prodSkuDetail.Price
-	orderItem.OfferTotalPrice = float64(int64(prodSkuDetail.Price*100)*int64(item.Num))
+	orderItem.OfferTotalPrice = float64(int64(prodSkuDetail.Price*100)*int64(item.Num))/100
 	orderItem.BuyUnitPrice = prodSkuDetail.DisPrice
-	orderItem.BuyTotalPrice = float64(int64(prodSkuDetail.DisPrice*100)*int64(item.Num))
+	orderItem.BuyTotalPrice = float64(int64(prodSkuDetail.DisPrice*100)*int64(item.Num))/100
 	orderItem.Json = item.Json
 	return  orderItem.InsertTx(tx)
 }
