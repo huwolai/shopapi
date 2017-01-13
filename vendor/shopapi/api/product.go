@@ -497,7 +497,7 @@ func ProductListWithRecomm(c *gin.Context)  {
 	pindex,psize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
 	
 	prodList,count,err := service.ProductListWithRecomm(appId,pindex,psize)	
-	log.Error(count)
+	//log.Error(count)
 	if err!=nil {
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询失败!")
