@@ -182,7 +182,7 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	
 	var mdetails []*MerchantDetail
 	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' and getDistance(mt.longitude,latitude,?,?)<cover_distance order by distance limit ?,?",longitude,latitude,appId,status,openId,longitude,latitude,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)	
-	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status in ? and mt.open_id<>? and mt.flag<>'default' and find_in_set(?,service_area) order by status asc,weight desc limit ?,?",longitude,latitude,appId,status,openId,serviceArea,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
+	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status in ? and mt.open_id<>? and id>3 and find_in_set(?,service_area) order by status asc,weight desc limit ?,?",longitude,latitude,appId,status,openId,serviceArea,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
 	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' order by distance limit ?,?",longitude,latitude,appId,status,openId,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
 /* 	b:=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' and find_in_set(?,service_area) order by distance limit ?,?",longitude,latitude,appId,status,openId,serviceArea,(pageIndex-1)*pageSize,pageSize)
 	log.Error( b.ToSql() ) */
@@ -215,7 +215,8 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	//builder = builder.Where("mt.status = ?",1)
 	builder = builder.Where("mt.status in ?",status)
 	builder = builder.Where("mt.open_id <> ?",openId)
-	builder = builder.Where("mt.flag <> ?","default")
+	//builder = builder.Where("mt.flag <> ?","default")
+	builder = builder.Where("mt.id > ?",3)
 	builder = builder.Where("id not in ?",existsId)	
 	_,err =builder.OrderBy("is_recom desc,id desc").Limit(uint64(l)).Offset(0).LoadStructs(&mdetails20)
 	
@@ -245,7 +246,8 @@ func (self *MerchantDetail) MerchantNearSearch(longitude float64,latitude float6
 	//builder = builder.Where("mt.status = ?",1)
 	builder = builder.Where("mt.status in ?",status)
 	builder = builder.Where("mt.open_id <> ?",openId)
-	builder = builder.Where("mt.flag <> ?","default")
+	//builder = builder.Where("mt.flag <> ?","default")
+	builder = builder.Where("mt.id > ?",3)
 	builder = builder.Where("find_in_set(?,service_area)",serviceArea)
 	builder = builder.Where("id not in (SELECT merchant_prod.merchant_id from prod_attr_val,merchant_prod where merchant_prod.prod_id=prod_attr_val.prod_id and prod_attr_val.attr_key='time' and prod_attr_val.attr_value=?)",serviceTime)	
 	builder = builder.Where("id not in (SELECT merchant_id from merchant_service_time where stime=? )",fmt.Sprintf("%d:00",serviceHour))
