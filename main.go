@@ -220,7 +220,7 @@ func main() {
 		}
 		merchants := v1.Group("/merchants")
 		{
-			//附近商户
+			//附近商户 id<=3 内部保留账号
 			merchants.GET("/nearby", api.MerchatNear)
 			//附近商户搜索 可提供服务的厨师
 			merchants.GET("/nearbySearch", api.MerchatNearSearch)
