@@ -1241,6 +1241,13 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 		if prodSkuDetail.Stock<=0 {
 			return nil,errors.New("此商品已没有库存!")
 		}
+		
+		log.Info(prodSkuDetail.DisPrice)
+		log.Info(prodSkuDetail.DisPrice*100)
+		log.Info(math.Floor(prodSkuDetail.DisPrice*100))
+		log.Info(int64(math.Floor(prodSkuDetail.DisPrice*100)))
+		log.Info(int64(math.Floor(prodSkuDetail.DisPrice*100))*int64(item.Num))
+		
 		totalActPrice	+=	int64(math.Floor(prodSkuDetail.DisPrice*100))*int64(item.Num)
 		totalPrice 		+= 	int64(math.Floor(prodSkuDetail.Price*100))*int64(item.Num)
 		err =orderItemSave(prodSkuDetail,item,order.No,tx)
@@ -1249,8 +1256,7 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 		}
 
 	}
-	log.Info(totalActPrice)
-	log.Info(totalPrice)
+	
 	order.RealPrice = float64(totalActPrice)/100
 	order.Price 	= float64(totalPrice)/100
 
