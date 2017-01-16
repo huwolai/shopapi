@@ -3,6 +3,9 @@ package dao
 import (
     "encoding/json"
     "errors"
+	"strings"
+	"strconv"
+	"fmt"
 )
 func  JsonToMap( s string) (map[string]interface{},error) {
 	if len(s)<1 {
@@ -27,5 +30,10 @@ func Left(str string, length int) string {
     rs := []rune(str)      
     return string(rs[0:length])
 }
+func Float2int(f float64) int64 {
+    i64,_ := strconv.ParseInt(strings.Replace(fmt.Sprintf("%.2f",f), ".", "", -1), 10, 64)
+	return i64
+}
+
 
 
