@@ -375,6 +375,24 @@ func (self *OrderDetail) OrderDetailWithUser(openId string,orderStatus []int,pay
 	return orders,err
 }
 
+func (self *OrderDetail) OrderDetailWithUserCount(openId string,orderStatus []int,payStatus []int,appId string) (int64,error)  {
+
+	sess := db.NewSession()
+
+	builder :=sess.Select("count(id)").From("`order`").Where("open_id=?",openId).Where("app_id=?",appId)
+
+	if orderStatus!=nil&&len(orderStatus)>0{
+		builder =builder.Where("order_status in ?",orderStatus)
+	}
+
+	if payStatus!=nil&&len(payStatus) >0 {
+		builder =builder.Where("pay_status in ?",payStatus)
+	}
+	count, err :=builder.ReturnInt64()
+	
+	return count,err
+}
+
 //获取用户指定状态订单数量
 func (self *OrderCount) OrderWithUserAndStatusCount(openId string,orderStatus []int,payStatus []int,appId string) (*OrderCount,error)  {
 

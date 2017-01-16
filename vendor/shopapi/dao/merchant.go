@@ -226,6 +226,18 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	
 	return mdetails,err
 }
+
+func (self *MerchantDetail) MerchantNearCount(longitude float64,latitude float64,openId string,appId string,serviceArea string) (int64,error)  {
+	
+	status := make([]uint64, 0)
+	status = append(status,1)
+	status = append(status,5)
+
+	total,err :=db.NewSession().SelectBySql("select count(app_id) from merchant mt where app_id = ? and mt.status in ? and mt.open_id<>? and id>3 and find_in_set(?,service_area) limit 1",appId,status,openId,serviceArea).ReturnInt64()
+
+	return total,err
+}
+
 //附近商户搜索 可提供服务的厨师
 func (self *MerchantDetail) MerchantNearSearch(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64, serviceTime string, serviceHour uint64,serviceArea string) ([]*MerchantDetail,error)  {
 
