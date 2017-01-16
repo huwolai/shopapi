@@ -1249,6 +1249,8 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 		}
 
 	}
+	log.Info(totalActPrice)
+	log.Info(totalPrice)
 	order.RealPrice = float64(totalActPrice)/100
 	order.Price 	= float64(totalPrice)/100
 
