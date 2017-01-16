@@ -23,6 +23,7 @@ import (
 	"encoding/base64"
 	"strings"
 	"github.com/robfig/cron"
+	"math"
 )
 
 type OrderModel struct  {
@@ -1240,8 +1241,8 @@ func orderSave(model *OrderModel,tx *dbr.Tx) (*dao.Order,error)  {
 		if prodSkuDetail.Stock<=0 {
 			return nil,errors.New("此商品已没有库存!")
 		}
-		totalActPrice	+=	int64(prodSkuDetail.DisPrice*100)*int64(item.Num)
-		totalPrice 		+= 	int64(prodSkuDetail.Price*100)	 *int64(item.Num)
+		totalActPrice	+=	int64(math.Floor(prodSkuDetail.DisPrice*100))*int64(item.Num)
+		totalPrice 		+= 	int64(math.Floor(prodSkuDetail.Price*100))*int64(item.Num)
 		err =orderItemSave(prodSkuDetail,item,order.No,tx)
 		if err!=nil{
 			return nil,err
@@ -1270,9 +1271,9 @@ func orderItemSave(prodSkuDetail *dao.ProdSkuDetail,item OrderItemModel,orderNo 
 	orderItem.AppId = prodSkuDetail.AppId
 	orderItem.Num = item.Num
 	orderItem.OfferUnitPrice = prodSkuDetail.Price
-	orderItem.OfferTotalPrice = float64(int64(prodSkuDetail.Price*100)*int64(item.Num))/100
+	orderItem.OfferTotalPrice = float64(int64(math.Floor(prodSkuDetail.Price*100))*int64(item.Num))/100
 	orderItem.BuyUnitPrice = prodSkuDetail.DisPrice
-	orderItem.BuyTotalPrice = float64(int64(prodSkuDetail.DisPrice*100)*int64(item.Num))/100
+	orderItem.BuyTotalPrice = float64(int64(math.Floor(prodSkuDetail.DisPrice*100))*int64(item.Num))/100
 	orderItem.Json = item.Json
 	return  orderItem.InsertTx(tx)
 }
