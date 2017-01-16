@@ -432,7 +432,7 @@ func MerchatNear(c *gin.Context)  {
 	flongitude,_ :=strconv.ParseFloat(longitude,20)
 	flatitude,_  :=strconv.ParseFloat(latitude,20)
 	
-	mDetailList,total,err := service.MerchantNear(flongitude,flatitude,openId,appId,serviceArea,pIndex,pSize)
+	mDetailList,_,err := service.MerchantNear(flongitude,flatitude,openId,appId,serviceArea,pIndex,pSize)
 	if err!=nil {
 		util.ResponseError400(c.Writer,err.Error())
 		return
@@ -445,8 +445,8 @@ func MerchatNear(c *gin.Context)  {
 		}
 	}
 
-	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),mDetailDtos))
-	//c.JSON(http.StatusOK,mDetailDtos)
+	//c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),mDetailDtos))
+	c.JSON(http.StatusOK,mDetailDtos)
 }
 
 //附近商户搜索 可提供服务的厨师
