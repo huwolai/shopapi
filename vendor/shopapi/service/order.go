@@ -455,7 +455,8 @@ func makePrepay(order *dao.Order,address *dao.Address,payPrice float64,model *Or
 	params := map[string]interface{}{
 		"open_id": order.OpenId,
 		"out_trade_no": order.No,
-		"amount": int64(payPrice*100),
+		//"amount": int64(payPrice*100),
+		"amount": dao.Float2int(payPrice),
 		"trade_type": 2,  //交易类型(1.充值 2.购买)
 		"pay_type": model.PayType,
 		"title": order.Title,
@@ -474,7 +475,8 @@ func makeImprest(order *dao.Order,address *dao.Address,payPrice float64) (map[st
 	params := map[string]interface{}{
 		"open_id":order.OpenId,
 		"type": 1,
-		"amount": int64(payPrice*100),
+		//"amount": int64(payPrice*100),
+		"amount": dao.Float2int(payPrice),
 		"title": order.Title,
 		"remark": order.Title,
 	}
