@@ -561,9 +561,12 @@ func HandleCoupon(order *dao.Order,coupotokens []string,tx *dbr.Tx) (float64,err
 	return couponTotalAmount,nil
 }
 
-func OrderByUser(openId string,orderStatus []int,payStatus []int,appId string,pageIndex uint64,pageSize uint64)  ([]*dao.OrderDetail,error)  {
+func OrderByUser(openId string,orderStatus []int,payStatus []int,appId string,pageIndex uint64,pageSize uint64)  ([]*dao.OrderDetail,int64,error)  {
 
 	orderDetail :=dao.NewOrderDetail()
+	
+	orderDetailsCount,err := orderDetail.OrderDetailWithUserCount(openId,orderStatus,payStatus,appId)	
+	
 	orderDetails,err := orderDetail.OrderDetailWithUser(openId,orderStatus,payStatus,appId,pageIndex,pageSize)	
 	
 	for k,item :=range orderDetails {
@@ -581,7 +584,7 @@ func OrderByUser(openId string,orderStatus []int,payStatus []int,appId string,pa
 		}		
 	}
 
-	return orderDetails,err
+	return orderDetails,orderDetailsCount,err
 }
 
 //获取用户指定状态订单数量

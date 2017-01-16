@@ -442,7 +442,7 @@ func OrderWithUserAndStatus(c *gin.Context)  {
 		}
 	}
 
-	orderList,err := service.OrderByUser(openId,iorderStatusArray,ipayStatusArray,appId,pIndex,pSize)
+	orderList,total,err := service.OrderByUser(openId,iorderStatusArray,ipayStatusArray,appId,pIndex,pSize)
 	if err!=nil {
 		util.ResponseError(c.Writer,http.StatusBadRequest,err.Error())
 		return
@@ -455,7 +455,8 @@ func OrderWithUserAndStatus(c *gin.Context)  {
 		}
 	}
 
-	c.JSON(http.StatusOK,orderDetailDtos)
+	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),orderDetailDtos))
+	//c.JSON(http.StatusOK,orderDetailDtos)
 }
 
 //获取用户指定状态订单数量
