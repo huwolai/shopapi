@@ -412,8 +412,7 @@ func MerchantServiceTimeAdd(c *gin.Context)  {
 }
 
 //附近商户
-func MerchatNear(c *gin.Context)  {
-	
+func MerchatNear(c *gin.Context)  {	
 	appId := security.GetAppId2(c.Request)
 
 	longitude 	:=c.Query("longitude")
@@ -432,7 +431,7 @@ func MerchatNear(c *gin.Context)  {
 	flongitude,_ :=strconv.ParseFloat(longitude,20)
 	flatitude,_  :=strconv.ParseFloat(latitude,20)
 	
-	mDetailList,_,err := service.MerchantNear(flongitude,flatitude,openId,appId,serviceArea,pIndex,pSize)
+	mDetailList,err := service.MerchantNear(flongitude,flatitude,openId,appId,serviceArea,pIndex,pSize)
 	if err!=nil {
 		util.ResponseError400(c.Writer,err.Error())
 		return
@@ -444,9 +443,34 @@ func MerchatNear(c *gin.Context)  {
 			mDetailDtos = append(mDetailDtos,merchantDetailToDto(mDetail))
 		}
 	}
-
-	//c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),mDetailDtos))
 	c.JSON(http.StatusOK,mDetailDtos)
+}
+func Merchats(c *gin.Context)  {	
+	appId := security.GetAppId2(c.Request)
+
+	longitude 	:=c.Query("longitude")
+	latitude	:=c.Query("latitude")	
+	openId 		:=security.GetOpenId(c.Request)
+	pageSize	:=c.Query("page_size")
+	
+	pIndex,pSize := page.ToPageNumOrDefault(c.Query("page_index"),pageSize)	
+
+	flongitude,_ :=strconv.ParseFloat(longitude,20)
+	flatitude,_  :=strconv.ParseFloat(latitude,20)
+	
+	mDetailList,total,err := service.Merchants(flongitude,flatitude,openId,appId,pIndex,pSize)
+	if err!=nil {
+		util.ResponseError400(c.Writer,err.Error())
+		return
+	}
+	mDetailDtos :=make([]*MerchantDetailDto,0)
+	if mDetailList!=nil {
+		for _,mDetail :=range mDetailList {
+			mDetailDtos = append(mDetailDtos,merchantDetailToDto(mDetail))
+		}
+	}
+	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(total),mDetailDtos))
+	//c.JSON(http.StatusOK,mDetailDtos)
 }
 
 //附近商户搜索 可提供服务的厨师

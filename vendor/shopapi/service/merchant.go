@@ -388,10 +388,15 @@ func MerchantServiceTimeAdd(merchantId int64,stimes []string) error  {
 
 }
 
-func  MerchantNear(longitude float64,latitude float64,openId string,appId string,serviceArea string, pageIndex uint64, pageSize uint64) ([]*dao.MerchantDetail,int64,error)   {
+func  MerchantNear(longitude float64,latitude float64,openId string,appId string,serviceArea string, pageIndex uint64, pageSize uint64) ([]*dao.MerchantDetail,error)   {
 	mDetail :=dao.NewMerchantDetail()
 	mDetailList,err := mDetail.MerchantNear(longitude,latitude,openId,appId,serviceArea,pageIndex,pageSize)
-	count,err := mDetail.MerchantNearCount(longitude,latitude,openId,appId,serviceArea)
+	return mDetailList,err
+}
+func  Merchants(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64) ([]*dao.MerchantDetail,int64,error)   {
+	mDetail 		:=dao.NewMerchantDetail()
+	mDetailList,err := mDetail.Merchants(longitude,latitude,openId,appId,pageIndex,pageSize)
+	count,err 		:= mDetail.MerchantsCount(openId,appId)
 	return mDetailList,count,err
 }
 //附近商户搜索 可提供服务的厨师

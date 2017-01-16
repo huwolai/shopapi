@@ -227,16 +227,39 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	return mdetails,err
 }
 
-func (self *MerchantDetail) MerchantNearCount(longitude float64,latitude float64,openId string,appId string,serviceArea string) (int64,error)  {
-	
+func (self *MerchantDetail) Merchants(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64)([]*MerchantDetail,error) {
+	var mdetails []*MerchantDetail
+
 	status := make([]uint64, 0)
 	status = append(status,1)
 	status = append(status,5)
-
-	total,err :=db.NewSession().SelectBySql("select count(app_id) from merchant mt where app_id = ? and mt.status in ? and mt.open_id<>? and id>3 and find_in_set(?,service_area) limit 1",appId,status,openId,serviceArea).ReturnInt64()
-
-	return total,err
+	
+	builder:= db.NewSession().Select(fmt.Sprintf("mt.*,getDistance(mt.longitude,latitude,%f,%f) distance,mt.cover_distance",longitude,latitude)).From("merchant mt")	
+	builder = builder.Where("app_id = ?",appId)
+	builder = builder.Where("mt.status in ?",status)
+	builder = builder.Where("mt.open_id <> ?",openId)
+	builder = builder.Where("mt.id > ?",3)
+	_,err  := builder.OrderBy("is_recom desc,id desc").Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&mdetails)
+	
+	return mdetails,err
 }
+
+func (self *MerchantDetail) MerchantsCount(openId string,appId string) (int64,error)  {
+	status := make([]uint64, 0)
+	status = append(status,1)
+	status = append(status,5)
+	
+	builder :=db.NewSession().Select("count(app_id)").From("merchant mt")	
+	builder = builder.Where("app_id = ?",appId)
+	builder = builder.Where("mt.status in ?",status)
+	builder = builder.Where("mt.open_id <> ?",openId)
+	builder = builder.Where("mt.id > ?",3)
+	//_,err =builder.OrderBy("is_recom desc,id desc").Limit(1).LoadStructs(&mdetails)
+	count,err :=builder.ReturnInt64()
+	return count,err
+}
+
+
 
 //附近商户搜索 可提供服务的厨师
 func (self *MerchantDetail) MerchantNearSearch(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64, serviceTime string, serviceHour uint64,serviceArea string) ([]*MerchantDetail,error)  {
