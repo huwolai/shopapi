@@ -87,6 +87,8 @@ func OrderFetchMoney() {
 			err = calMerchant(order)
 			if err != nil {
 				log.Error("商户结算失败,订单号:", order.No)
+				log.Error(order.MerchantAmount)
+				log.Error(int64(order.MerchantAmount * 100))
 				return
 			}
 
@@ -187,8 +189,6 @@ func calDBN(order *dao.Order) error {
 
 			err = cal(order, order.DbnAmount, userdbn.OpenId, "dbn"+strconv.FormatInt(orderItem.Id,10))
 			if err != nil {
-				log.Error(order.DbnAmount)
-				log.Error(int64(order.DbnAmount * 100))
 				return err
 			}
 		}
