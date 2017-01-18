@@ -187,6 +187,8 @@ func calDBN(order *dao.Order) error {
 
 			err = cal(order, order.DbnAmount, userdbn.OpenId, "dbn"+strconv.FormatInt(orderItem.Id,10))
 			if err != nil {
+				log.Error(order.DbnAmount)
+				log.Error(int64(order.DbnAmount * 100))
 				return err
 			}
 		}
