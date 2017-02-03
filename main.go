@@ -395,6 +395,10 @@ func main() {
 			cart.POST("/:open_id/update", api.CartUpdateList)
 			cart.POST("/:open_id/delete/:id", api.CartDelFromList)
 		}
+		menu := v1.Group("/menu")
+		{
+			menu.GET("/", api.Menu)
+		}
 		test := v1.Group("/test")
 		{
 			test.GET("/", api.Test)
