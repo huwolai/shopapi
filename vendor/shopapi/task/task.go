@@ -224,12 +224,13 @@ func cal(order *dao.Order, calMoney float64, openId string, mark string) error {
 		//accountRecharge.audit 	 = ""
 		accountRecharge.Remark   = order.Title
 		accountRecharge.Type     = 1
-		accountRecharge.Insert()
-		/* err :=accountRecharge.Insert()
+		//accountRecharge.Insert()		
+		
+		err :=accountRecharge.Insert()
 		if err!=nil{
-			log.Error(err)
-			return nil,errors.New("充值记录插入失败!")
-		} */
+			detailModel,_ :=service.AccountDetail(openId)
+			service.AccountSyncMoney(openId,detailModel.Amount)
+		}
 	}
 	
 	

@@ -316,6 +316,8 @@ func allocOrderAmount(order *dao.Order) error  {
 	}
 	//================================
 	accountRecharge.Insert()
+	detailModel,_ :=AccountDetail(order.MOpenId)
+	AccountSyncMoney(order.MOpenId,detailModel.Amount)
 	//================================
 
 	if order.DbnAmount<=0 {
@@ -375,6 +377,8 @@ func allocOrderAmount(order *dao.Order) error  {
 			}
 			//================================			
 			accountRecharge1.Insert()
+			detailModel,_ :=AccountDetail(key)
+			AccountSyncMoney(key,detailModel.Amount)
 			//================================
 		}
 	}
