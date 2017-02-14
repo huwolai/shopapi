@@ -828,12 +828,12 @@ func OrderDelete(c *gin.Context)  {
 	}
 	orderNo :=c.Param("order_no")
 	appId := security.GetAppId2(c.Request)
-	var paramMap map[string]interface{}
+	/* var paramMap map[string]interface{}
 	err = c.BindJSON(&paramMap)
 	if err!=nil{
 		util.ResponseError400(c.Writer,"参数有误!")
 		return
-	}
+	} */
 
 	err =service.OrderDelete(orderNo,appId)
 	if err!=nil{
