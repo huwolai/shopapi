@@ -217,13 +217,14 @@ func cal(order *dao.Order, calMoney float64, openId string, mark string) error {
 		//accountRecharge.Amount   = calMoney * 100
 		accountRecharge.Amount   = calMoney
 		accountRecharge.No 		 = order.No + "-" + mark
-		accountRecharge.AppId 	 = order.AppId
-		accountRecharge.Status 	 = comm.ACCOUNT_RECHARGE_STATUS_WAIT
+		accountRecharge.AppId 	 = order.AppId		
 		accountRecharge.OpenId 	 = openId
 		if openId=="75b3be97d0b749768bcb272e4684786a" {
 			accountRecharge.Froms 	 = 0
+			accountRecharge.Status 	 = comm.ACCOUNT_RECHARGE_STATUS_WAIT
 		}else{
 			accountRecharge.Froms 	 = 1
+			accountRecharge.Status 	 = comm.ACCOUNT_RECHARGE_STATUS_NORMAL
 		}		
 		accountRecharge.Opt 	 = "system"
 		//accountRecharge.audit 	 = ""
