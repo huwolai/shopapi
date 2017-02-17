@@ -373,8 +373,8 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 	
 	buildercount=buildercount.From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.status=?",1).Where("product.parent_id=?",0).Where("product.app_id=?",appId)
 	
-	builder 		= builder.Where("product.service_city = ?",serviceCity)
-	buildercount    = buildercount.Where("product.service_city = ?",serviceCity)
+	//builder 		= builder.Where("product.service_city = ?",serviceCity)
+	//buildercount    = buildercount.Where("product.service_city = ?",serviceCity)
 		
 	if flags!=nil&&len(flags)>0{
 		builder 		= builder.Where("product.flag in ?",flags)
