@@ -627,6 +627,48 @@ func (self *ProductDetail) ProdDetailListWithIds(appId string,ids []string) ([]*
 	
 	return prod,err
 }
+func (self *ProductDetail) ProductListSearch(appId string,prodName string,flags []string,noflags []string,pageIndex uint64,pageSize uint64) ([]*ProductDetail,int , error)  {
+	session := db.NewSession()
+	var prodList []*ProductDetail
+	var count int
+	
+	builder 	:=session.Select("product.*,UNIX_TIMESTAMP(product.create_time) as create_time_unix,merchant.id merchant_id,merchant.name merchant_name")
+	
+	buildercount :=session.Select("count(product.id)")
+	
+	builder=builder.From("product").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("product.title  like ? ","%"+prodName+"%").Where("product.status=?",1).Where("product.parent_id=?",0).Where("product.app_id=?",appId)
+	
+	buildercount=buildercount.From("product").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("product.title  like ?","%"+prodName+"%").Where("product.status=?",1).Where("product.parent_id=?",0).Where("product.app_id=?",appId)
+	
+	
+	if flags!=nil&&len(flags)>0{
+		builder 		= builder.Where("product.flag in ?",flags)
+		buildercount    = buildercount.Where("product.flag in ?",flags)
+	}
+	if noflags!=nil&&len(noflags) >0 {
+		builder 		= builder.Where("product.flag not in ?",noflags)
+		buildercount 	= buildercount.Where("product.flag not in ?",noflags)
+	}	
+	
+	builder = builder.OrderDir("product.`order`",false)
+	
+	_,err := builder.Limit(pageSize).Offset((pageIndex-1)*pageSize).LoadStructs(&prodList)
+	if err!=nil{
+		return nil,0,err
+	}
+	
+	_,err = buildercount.Limit(1).LoadStructs(&count)
+	if err!=nil{
+		return nil,0,err
+	}
+	
+	if prodList!=nil&&len(prodList)>0 {
+		err = FillProdImgs(appId,prodList)
+		err = FillProdSkus(appId,prodList)
+	}
+
+	return prodList,count,err
+}
 
 
 

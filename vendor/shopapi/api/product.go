@@ -1377,7 +1377,28 @@ func ProdDetailListWithActivity(c *gin.Context)  {
 	c.JSON(http.StatusOK,idsMap)
 }
 
+/**
+商品列表 查询
+ */
+func ProductListSearch(c *gin.Context)  {
+	appId 	 := security.GetAppId2(c.Request)
+	prodName :=c.Query("title")
+	flags 	 :=c.Query("flags")
+	noflags  := c.Query("noflags")
 
+	flagsArray,noflagsArray := GetFlagsAndNoFlags(flags,noflags)	
+	pIndex,pSize :=page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+
+	prodList,count,err := service.ProductListSearch(appId,prodName,flagsArray,noflagsArray,pIndex,pSize)
+	if err!=nil {
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询失败!")
+		return
+	}
+
+	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(count),prodList))
+	//c.JSON(http.StatusOK,prodListDtos)
+}
 
 
 

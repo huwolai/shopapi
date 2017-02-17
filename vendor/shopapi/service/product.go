@@ -713,6 +713,15 @@ func ProdSoldNumRealWithId(prodId int64) (int64,error) {
 func ProdDetailListWithIds(appId string,ids []string) ([]*dao.ProductDetail,error)  {
 	return dao.NewProductDetail().ProdDetailListWithIds(appId,ids)
 }
+//根据商品名获取商品
+func ProductListSearch(appId string,prodName string,flags []string,noflags []string,pageIndex uint64,pageSize uint64) ([]*dao.ProductDetail,int,error)   {
+	productDetail :=dao.NewProductDetail()
+	prodList,count,err := productDetail.ProductListSearch(appId,prodName,flags,noflags,pageIndex,pageSize)
+	if err!=nil {
+		return nil,0,err
+	}
+	return prodList,count,nil
+}
 
 
 
