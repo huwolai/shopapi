@@ -216,7 +216,7 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	builder = builder.Where("app_id = ?",appId)
 	//builder = builder.Where("mt.status = ?",1)
 	builder = builder.Where("mt.status in ?",status)
-	builder = builder.Where("mt.service_city = ?",serviceCity)
+	//builder = builder.Where("mt.service_city = ?",serviceCity)
 	builder = builder.Where("mt.open_id <> ?",openId)
 	//builder = builder.Where("mt.flag <> ?","default")
 	builder = builder.Where("mt.id > ?",3)
