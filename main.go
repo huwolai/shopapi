@@ -186,6 +186,7 @@ func main() {
 			products.POST("/:merchant_id", api.ProductAdd)
 			products.GET("/", api.ProdDetailListWith)
 			products.GET("/activity", api.ProdDetailListWithActivity)
+			products.GET("/search", api.ProductListSearch)
 		}
 
 		//商品
