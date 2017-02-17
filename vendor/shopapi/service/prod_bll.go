@@ -31,6 +31,7 @@ type ProdBLL struct {
 	Goodsid string
 	
 	IsLimit int64
+	ServiceCity string
 }
 
 type ProdImgBLL struct {

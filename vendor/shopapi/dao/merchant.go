@@ -35,6 +35,7 @@ type Merchant struct  {
 	BaseDModel
 	
 	ServiceArea string
+	ServiceCity string
 }
 
 type MerchantDetail struct  {
@@ -82,7 +83,7 @@ func NewMerchantOnline() *MerchantOnline  {
 
 func (self *Merchant) InsertTx(tx *dbr.Tx) (int64,error) {
 
-	result,err :=tx.InsertInto("merchant").Columns("name","mobile","app_id","open_id","address","address_id","longitude","latitude","status","weight","cover_distance","json","flag","service_area").Record(self).Exec()
+	result,err :=tx.InsertInto("merchant").Columns("name","mobile","app_id","open_id","address","address_id","longitude","latitude","status","weight","cover_distance","json","flag","service_area","service_city").Record(self).Exec()
 	if err!=nil{
 		return 0,err
 	}
@@ -140,6 +141,7 @@ func (self *Merchant) MerchantUpdateTx(merchant *Merchant,tx *dbr.Tx) error  {
 	builder = builder.Set("latitude"	,merchant.Latitude)	
 	builder = builder.Set("json"		,merchant.Json)
 	builder = builder.Set("service_area",merchant.ServiceArea)
+	builder = builder.Set("Service_city" ,merchant.ServiceCity)
 	
 	if merchant.CoverDistance>0 {
 		builder = builder.Set("cover_distance",merchant.CoverDistance)
@@ -174,7 +176,7 @@ func (self *Merchant) IncrWeightWithIdTx(num int,id int64,tx *dbr.Tx) error {
 	return err
 }
 
-func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,openId string,appId string,serviceArea string, pageIndex uint64, pageSize uint64) ([]*MerchantDetail,error)  {
+func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,openId string,appId string,serviceArea string,serviceCity string, pageIndex uint64, pageSize uint64) ([]*MerchantDetail,error)  {
 	
 	status := make([]uint64, 0)
 	status = append(status,1)
@@ -182,7 +184,7 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	
 	var mdetails []*MerchantDetail
 	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' and getDistance(mt.longitude,latitude,?,?)<cover_distance order by distance limit ?,?",longitude,latitude,appId,status,openId,longitude,latitude,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)	
-	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status in ? and mt.open_id<>? and id>3 and find_in_set(?,service_area) order by status asc,weight desc limit ?,?",longitude,latitude,appId,status,openId,serviceArea,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
+	_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status in ? and mt.open_id<>? and id>3 and service_city=? and find_in_set(?,service_area) order by status asc,weight desc limit ?,?",longitude,latitude,appId,status,openId,serviceCity,serviceArea,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
 	//_,err :=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' order by distance limit ?,?",longitude,latitude,appId,status,openId,(pageIndex-1)*pageSize,pageSize).LoadStructs(&mdetails)
 /* 	b:=db.NewSession().SelectBySql("select mt.*,getDistance(mt.longitude,latitude,?,?) distance,mt.cover_distance from merchant mt where app_id = ? and mt.status = ? and mt.open_id<>? and mt.flag<>'default' and find_in_set(?,service_area) order by distance limit ?,?",longitude,latitude,appId,status,openId,serviceArea,(pageIndex-1)*pageSize,pageSize)
 	log.Error( b.ToSql() ) */
@@ -214,6 +216,7 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	builder = builder.Where("app_id = ?",appId)
 	//builder = builder.Where("mt.status = ?",1)
 	builder = builder.Where("mt.status in ?",status)
+	builder = builder.Where("mt.service_city = ?",serviceCity)
 	builder = builder.Where("mt.open_id <> ?",openId)
 	//builder = builder.Where("mt.flag <> ?","default")
 	builder = builder.Where("mt.id > ?",3)
@@ -227,7 +230,7 @@ func (self *MerchantDetail) MerchantNear(longitude float64,latitude float64,open
 	return mdetails,err
 }
 
-func (self *MerchantDetail) Merchants(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64)([]*MerchantDetail,error) {
+func (self *MerchantDetail) Merchants(longitude float64,latitude float64,openId string,appId string,serviceCity string, pageIndex uint64, pageSize uint64)([]*MerchantDetail,error) {
 	var mdetails []*MerchantDetail
 
 	status := make([]uint64, 0)
@@ -236,6 +239,7 @@ func (self *MerchantDetail) Merchants(longitude float64,latitude float64,openId 
 	
 	builder:= db.NewSession().Select(fmt.Sprintf("mt.*,getDistance(mt.longitude,latitude,%f,%f) distance,mt.cover_distance",longitude,latitude)).From("merchant mt")	
 	builder = builder.Where("app_id = ?",appId)
+	builder = builder.Where("service_city = ?",serviceCity)
 	builder = builder.Where("mt.status in ?",status)
 	builder = builder.Where("mt.open_id <> ?",openId)
 	builder = builder.Where("mt.id > ?",3)
@@ -244,7 +248,7 @@ func (self *MerchantDetail) Merchants(longitude float64,latitude float64,openId 
 	return mdetails,err
 }
 
-func (self *MerchantDetail) MerchantsCount(openId string,appId string) (int64,error)  {
+func (self *MerchantDetail) MerchantsCount(openId string,appId string,serviceCity string) (int64,error)  {
 	status := make([]uint64, 0)
 	status = append(status,1)
 	status = append(status,5)
@@ -253,6 +257,7 @@ func (self *MerchantDetail) MerchantsCount(openId string,appId string) (int64,er
 	builder = builder.Where("app_id = ?",appId)
 	builder = builder.Where("mt.status in ?",status)
 	builder = builder.Where("mt.open_id <> ?",openId)
+	builder = builder.Where("mt.service_city = ?",serviceCity)
 	builder = builder.Where("mt.id > ?",3)
 	//_,err =builder.OrderBy("is_recom desc,id desc").Limit(1).LoadStructs(&mdetails)
 	count,err :=builder.ReturnInt64()

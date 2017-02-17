@@ -45,6 +45,8 @@ type ProductParam struct  {
 	Goodsid  string `json:"goodsid"`
 	
 	IsLimit  int64 `json:"is_limit"`
+	
+	ServiceCity  string `json:"service_city"`
 }
 
 type ProductImgParam struct {
@@ -520,10 +522,12 @@ func ProductListWithRecomm(c *gin.Context)  {
 商品列表(根据分类查询)
  */
 func ProductListWithCategory(c *gin.Context)  {
-	categoryId :=c.Param("category_id")
+	categoryId 		:= c.Param("category_id")
 
-	 flags :=c.Query("flags")
-	 noflags := c.Query("noflags")
+	flags 			:= c.Query("flags")
+	noflags 		:= c.Query("noflags")
+	
+	serviceCity 	:= c.Query("service_city")
 
 	flagsArray,noflagsArray := GetFlagsAndNoFlags(flags,noflags)
 	
@@ -531,7 +535,7 @@ func ProductListWithCategory(c *gin.Context)  {
 
 	icategoryId,_ := strconv.Atoi(categoryId)
 	appId := security.GetAppId2(c.Request)
-	prodList,count,err := service.ProductListWithCategory(appId,int64(icategoryId),flagsArray,noflagsArray,pIndex,pSize)
+	prodList,count,err := service.ProductListWithCategory(appId,int64(icategoryId),flagsArray,noflagsArray,serviceCity,pIndex,pSize)
 	if err!=nil {
 		log.Error(err)
 		util.ResponseError400(c.Writer,"查询失败!")
@@ -1021,6 +1025,7 @@ func productParamToBLL(param *ProductParam) *service.ProdBLL {
 	prodBll.ParentId  = param.ParentId
 	prodBll.Goodsid  = param.Goodsid
 	prodBll.IsLimit  = param.IsLimit
+	prodBll.ServiceCity  = param.ServiceCity
 
 	imgsparams  := param.Imgs
 	if imgsparams!=nil {

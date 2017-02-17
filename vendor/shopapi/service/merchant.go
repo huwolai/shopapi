@@ -29,6 +29,7 @@ type MerchantDetailDLL struct  {
 	Imgs []MerchantImgDLL
 	
 	ServiceArea string
+	ServiceCity string
 }
 
 type MerchantImgDLL struct  {
@@ -146,6 +147,11 @@ func fillMerchant(merchant *dao.Merchant,dll *MerchantDetailDLL)  {
 	if dll.ServiceArea!="" {
 		merchant.ServiceArea = dll.ServiceArea
 	}
+	
+	if dll.ServiceCity!="" {
+		merchant.ServiceCity = dll.ServiceCity
+	}
+	
 	if dll.Json!="" {
 		merchant.Json = dll.Json
 	}
@@ -228,6 +234,7 @@ func MerchantAdd(dll *MerchantDetailDLL) (*MerchantDetailDLL,error)  {
 	merchant.AddressId 			= dll.AddressId
 	merchant.CoverDistance 		= dll.CoverDistance
 	merchant.ServiceArea 		= dll.ServiceArea
+	merchant.ServiceCity 		= dll.ServiceCity
 	mid,err := merchant.InsertTx(tx)
 	if err!=nil{
 		tx.Rollback()
@@ -388,15 +395,15 @@ func MerchantServiceTimeAdd(merchantId int64,stimes []string) error  {
 
 }
 
-func  MerchantNear(longitude float64,latitude float64,openId string,appId string,serviceArea string, pageIndex uint64, pageSize uint64) ([]*dao.MerchantDetail,error)   {
+func  MerchantNear(longitude float64,latitude float64,openId string,appId string,serviceArea string,serviceCity string, pageIndex uint64, pageSize uint64) ([]*dao.MerchantDetail,error)   {
 	mDetail :=dao.NewMerchantDetail()
-	mDetailList,err := mDetail.MerchantNear(longitude,latitude,openId,appId,serviceArea,pageIndex,pageSize)
+	mDetailList,err := mDetail.MerchantNear(longitude,latitude,openId,appId,serviceArea,serviceCity,pageIndex,pageSize)
 	return mDetailList,err
 }
-func  Merchants(longitude float64,latitude float64,openId string,appId string, pageIndex uint64, pageSize uint64) ([]*dao.MerchantDetail,int64,error)   {
+func  Merchants(longitude float64,latitude float64,openId string,appId string,serviceCity string, pageIndex uint64, pageSize uint64) ([]*dao.MerchantDetail,int64,error)   {
 	mDetail 		:=dao.NewMerchantDetail()
-	mDetailList,err := mDetail.Merchants(longitude,latitude,openId,appId,pageIndex,pageSize)
-	count,err 		:= mDetail.MerchantsCount(openId,appId)
+	mDetailList,err := mDetail.Merchants(longitude,latitude,openId,appId,serviceCity,pageIndex,pageSize)
+	count,err 		:= mDetail.MerchantsCount(openId,appId,serviceCity)
 	return mDetailList,count,err
 }
 //附近商户搜索 可提供服务的厨师

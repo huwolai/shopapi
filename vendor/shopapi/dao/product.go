@@ -35,6 +35,7 @@ type Product struct  {
 	Goodsid  string
 	
 	IsLimit  int64
+	ServiceCity  string
 }
 
 type ProductDetail struct {
@@ -271,7 +272,7 @@ func (self *Product) SoldNumInc(num int,prodId int64,tx *dbr.Tx) error  {
 
 func (self *Product) InsertTx(tx *dbr.Tx) (int64,error)  {
 
-	result,err :=tx.InsertInto("product").Columns("title","sub_title","app_id","description","sold_num","price","dis_price","json","flag","status","is_recom","limit_num","parent_id","goodsid","is_limit").Record(self).Exec()
+	result,err :=tx.InsertInto("product").Columns("title","sub_title","app_id","description","sold_num","price","dis_price","json","flag","status","is_recom","limit_num","parent_id","goodsid","is_limit","service_city").Record(self).Exec()
 	if err !=nil {
 
 		return 0,err
@@ -359,7 +360,7 @@ func (self *ProductDetail) ProductListWithMerchant(merchantId int64,appId string
 	return prodList,err
 }
 
-func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64,flags []string,noflags []string,pageIndex uint64,pageSize uint64) ([]*ProductDetail,int , error)  {
+func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64,flags []string,noflags []string,serviceCity string,pageIndex uint64,pageSize uint64) ([]*ProductDetail,int , error)  {
 	session := db.NewSession()
 	var prodList []*ProductDetail
 	var count int
@@ -372,7 +373,9 @@ func (self *ProductDetail) ProductListWithCategory(appId string,categoryId int64
 	
 	buildercount=buildercount.From("product").Join("prod_category","product.id = prod_category.prod_id").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("prod_category.category_id=?",categoryId).Where("product.status=?",1).Where("product.parent_id=?",0).Where("product.app_id=?",appId)
 	
-	
+	builder 		= builder.Where("product.service_city = ?",serviceCity)
+	buildercount    = buildercount.Where("product.service_city = ?",serviceCity)
+		
 	if flags!=nil&&len(flags)>0{
 		builder 		= builder.Where("product.flag in ?",flags)
 		buildercount    = buildercount.Where("product.flag in ?",flags)

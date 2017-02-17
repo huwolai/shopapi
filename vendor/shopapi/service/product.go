@@ -309,9 +309,9 @@ func ProductListWithRecomm(appId string,pageIndex uint64,pageSize uint64) ([]*da
 }
 
 //根据分类获取商品
-func ProductListWithCategory(appId string,categoryId int64,flags []string,noflags []string,pageIndex uint64,pageSize uint64) ([]*dao.ProductDetail,int,error)   {
+func ProductListWithCategory(appId string,categoryId int64,flags []string,noflags []string, serviceCity string,pageIndex uint64,pageSize uint64) ([]*dao.ProductDetail,int,error)   {
 	productDetail :=dao.NewProductDetail()
-	prodList,count,err := productDetail.ProductListWithCategory(appId,categoryId,flags,noflags,pageIndex,pageSize)
+	prodList,count,err := productDetail.ProductListWithCategory(appId,categoryId,flags,noflags,serviceCity,pageIndex,pageSize)
 	if err!=nil {
 		return nil,0,err
 	}
@@ -590,6 +590,7 @@ func prodToModel(prodbll *ProdBLL) *dao.Product {
 	prod.ParentId = prodbll.ParentId
 	prod.Goodsid = prodbll.Goodsid
 	prod.IsLimit = prodbll.IsLimit
+	prod.ServiceCity = prodbll.ServiceCity
 
 	return prod
 }

@@ -58,6 +58,7 @@ type MerchantDetailParam struct  {
 	Imgs []MerchantImgDto
 	
 	ServiceArea string `json:"service_area"`
+	ServiceCity string `json:"service_city"`
 }
 
 //商户主要图片DTO
@@ -121,7 +122,6 @@ func MerchantUpdate(c *gin.Context)  {
 		util.ResponseError400(c.Writer,err.Error())
 		return
 	}
-
 
 	var param MerchantDetailParam
 	err =c.BindJSON(&param)
@@ -417,6 +417,7 @@ func MerchatNear(c *gin.Context)  {
 
 	longitude 	:=c.Query("longitude")
 	latitude	:=c.Query("latitude")
+	serviceCity :=c.Query("service_city")
 	serviceArea :=c.Query("service_area")
 	openId 		:= security.GetOpenId(c.Request)
 	
@@ -431,7 +432,7 @@ func MerchatNear(c *gin.Context)  {
 	flongitude,_ :=strconv.ParseFloat(longitude,20)
 	flatitude,_  :=strconv.ParseFloat(latitude,20)
 	
-	mDetailList,err := service.MerchantNear(flongitude,flatitude,openId,appId,serviceArea,pIndex,pSize)
+	mDetailList,err := service.MerchantNear(flongitude,flatitude,openId,appId,serviceArea,serviceCity,pIndex,pSize)
 	if err!=nil {
 		util.ResponseError400(c.Writer,err.Error())
 		return
@@ -452,13 +453,14 @@ func Merchats(c *gin.Context)  {
 	latitude	:=c.Query("latitude")	
 	openId 		:=security.GetOpenId(c.Request)
 	pageSize	:=c.Query("page_size")
+	serviceCity :=c.Query("service_city")
 	
 	pIndex,pSize := page.ToPageNumOrDefault(c.Query("page_index"),pageSize)	
 
 	flongitude,_ :=strconv.ParseFloat(longitude,20)
 	flatitude,_  :=strconv.ParseFloat(latitude,20)
 	
-	mDetailList,total,err := service.Merchants(flongitude,flatitude,openId,appId,pIndex,pSize)
+	mDetailList,total,err := service.Merchants(flongitude,flatitude,openId,appId,serviceCity,pIndex,pSize)
 	if err!=nil {
 		util.ResponseError400(c.Writer,err.Error())
 		return
@@ -688,6 +690,7 @@ func merchantDetailParamToDll(param MerchantDetailParam)  *service.MerchantDetai
 	dll.Longitude = param.Longitude
 	dll.Id = param.Id
 	dll.ServiceArea = param.ServiceArea
+	dll.ServiceCity = param.ServiceCity
 
 	if param.Imgs!=nil {
 		imgdlls := make([]service.MerchantImgDLL,0)
