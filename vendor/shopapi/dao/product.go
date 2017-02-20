@@ -635,9 +635,10 @@ func (self *ProductDetail) ProductListSearch(appId string,prodName string,flags 
 	var prodList []*ProductDetail
 	var count int
 	
-	builder 	:=session.Select("product.*,UNIX_TIMESTAMP(product.create_time) as create_time_unix,merchant.id merchant_id,merchant.name merchant_name")
+	builder 	:=session.Select("product.*,UNIX_TIMESTAMP(product.create_time) as create_time_unix,merchant.id merchant_id,merchant.name merchant_name,prod_category.category_id").Join("prod_category","product.id = prod_category.prod_id")
 	
 	buildercount :=session.Select("count(product.id)")
+	
 	
 	builder=builder.From("product").Join("merchant_prod","product.id = merchant_prod.prod_id").Join("merchant","merchant.id = merchant_prod.merchant_id").Where("product.title  like ? ","%"+prodName+"%").Where("product.status=?",1).Where("product.parent_id=?",0).Where("product.app_id=?",appId)
 	
